@@ -68,6 +68,10 @@ input,select{font-family:inherit;font-size:16px}
 .btn:active{transform:scale(.98)}
 .btn-ghost{background:none;color:var(--muted);font-weight:500;font-size:14px;margin-top:14px}
 .btn-ghost b{color:var(--amber)}
+.btn-secundario{
+  width:100%;padding:14px;border-radius:14px;font-weight:600;font-size:15px;
+  background:var(--bg);border:1px solid var(--line);color:var(--text);margin-top:10px;
+}
 .aviso{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--bg-soft);
   border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5}
 .aviso.erro{border-color:var(--danger);color:var(--danger)}
@@ -81,12 +85,26 @@ header{
 header h2{font-size:22px;letter-spacing:-.4px}
 header .sair{color:var(--muted);font-size:13px;padding:8px 10px}
 
-.abas{display:flex;gap:8px;padding:4px 20px 14px;position:sticky;z-index:5}
+.abas{display:flex;gap:8px;padding:4px 20px 10px}
 .aba{
   flex:1;padding:11px;border-radius:999px;font-weight:600;font-size:14px;
   background:var(--bg-soft);color:var(--muted);border:1px solid var(--line);
 }
 .aba.ativa{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+
+/* filtro por streaming */
+.filtros{
+  display:flex;gap:8px;padding:2px 20px 12px;overflow-x:auto;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.filtros::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:999px;font-weight:600;font-size:12px;
+  background:var(--bg-soft);border:1px solid var(--line);color:var(--muted);
+}
+.chip .ponto{width:10px;height:10px;border-radius:4px}
+.chip.ativo{border-color:var(--amber);color:var(--text);background:var(--card)}
 
 main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 
@@ -100,13 +118,14 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
   background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px;display:flex;flex-direction:column;gap:12px;
 }
-.card-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.card-nome{font-family:'Sora';font-weight:700;font-size:17px;line-height:1.3;word-break:break-word}
+.card-topo{display:flex;gap:12px;align-items:flex-start}
+.card img.capa{width:56px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
+.card-nome{font-family:'Sora';font-weight:700;font-size:17px;line-height:1.3;word-break:break-word;flex:1}
 .badge{
   flex-shrink:0;font-size:11px;font-weight:700;letter-spacing:.4px;
   padding:5px 10px;border-radius:999px;color:#fff;white-space:nowrap;
 }
-/* contador T/E — assinatura do app */
+/* contador T/E */
 .contador{display:flex;gap:10px}
 .bloco{
   flex:1;background:var(--bg);border:1px solid var(--line);border-radius:14px;
@@ -114,6 +133,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 }
 .bloco .rotulo{font-size:10px;color:var(--muted);letter-spacing:1.2px;font-weight:600;padding-left:6px}
 .bloco .valor{font-family:'Sora';font-weight:800;font-size:22px;color:var(--amber);min-width:34px;text-align:center}
+.bloco .max{font-size:10px;color:var(--muted);font-weight:600}
 .bloco button{
   width:34px;height:34px;border-radius:10px;background:var(--bg-soft);
   color:var(--text);font-size:18px;font-weight:700;border:1px solid var(--line);
@@ -125,46 +145,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
   background:var(--bg-soft);border:1px solid var(--line);color:var(--text);
 }
 .acao.principal{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:700}
-.acao.mini{flex:0 0 44px}
 .acao:active{transform:scale(.97)}
-
-/* ---------- grade de streamings ---------- */
-.grade-streamings{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
-.tile{
-  display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;
-  background:var(--bg);border:1px solid var(--line);font-weight:600;font-size:14px;
-  color:var(--text);text-align:left;
-}
-.tile:active{transform:scale(.97);border-color:var(--amber)}
-.mini-icone{
-  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
-  font-family:'Sora';font-weight:800;font-size:13px;color:#fff;flex-shrink:0;
-}
-.seletor-streaming{
-  width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;
-  border-radius:14px;background:var(--bg);border:1px solid var(--line);
-  color:var(--text);font-weight:600;font-size:15px;
-}
-.seletor-streaming .trocar{margin-left:auto;color:var(--amber);font-size:13px;font-weight:600}
-.btn-secundario{
-  width:100%;padding:14px;border-radius:14px;font-weight:600;font-size:15px;
-  background:var(--bg);border:1px solid var(--line);color:var(--text);margin-top:10px;
-}
-
-/* ---------- busca de capas ---------- */
-.busca-resultados{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
-.resultado{
-  display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;
-  background:var(--bg);border:1px solid var(--line);text-align:left;color:var(--text);width:100%;
-}
-.resultado:active{border-color:var(--amber)}
-.resultado img,.resultado .sem-capa{width:42px;height:62px;object-fit:cover;border-radius:8px;background:var(--bg-soft);flex-shrink:0}
-.resultado .info{font-size:13px;font-weight:600;line-height:1.35}
-.resultado .info span{display:block;color:var(--muted);font-weight:400;font-size:12px}
-.capa-preview{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.capa-preview img{width:54px;height:80px;object-fit:cover;border-radius:10px}
-.capa-preview .limpar{color:var(--muted);font-size:13px;text-decoration:underline}
-.card img.capa{width:56px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
 
 /* ---------- botão flutuante ---------- */
 #btn-add{
@@ -188,22 +169,59 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 .linha-dupla{display:flex;gap:10px}
 .linha-dupla .field{flex:1}
 .folha .btn-ghost{width:100%;text-align:center}
+
+/* busca livre */
+.busca-resultados{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
+.resultado{
+  display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;
+  background:var(--bg);border:1px solid var(--line);text-align:left;color:var(--text);width:100%;
+}
+.resultado:active{border-color:var(--amber)}
+.resultado img,.resultado .sem-capa{width:42px;height:62px;object-fit:cover;border-radius:8px;background:var(--bg-soft);flex-shrink:0}
+.resultado .info{font-size:13px;font-weight:600;line-height:1.35;flex:1}
+.resultado .info span{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.mini-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.mini-badges .badge{font-size:9px;padding:3px 7px}
+.buscando{color:var(--muted);font-size:13px;text-align:center;padding:10px}
+
+/* grade de streamings */
+.grade-streamings{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
+.tile{
+  display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;
+  background:var(--bg);border:1px solid var(--line);font-weight:600;font-size:14px;
+  color:var(--text);text-align:left;
+}
+.tile:active{transform:scale(.97);border-color:var(--amber)}
+.mini-icone{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  font-family:'Sora';font-weight:800;font-size:13px;color:#fff;flex-shrink:0;
+}
+.seletor-streaming{
+  width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:14px;background:var(--bg);border:1px solid var(--line);
+  color:var(--text);font-weight:600;font-size:15px;
+}
+.seletor-streaming .trocar{margin-left:auto;color:var(--amber);font-size:13px;font-weight:600}
+.disponivel{font-size:12px;color:var(--muted);margin:-6px 0 14px;line-height:1.6}
+.capa-preview{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.capa-preview img{width:54px;height:80px;object-fit:cover;border-radius:10px}
+.capa-preview .titulo-escolhido{font-family:'Sora';font-weight:700;font-size:15px;line-height:1.3}
 </style>
 </head>
 <body>
 
-<!-- ===== CONFIGURAÇÃO (cole os valores do seu projeto Supabase) ===== -->
+<!-- ===== CONFIGURAÇÃO ===== -->
 <script>
   const SUPABASE_URL = "https://nutshjslqeqgtiycrquk.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_SyjAm8mEPB3EjftDELuw7A_YBsif-iJ";
   const TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 </script>
-<!-- =================================================================== -->
+<!-- ======================== -->
 
 <!-- TELA: configuração pendente -->
 <div id="tela-config" class="screen hidden" style="justify-content:center;padding:28px">
   <div class="logo"><div class="logo-mark">▶</div><div><h1>CineLista</h1><span>configuração pendente</span></div></div>
-  <div class="aviso">Falta conectar o app ao seu Supabase. Abra o arquivo <b>index.html</b> no Bloco de Notas e substitua <b>COLE_AQUI_SUA_PROJECT_URL</b> e <b>COLE_AQUI_SUA_ANON_KEY</b> pelos valores do seu projeto (Settings → API).</div>
+  <div class="aviso">Falta conectar o app ao seu Supabase. Abra o arquivo <b>index.html</b> e substitua os valores de configuração.</div>
 </div>
 
 <!-- TELA: login -->
@@ -229,6 +247,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
     <button class="aba ativa" data-aba="assistindo">▶ Assistindo</button>
     <button class="aba" data-aba="proximo">☆ Próximos</button>
   </div>
+  <div class="filtros" id="filtros"></div>
   <main id="lista"></main>
   <button id="btn-add">+</button>
 </div>
@@ -237,16 +256,32 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 <div id="modal" class="hidden">
   <div class="folha">
 
-    <!-- Passo 1: escolher o streaming -->
-    <div id="passo-streaming">
-      <h3>Onde você vai assistir?</h3>
-      <div class="grade-streamings" id="grade-streamings"></div>
-      <button class="btn-ghost" id="btn-fechar-grade">Cancelar</button>
+    <!-- Passo 1: busca livre -->
+    <div id="passo-busca">
+      <h3>O que você vai assistir?</h3>
+      <div class="field">
+        <input id="f-busca" placeholder="Digite o nome do filme ou série..." autocomplete="off">
+      </div>
+      <div id="busca-resultados" class="busca-resultados"></div>
+      <button class="btn-ghost" id="btn-manual">Não achei — <b>adicionar manualmente</b></button>
+      <button class="btn-ghost" id="btn-fechar-busca">Cancelar</button>
     </div>
 
-    <!-- Passo 2: dados do título -->
+    <!-- Passo 2: escolher o streaming (fluxo manual / trocar) -->
+    <div id="passo-streaming" class="hidden">
+      <h3>Em qual streaming?</h3>
+      <div class="grade-streamings" id="grade-streamings"></div>
+      <button class="btn-ghost" id="btn-fechar-grade">Voltar</button>
+    </div>
+
+    <!-- Passo 3: confirmar dados -->
     <div id="passo-form" class="hidden">
       <h3 id="modal-titulo">Adicionar título</h3>
+      <div id="capa-preview" class="capa-preview hidden">
+        <img id="capa-img" alt="Capa">
+        <div class="titulo-escolhido" id="titulo-escolhido"></div>
+      </div>
+      <div class="field" id="grupo-nome"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
       <div class="field"><label>Streaming</label>
         <button class="seletor-streaming" id="btn-trocar-streaming">
           <span class="mini-icone" id="sel-icone"></span>
@@ -254,13 +289,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
           <span class="trocar">trocar</span>
         </button>
       </div>
-      <div class="field"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
-      <button class="btn-secundario" id="btn-buscar-capa" style="margin:0 0 14px">🔍 Buscar capa e nome oficial</button>
-      <div id="busca-resultados" class="busca-resultados hidden"></div>
-      <div id="capa-preview" class="capa-preview hidden">
-        <img id="capa-img" alt="Capa">
-        <button class="limpar" id="btn-limpar-capa">remover capa</button>
-      </div>
+      <div class="disponivel hidden" id="disponivel"></div>
       <div class="field"><label>Lista</label>
         <select id="f-status">
           <option value="assistindo">Assistindo</option>
@@ -268,10 +297,9 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
         </select>
       </div>
       <div class="linha-dupla" id="grupo-te">
-        <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="0" value="1"></div>
-        <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="0" value="1"></div>
+        <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="1" value="1"></div>
+        <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="1" value="1"></div>
       </div>
-      <div class="field"><label>Link direto (opcional)</label><input id="f-link" placeholder="Cole o link do título no streaming"></div>
       <button class="btn" id="btn-salvar-abrir">Salvar e abrir</button>
       <button class="btn-secundario" id="btn-salvar">Só salvar</button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
@@ -284,24 +312,27 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 <script>
 /* ---------- streamings ---------- */
 const STREAMINGS = {
-  netflix:   { nome:"Netflix",     cor:"#E50914", busca:t=>"https://www.netflix.com/search?q="+t },
-  prime:     { nome:"Prime Video", cor:"#00A8E1", busca:t=>"https://www.primevideo.com/search?phrase="+t },
-  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", busca:t=>"https://play.hbomax.com/search?q="+t },
-  paramount: { nome:"Paramount+",  cor:"#0064FF", busca:()=>"https://www.paramountplus.com/search/" },
-  globoplay: { nome:"Globoplay",   cor:"#FB0D54", busca:t=>"https://globoplay.globo.com/busca/?q="+t },
-  disney:    { nome:"Disney+",     cor:"#113CCF", busca:t=>"https://www.disneyplus.com/search?q="+t },
-  appletv:   { nome:"Apple TV",    cor:"#555A66", busca:t=>"https://tv.apple.com/search?term="+t },
+  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],           busca:t=>"https://www.netflix.com/search?q="+t },
+  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"],      busca:t=>"https://www.primevideo.com/search?phrase="+t },
+  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],     busca:t=>"https://play.hbomax.com/search?q="+t },
+  paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],         busca:()=>"https://www.paramountplus.com/search/" },
+  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],             busca:t=>"https://globoplay.globo.com/busca/?q="+t },
+  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],            busca:t=>"https://www.disneyplus.com/search?q="+t },
+  appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],          busca:t=>"https://tv.apple.com/search?term="+t },
 };
 
 /* ---------- estado ---------- */
-let db=null, usuario=null, titulos=[], abaAtual="assistindo", editandoId=null, modoCadastro=false, streamingEscolhido="netflix", gradeOrigem="novo";
+let db=null, usuario=null, titulos=[], abaAtual="assistindo", filtroStreaming=null,
+    editandoId=null, modoCadastro=false, gradeOrigem="busca",
+    streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
+    estruturaEscolhida=null, resultadosBusca=[], timerBusca=null;
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 /* ---------- inicialização ---------- */
 window.addEventListener("DOMContentLoaded", async ()=>{
-  montarGrade();
+  montarGrade(); montarFiltros();
 
   if(SUPABASE_URL.startsWith("COLE_AQUI")||SUPABASE_ANON_KEY.startsWith("COLE_AQUI")){
     $("#tela-config").classList.remove("hidden"); return;
@@ -363,28 +394,51 @@ document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
   desenhar();
 });
 
+/* ---------- filtros por streaming ---------- */
+function montarFiltros(){
+  const el=$("#filtros");
+  el.innerHTML=`<button class="chip ativo" data-f="">Todos</button>`+
+    Object.entries(STREAMINGS).map(([k,s])=>
+      `<button class="chip" data-f="${k}"><span class="ponto" style="background:${s.cor}"></span>${s.nome}</button>`
+    ).join("");
+  el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    filtroStreaming=c.dataset.f||null;
+    el.querySelectorAll(".chip").forEach(x=>x.classList.toggle("ativo",x===c));
+    desenhar();
+  });
+}
+
+/* ---------- lista ---------- */
+function estruturaDe(t){
+  try{ const a=JSON.parse(t.estrutura); return Array.isArray(a)&&a.length?a:null; }catch{ return null; }
+}
 function desenhar(){
   const lista=$("#lista");
-  const itens=titulos.filter(t=>t.status===abaAtual);
+  let itens=titulos.filter(t=>t.status===abaAtual);
+  if(filtroStreaming) itens=itens.filter(t=>t.streaming===filtroStreaming);
   if(!itens.length){
+    const nomeF=filtroStreaming?` na ${STREAMINGS[filtroStreaming].nome}`:"";
     lista.innerHTML=abaAtual==="assistindo"
-      ?`<div class="vazio"><span class="icone">🎬</span>Nada por aqui ainda.<br>Toque em <b>+</b> para adicionar o que você está assistindo.</div>`
-      :`<div class="vazio"><span class="icone">☆</span>Sua fila está vazia.<br>Toque em <b>+</b> para guardar os próximos da lista.</div>`;
+      ?`<div class="vazio"><span class="icone">🎬</span>Nada por aqui${nomeF} ainda.<br>Toque em <b>+</b> para adicionar.</div>`
+      :`<div class="vazio"><span class="icone">☆</span>Sua fila${nomeF} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
     return;
   }
   lista.innerHTML=itens.map(t=>{
-    const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666"};
-    const contador=t.status==="assistindo"?`
+    const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666",busca:x=>"https://www.google.com/search?q="+x};
+    const est=estruturaDe(t);
+    const maxT=est?est.length:null;
+    const maxE=est?est[Math.min((t.temporada??1),maxT)-1]:null;
+    const contador=(t.status==="assistindo"&&t.tipo!=="movie")?`
       <div class="contador">
         <div class="bloco"><span class="rotulo">TEMP</span>
-          <span class="valor">${t.temporada??1}</span>
+          <span class="valor">${t.temporada??1}${maxT?`<span class="max">/${maxT}</span>`:""}</span>
           <div style="display:flex;gap:4px">
             <button onclick="ajustar('${t.id}','temporada',-1)">−</button>
             <button onclick="ajustar('${t.id}','temporada',1)">+</button>
           </div>
         </div>
         <div class="bloco"><span class="rotulo">EP</span>
-          <span class="valor">${t.episodio??1}</span>
+          <span class="valor">${t.episodio??1}${maxE?`<span class="max">/${maxE}</span>`:""}</span>
           <div style="display:flex;gap:4px">
             <button onclick="ajustar('${t.id}','episodio',-1)">−</button>
             <button onclick="ajustar('${t.id}','episodio',1)">+</button>
@@ -398,7 +452,7 @@ function desenhar(){
     <div class="card">
       <div class="card-topo">
         ${t.capa?`<img class="capa" src="${esc(t.capa)}" alt="" loading="lazy">`:""}
-        <div class="card-nome" style="flex:1">${esc(t.nome)}</div>
+        <div class="card-nome">${esc(t.nome)}</div>
         <span class="badge" style="background:${s.cor}">${s.nome}</span>
       </div>
       ${contador}
@@ -414,18 +468,33 @@ function desenhar(){
   }).join("");
 }
 
-/* ---------- ações ---------- */
+/* ---------- ações dos cards ---------- */
 window.abrirStreaming=id=>{
   const t=titulos.find(x=>x.id===id); if(!t) return;
   const s=STREAMINGS[t.streaming];
-  const url=t.link_direto?.trim()||s.busca(encodeURIComponent(t.nome));
-  window.open(url,"_blank");
+  window.open(s.busca(encodeURIComponent(t.nome)),"_blank");
 };
 window.ajustar=async (id,campo,delta)=>{
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  const novo=Math.max(0,(t[campo]??1)+delta);
-  t[campo]=novo; desenhar();
-  await db.from("titulos").update({[campo]:novo}).eq("id",id);
+  const est=estruturaDe(t);
+  let temporada=t.temporada??1, episodio=t.episodio??1;
+  const maxT=est?est.length:Infinity;
+  if(campo==="episodio"){
+    episodio+=delta;
+    const maxE=est?est[temporada-1]:Infinity;
+    if(episodio>maxE){
+      if(temporada<maxT){ temporada++; episodio=1; } else episodio=maxE;
+    }
+    if(episodio<1){
+      if(temporada>1){ temporada--; episodio=est?est[temporada-1]:1; } else episodio=1;
+    }
+  }else{
+    temporada=Math.min(Math.max(1,temporada+delta),maxT===Infinity?9999:maxT);
+    const maxE=est?est[temporada-1]:Infinity;
+    if(episodio>maxE) episodio=1;
+  }
+  t.temporada=temporada; t.episodio=episodio; desenhar();
+  await db.from("titulos").update({temporada,episodio}).eq("id",id);
 };
 window.mover=async (id,status)=>{
   const t=titulos.find(x=>x.id===id); if(!t) return;
@@ -440,103 +509,175 @@ window.excluir=async id=>{
 };
 window.editar=id=>{
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  editandoId=id; gradeOrigem="trocar";
-  capaEscolhida=t.capa||null; resultadosBusca=[];
-  atualizarPreviewCapa(); $("#busca-resultados").classList.add("hidden");
-  streamingEscolhido=t.streaming; atualizarSeletor();
+  editandoId=id; gradeOrigem="form";
+  streamingEscolhido=t.streaming; capaEscolhida=t.capa||null;
+  tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv";
+  estruturaEscolhida=estruturaDe(t);
+  atualizarSeletor(); atualizarPreviewCapa(t.nome);
   $("#modal-titulo").textContent="Editar título";
   $("#f-nome").value=t.nome; $("#f-status").value=t.status;
   $("#f-temporada").value=t.temporada??1; $("#f-episodio").value=t.episodio??1;
-  $("#f-link").value=t.link_direto||"";
+  $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
+  $("#disponivel").classList.add("hidden");
   mostrarPasso("form");
   $("#modal").classList.remove("hidden");
 };
 
-/* ---------- modal ---------- */
-const SIGLAS={netflix:"N",prime:"PV",hbomax:"MAX",paramount:"P+",globoplay:"GP",disney:"D+",appletv:"TV"};
-let capaEscolhida=null, resultadosBusca=[];
-
-/* ---------- busca de capas (TMDB) ---------- */
-$("#btn-buscar-capa").onclick=async ()=>{
-  if(TMDB_KEY.startsWith("COLE_AQUI")){ alert("A busca de capas ainda não foi configurada."); return; }
-  const q=$("#f-nome").value.trim();
-  if(!q){ alert("Digite o nome do filme ou série primeiro."); return; }
-  const btn=$("#btn-buscar-capa"); btn.textContent="Buscando...";
-  try{
-    const r=await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&language=pt-BR&query=${encodeURIComponent(q)}`);
-    const j=await r.json();
-    resultadosBusca=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,6);
-  }catch(e){ alert("Falha na busca. Verifique sua internet."); btn.textContent="🔍 Buscar capa e nome oficial"; return; }
-  btn.textContent="🔍 Buscar capa e nome oficial";
-  const el=$("#busca-resultados"); el.classList.remove("hidden");
-  if(!resultadosBusca.length){
-    el.innerHTML=`<div class="aviso">Nada encontrado com esse nome. Tente escrever de outro jeito.</div>`;
-    return;
-  }
-  el.innerHTML=resultadosBusca.map((x,i)=>{
-    const nome=x.title||x.name;
-    const ano=(x.release_date||x.first_air_date||"").slice(0,4);
-    const capa=x.poster_path?"https://image.tmdb.org/t/p/w185"+x.poster_path:"";
-    const tipo=x.media_type==="movie"?"Filme":"Série";
-    return `<button class="resultado" onclick="escolherCapa(${i})">
-      ${capa?`<img src="${capa}" alt="">`:`<div class="sem-capa"></div>`}
-      <div class="info">${esc(nome)}<span>${tipo}${ano?" · "+ano:""}</span></div>
-    </button>`;
-  }).join("");
-};
-window.escolherCapa=i=>{
-  const x=resultadosBusca[i]; if(!x) return;
-  $("#f-nome").value=x.title||x.name;
-  capaEscolhida=x.poster_path?"https://image.tmdb.org/t/p/w342"+x.poster_path:null;
-  $("#busca-resultados").classList.add("hidden");
-  atualizarPreviewCapa();
-};
-function atualizarPreviewCapa(){
-  const box=$("#capa-preview");
-  if(capaEscolhida){ $("#capa-img").src=capaEscolhida; box.classList.remove("hidden"); }
-  else box.classList.add("hidden");
+/* ---------- modal: navegação ---------- */
+function mostrarPasso(qual){
+  $("#passo-busca").classList.toggle("hidden",qual!=="busca");
+  $("#passo-streaming").classList.toggle("hidden",qual!=="grade");
+  $("#passo-form").classList.toggle("hidden",qual!=="form");
 }
-$("#btn-limpar-capa").onclick=()=>{ capaEscolhida=null; atualizarPreviewCapa(); };
-
 function montarGrade(){
   $("#grade-streamings").innerHTML=Object.entries(STREAMINGS).map(([k,s])=>`
     <button class="tile" onclick="escolherStreaming('${k}')">
-      <span class="mini-icone" style="background:${s.cor}">${SIGLAS[k]||s.nome[0]}</span>${s.nome}
+      <span class="mini-icone" style="background:${s.cor}">${s.sigla}</span>${s.nome}
     </button>`).join("");
 }
 function atualizarSeletor(){
   const s=STREAMINGS[streamingEscolhido];
-  $("#sel-icone").textContent=SIGLAS[streamingEscolhido]||s.nome[0];
+  $("#sel-icone").textContent=s.sigla;
   $("#sel-icone").style.background=s.cor;
   $("#sel-nome").textContent=s.nome;
   $("#btn-salvar-abrir").textContent="▶ Salvar e abrir no "+s.nome;
 }
-function mostrarPasso(qual){
-  $("#passo-streaming").classList.toggle("hidden",qual!=="grade");
-  $("#passo-form").classList.toggle("hidden",qual!=="form");
+function atualizarPreviewCapa(nome){
+  const box=$("#capa-preview");
+  if(capaEscolhida){
+    $("#capa-img").src=capaEscolhida;
+    $("#titulo-escolhido").textContent=nome||$("#f-nome").value;
+    box.classList.remove("hidden");
+    $("#grupo-nome").classList.add("hidden");
+  }else{
+    box.classList.add("hidden");
+    $("#grupo-nome").classList.remove("hidden");
+  }
 }
 window.escolherStreaming=k=>{
   streamingEscolhido=k; atualizarSeletor(); mostrarPasso("form");
 };
 
 $("#btn-add").onclick=()=>{
-  editandoId=null; gradeOrigem="novo";
-  capaEscolhida=null; resultadosBusca=[];
-  atualizarPreviewCapa(); $("#busca-resultados").classList.add("hidden");
-  $("#modal-titulo").textContent="Adicionar título";
+  editandoId=null; gradeOrigem="busca";
+  capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
+  resultadosBusca=[];
+  $("#f-busca").value=""; $("#busca-resultados").innerHTML="";
   $("#f-nome").value=""; $("#f-status").value=abaAtual;
-  $("#f-temporada").value=1; $("#f-episodio").value=1; $("#f-link").value="";
-  mostrarPasso("grade");
+  $("#f-temporada").value=1; $("#f-episodio").value=1;
+  $("#modal-titulo").textContent="Adicionar título";
+  $("#disponivel").classList.add("hidden");
+  mostrarPasso("busca");
   $("#modal").classList.remove("hidden");
+  setTimeout(()=>$("#f-busca").focus(),100);
 };
-$("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="trocar"; mostrarPasso("grade"); };
-$("#btn-fechar-grade").onclick=()=>{
-  if(gradeOrigem==="trocar") mostrarPasso("form");
-  else $("#modal").classList.add("hidden");
-};
+$("#btn-manual").onclick=()=>{ gradeOrigem="busca"; tipoEscolhido="tv"; estruturaEscolhida=null; capaEscolhida=null; tmdbId=null; atualizarPreviewCapa(); $("#grupo-te").classList.remove("hidden"); mostrarPasso("grade"); };
+$("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="form"; mostrarPasso("grade"); };
+$("#btn-fechar-grade").onclick=()=>{ mostrarPasso(gradeOrigem==="form"?"form":"busca"); };
+$("#btn-fechar-busca").onclick=()=>$("#modal").classList.add("hidden");
 $("#btn-cancelar").onclick=()=>$("#modal").classList.add("hidden");
 $("#modal").onclick=e=>{ if(e.target.id==="modal") $("#modal").classList.add("hidden"); };
 
+/* ---------- busca livre com sugestão automática ---------- */
+$("#f-busca").addEventListener("input",()=>{
+  clearTimeout(timerBusca);
+  const q=$("#f-busca").value.trim();
+  if(q.length<2){ $("#busca-resultados").innerHTML=""; return; }
+  $("#busca-resultados").innerHTML=`<div class="buscando">Buscando...</div>`;
+  timerBusca=setTimeout(()=>buscarTMDB(q),450);
+});
+
+async function buscarTMDB(q){
+  try{
+    const r=await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&language=pt-BR&region=BR&query=${encodeURIComponent(q)}`);
+    const j=await r.json();
+    resultadosBusca=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,6);
+  }catch(e){
+    $("#busca-resultados").innerHTML=`<div class="aviso erro">Falha na busca. Verifique sua internet.</div>`; return;
+  }
+  if($("#f-busca").value.trim()!==q) return; // usuário continuou digitando
+  if(!resultadosBusca.length){
+    $("#busca-resultados").innerHTML=`<div class="aviso">Nada encontrado. Tente outro nome ou adicione manualmente.</div>`; return;
+  }
+  $("#busca-resultados").innerHTML=resultadosBusca.map((x,i)=>{
+    const nome=x.title||x.name;
+    const ano=(x.release_date||x.first_air_date||"").slice(0,4);
+    const capa=x.poster_path?"https://image.tmdb.org/t/p/w185"+x.poster_path:"";
+    const tipo=x.media_type==="movie"?"Filme":"Série";
+    return `<button class="resultado" onclick="escolherResultado(${i})">
+      ${capa?`<img src="${capa}" alt="">`:`<div class="sem-capa"></div>`}
+      <div class="info">${esc(nome)}<span>${tipo}${ano?" · "+ano:""}</span>
+        <div class="mini-badges" id="prov-${i}"><span style="color:var(--muted);font-size:10px">verificando streamings...</span></div>
+      </div>
+    </button>`;
+  }).join("");
+  resultadosBusca.forEach((x,i)=>carregarProvedores(x,i));
+}
+
+function mapearProvedores(lista){
+  const achados=[];
+  (lista||[]).forEach(p=>{
+    const nome=(p.provider_name||"").toLowerCase();
+    for(const [k,s] of Object.entries(STREAMINGS)){
+      if(s.apelidos.some(a=>nome.includes(a)) && !achados.includes(k)) achados.push(k);
+    }
+  });
+  return achados;
+}
+async function carregarProvedores(x,i){
+  try{
+    const r=await fetch(`https://api.themoviedb.org/3/${x.media_type}/${x.id}/watch/providers?api_key=${TMDB_KEY}`);
+    const j=await r.json();
+    const br=j.results?.BR;
+    x._provedores=mapearProvedores([...(br?.flatrate||[]),...(br?.ads||[])]);
+  }catch(e){ x._provedores=[]; }
+  const el=$("#prov-"+i); if(!el) return;
+  el.innerHTML=x._provedores.length
+    ?x._provedores.map(k=>`<span class="badge" style="background:${STREAMINGS[k].cor}">${STREAMINGS[k].nome}</span>`).join("")
+    :`<span style="color:var(--muted);font-size:10px">fora dos seus streamings (ou aluguel)</span>`;
+}
+
+window.escolherResultado=async i=>{
+  const x=resultadosBusca[i]; if(!x) return;
+  const nome=x.title||x.name;
+  tmdbId=x.id; tipoEscolhido=x.media_type;
+  capaEscolhida=x.poster_path?"https://image.tmdb.org/t/p/w342"+x.poster_path:null;
+  $("#f-nome").value=nome;
+  atualizarPreviewCapa(nome);
+
+  // streaming detectado
+  const provs=x._provedores||[];
+  if(provs.length) streamingEscolhido=provs[0];
+  atualizarSeletor();
+  const disp=$("#disponivel");
+  if(provs.length){
+    disp.innerHTML="Disponível em: "+provs.map(k=>`<b style="color:${STREAMINGS[k].cor}">${STREAMINGS[k].nome}</b>`).join(", ");
+    disp.classList.remove("hidden");
+  }else{
+    disp.innerHTML="Não encontrei este título nos seus streamings — confirme onde vai assistir no seletor acima.";
+    disp.classList.remove("hidden");
+  }
+
+  // temporadas/episódios reais (para séries)
+  estruturaEscolhida=null;
+  $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
+  if(tipoEscolhido==="tv"){
+    try{
+      const r=await fetch(`https://api.themoviedb.org/3/tv/${x.id}?api_key=${TMDB_KEY}&language=pt-BR`);
+      const j=await r.json();
+      estruturaEscolhida=(j.seasons||[]).filter(s=>s.season_number>0).map(s=>s.episode_count);
+      if(!estruturaEscolhida.length) estruturaEscolhida=null;
+      if(estruturaEscolhida){
+        $("#f-temporada").max=estruturaEscolhida.length;
+        $("#f-episodio").max=Math.max(...estruturaEscolhida);
+      }
+    }catch(e){ estruturaEscolhida=null; }
+  }
+  $("#f-temporada").value=1; $("#f-episodio").value=1;
+  mostrarPasso("form");
+};
+
+/* ---------- salvar ---------- */
 async function salvarTitulo(abrir){
   const nome=$("#f-nome").value.trim();
   if(!nome){ alert("Digite o nome do filme ou série."); return; }
@@ -546,12 +687,14 @@ async function salvarTitulo(abrir){
     status:$("#f-status").value,
     temporada:parseInt($("#f-temporada").value)||1,
     episodio:parseInt($("#f-episodio").value)||1,
-    link_direto:$("#f-link").value.trim()||null,
     capa:capaEscolhida,
+    tmdb_id:tmdbId,
+    tipo:tipoEscolhido,
+    estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
   };
   if(abrir){
     const s=STREAMINGS[streamingEscolhido];
-    window.open(registro.link_direto||s.busca(encodeURIComponent(nome)),"_blank");
+    window.open(s.busca(encodeURIComponent(nome)),"_blank");
   }
   let error;
   if(editandoId){
