@@ -74,9 +74,9 @@ header .sair{color:var(--muted);font-size:13px;padding:8px 10px}
   font-weight:600;font-size:12px;background:var(--bg-soft);border:1px solid var(--line);color:var(--muted)}
 .chip.ativo{border-color:var(--amber);color:var(--text);background:var(--card)}
 
-main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
-.vazio{margin:34px 0 10px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7;padding:0 30px}
-.vazio .icone{font-size:40px;display:block;margin-bottom:10px}
+main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
+.vazio{margin:14px 0;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:0 20px}
+.vazio .icone{font-size:32px;display:block;margin-bottom:8px}
 
 /* logos dos streamings */
 .logo-str{width:18px;height:18px;border-radius:5px;object-fit:cover;flex-shrink:0}
@@ -86,12 +86,33 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
   font-family:'Sora';font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
 .mini-icone.p{width:18px;height:18px;font-size:8px;border-radius:5px}
 
+/* ---------- seções e carrosséis ---------- */
+.secao{margin-top:14px}
+.secao h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.secao h3 .sub{font-size:12px;color:var(--muted);font-weight:500}
+.carrossel{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.carrossel::-webkit-scrollbar{display:none}
+.poster{flex-shrink:0;width:104px;text-align:left;position:relative}
+.poster img{width:104px;height:156px;object-fit:cover;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.poster .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.poster .rank{position:absolute;top:-6px;left:-4px;font-family:'Sora';font-weight:800;font-size:30px;
+  color:var(--amber);text-shadow:0 2px 8px rgba(0,0,0,.8);z-index:1}
+.fonte{font-size:10px;color:var(--muted);margin-top:8px}
+.carregando{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;width:100%}
+
 /* ---------- card ---------- */
+.carrossel-cards{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.carrossel-cards::-webkit-scrollbar{display:none}
+.carrossel-cards .card{flex-shrink:0;width:300px}
+.lista-vertical{display:flex;flex-direction:column;gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px;display:flex;flex-direction:column;gap:12px}
 .card-topo{display:flex;gap:12px;align-items:flex-start}
 .card img.capa{width:56px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
-.card-nome{font-family:'Sora';font-weight:700;font-size:17px;line-height:1.3;word-break:break-word;flex:1}
+.card-nome{font-family:'Sora';font-weight:700;font-size:16px;line-height:1.3;word-break:break-word;flex:1}
 .badge{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
   letter-spacing:.3px;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap}
 .contador{display:flex;gap:10px}
@@ -108,20 +129,6 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
   background:var(--bg-soft);border:1px solid var(--line);color:var(--text)}
 .acao.principal{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:700}
 .acao:active{transform:scale(.97)}
-
-/* ---------- descobrir (carrosséis) ---------- */
-.secao{margin-top:10px}
-.secao h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.carrossel{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.carrossel::-webkit-scrollbar{display:none}
-.poster{flex-shrink:0;width:104px;text-align:left;position:relative}
-.poster img{width:104px;height:156px;object-fit:cover;border-radius:12px;background:var(--card);border:1px solid var(--line)}
-.poster .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.poster .rank{position:absolute;top:-6px;left:-4px;font-family:'Sora';font-weight:800;font-size:30px;
-  color:var(--amber);text-shadow:0 2px 8px rgba(0,0,0,.8);z-index:1}
-.fonte{font-size:10px;color:var(--muted);margin-top:6px}
 
 /* ---------- botão flutuante / modal ---------- */
 #btn-add{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
@@ -160,7 +167,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 </head>
 <body>
 
-<!-- ===== CONFIGURAÇÃO (cole aqui os dados do seu projeto Firebase) ===== -->
+<!-- ===== CONFIGURAÇÃO ===== -->
 <script>
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyCc2RIMAP0e1oPykmsgiIBg1iI78c090Lo",
@@ -172,15 +179,13 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 </script>
-<!-- ===================================================================== -->
+<!-- ======================== -->
 
-<!-- TELA: configuração pendente -->
 <div id="tela-config" class="screen hidden">
   <div class="logo"><div class="logo-mark">▶</div><div><h1>CineLista</h1><span>configuração pendente</span></div></div>
-  <div class="aviso">Falta conectar o app ao Firebase: abra o <b>index.html</b> e preencha o bloco <b>FIREBASE_CONFIG</b> com os dados do seu projeto (ou envie o snippet de configuração no chat com o Claude para receber o arquivo pronto).</div>
+  <div class="aviso">Falta conectar o app ao Firebase: preencha o bloco <b>FIREBASE_CONFIG</b> no index.html.</div>
 </div>
 
-<!-- TELA: login -->
 <div id="tela-login" class="screen hidden">
   <div class="logo">
     <div class="logo-mark">▶</div>
@@ -193,10 +198,9 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <div id="msg-login" class="aviso hidden"></div>
 </div>
 
-<!-- TELA: app -->
 <div id="tela-app" class="screen hidden">
   <header>
-    <h2 id="titulo-aba">Assistindo</h2>
+    <h2 id="titulo-aba">Início</h2>
     <button class="sair" id="btn-sair">Sair</button>
   </header>
   <div class="abas">
@@ -208,7 +212,6 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <button id="btn-add">+</button>
 </div>
 
-<!-- MODAL -->
 <div id="modal" class="hidden">
   <div class="folha">
     <div id="passo-busca">
@@ -272,21 +275,22 @@ const STREAMINGS = {
   disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t },
   appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t },
 };
-const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/";
+const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.themoviedb.org/3";
 
 /* ---------- estado ---------- */
 let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroStreaming=null,
     editandoId=null, modoCadastro=false, gradeOrigem="busca",
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null,
-    LOGOS={}, PROV_IDS={}, top10=[], lancamentos=[];
+    LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null;
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const colTitulos=()=>collection(bd,"usuarios",usuario.uid,"titulos");
+const tmdbGet=async caminho=>{ const r=await fetch(`${API}${caminho}${caminho.includes("?")?"&":"?"}api_key=${TMDB}`); return r.json(); };
 
-/* ---------- ícones reais ---------- */
-function iconeStreaming(k,tam){ // tam: "" 18px, "m" 22px, "g" 38px
+/* ---------- ícones ---------- */
+function iconeStreaming(k,tam){
   const s=STREAMINGS[k];
   if(LOGOS[k]) return `<img class="logo-str ${tam||""}" src="${LOGOS[k]}" alt="${s.nome}">`;
   return `<span class="mini-icone ${tam?"":"p"}" style="background:${s.cor}">${s.sigla}</span>`;
@@ -294,21 +298,22 @@ function iconeStreaming(k,tam){ // tam: "" 18px, "m" 22px, "g" 38px
 async function carregarLogos(){
   try{
     const [tv,mv]=await Promise.all([
-      fetch(`https://api.themoviedb.org/3/watch/providers/tv?api_key=${TMDB}&language=pt-BR&watch_region=BR`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/watch/providers/movie?api_key=${TMDB}&language=pt-BR&watch_region=BR`).then(r=>r.json()),
+      tmdbGet(`/watch/providers/tv?language=pt-BR&watch_region=BR`),
+      tmdbGet(`/watch/providers/movie?language=pt-BR&watch_region=BR`),
     ]);
     const todos=[...(tv.results||[]),...(mv.results||[])];
     for(const [k,s] of Object.entries(STREAMINGS)){
       const p=todos.find(x=>s.apelidos.some(a=>(x.provider_name||"").toLowerCase().includes(a)));
       if(p){ LOGOS[k]=IMG+"w92"+p.logo_path; PROV_IDS[k]=p.provider_id; }
     }
-  }catch(e){/* usa iniciais como reserva */}
+  }catch(e){}
   montarGrade(); montarFiltros();
 }
 
 /* ---------- inicialização ---------- */
 window.addEventListener("DOMContentLoaded", ()=>{
-  montarGrade(); montarFiltros(); carregarLogos();
+  montarGrade(); montarFiltros();
+  logosProntos=carregarLogos();
   if(window.FIREBASE_CONFIG.apiKey==="COLE_AQUI"){
     $("#tela-config").classList.remove("hidden"); return;
   }
@@ -336,7 +341,7 @@ $("#btn-entrar").onclick=async ()=>{
     if(modoCadastro) await createUserWithEmailAndPassword(auth,email,senha);
     else await signInWithEmailAndPassword(auth,email,senha);
   }catch(e){
-    const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido."};
+    const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
     mostrarMsg(mapa[e.code]||"Erro: "+e.code,"erro");
   }
   $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
@@ -366,7 +371,7 @@ async function carregar(){
 document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
   abaAtual=b.dataset.aba;
   document.querySelectorAll(".aba").forEach(x=>x.classList.toggle("ativa",x===b));
-  $("#titulo-aba").textContent=abaAtual==="assistindo"?"Assistindo":"Próximos";
+  $("#titulo-aba").textContent=abaAtual==="assistindo"?"Início":"Próximos";
   desenhar();
 });
 
@@ -379,31 +384,58 @@ function montarFiltros(){
   el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
     filtroStreaming=c.dataset.f||null;
     el.querySelectorAll(".chip").forEach(x=>x.classList.toggle("ativo",x===c));
-    desenhar();
+    carregarDescobertas();
   });
 }
 
-/* ---------- descobrir: top 10 + lançamentos ---------- */
+/* ---------- descobrir: top 10 e lançamentos por streaming ---------- */
 async function carregarDescobertas(){
+  const chave=filtroStreaming||"todos";
+  if(DESC[chave]){ desenhar(); return; }
+  DESC[chave]={carregando:true};
+  desenhar();
+  await logosProntos;
+  const hoje=new Date().toISOString().slice(0,10);
+  let filmes=[],series=[],lanc=[];
   try{
-    const r=await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB}&language=pt-BR`);
-    top10=((await r.json()).results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,10);
-  }catch(e){ top10=[]; }
-  try{
-    const ids=Object.values(PROV_IDS).join("|");
-    const hoje=new Date().toISOString().slice(0,10);
-    const [fm,tv]=await Promise.all([
-      fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB}&language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=primary_release_date.desc&primary_release_date.lte=${hoje}&vote_count.gte=20`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB}&language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=first_air_date.desc&first_air_date.lte=${hoje}&vote_count.gte=20`).then(r=>r.json()),
-    ]);
-    const filmes=(fm.results||[]).map(x=>({...x,media_type:"movie"}));
-    const series=(tv.results||[]).map(x=>({...x,media_type:"tv"}));
-    lancamentos=[...filmes.slice(0,6),...series.slice(0,6)]
-      .sort((a,b)=>(b.release_date||b.first_air_date||"").localeCompare(a.release_date||a.first_air_date||""))
-      .slice(0,10);
-  }catch(e){ lancamentos=[]; }
+    if(chave==="todos"){
+      const ids=Object.values(PROV_IDS).join("|");
+      const [f,s,lf,ls]=await Promise.all([
+        tmdbGet(`/trending/movie/week?language=pt-BR`),
+        tmdbGet(`/trending/tv/week?language=pt-BR`),
+        tmdbGet(`/discover/movie?language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=primary_release_date.desc&primary_release_date.lte=${hoje}&vote_count.gte=20`),
+        tmdbGet(`/discover/tv?language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=first_air_date.desc&first_air_date.lte=${hoje}&vote_count.gte=20`),
+      ]);
+      filmes=(f.results||[]).slice(0,10).map(x=>({...x,media_type:"movie"}));
+      series=(s.results||[]).slice(0,10).map(x=>({...x,media_type:"tv"}));
+      lanc=[...(lf.results||[]).slice(0,6).map(x=>({...x,media_type:"movie"})),
+            ...(ls.results||[]).slice(0,6).map(x=>({...x,media_type:"tv"}))]
+        .sort((a,b)=>(b.release_date||b.first_air_date||"").localeCompare(a.release_date||a.first_air_date||""))
+        .slice(0,10);
+    }else{
+      const id=PROV_IDS[chave];
+      if(id){
+        const base=`language=pt-BR&watch_region=BR&with_watch_providers=${id}&with_watch_monetization_types=flatrate|ads`;
+        const [f,s,lf,ls]=await Promise.all([
+          tmdbGet(`/discover/movie?${base}&sort_by=popularity.desc`),
+          tmdbGet(`/discover/tv?${base}&sort_by=popularity.desc`),
+          tmdbGet(`/discover/movie?${base}&sort_by=primary_release_date.desc&primary_release_date.lte=${hoje}&vote_count.gte=10`),
+          tmdbGet(`/discover/tv?${base}&sort_by=first_air_date.desc&first_air_date.lte=${hoje}&vote_count.gte=10`),
+        ]);
+        filmes=(f.results||[]).slice(0,10).map(x=>({...x,media_type:"movie"}));
+        series=(s.results||[]).slice(0,10).map(x=>({...x,media_type:"tv"}));
+        lanc=[...(lf.results||[]).slice(0,6).map(x=>({...x,media_type:"movie"})),
+              ...(ls.results||[]).slice(0,6).map(x=>({...x,media_type:"tv"}))]
+          .sort((a,b)=>(b.release_date||b.first_air_date||"").localeCompare(a.release_date||a.first_air_date||""))
+          .slice(0,10);
+      }
+    }
+  }catch(e){}
+  DESC[chave]={filmes,series,lanc};
+  [...filmes,...series,...lanc].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
   desenhar();
 }
+
 function htmlPoster(x,rank){
   const nome=esc(x.title||x.name);
   const capa=x.poster_path?IMG+"w185"+x.poster_path:"";
@@ -414,80 +446,103 @@ function htmlPoster(x,rank){
   </button>`;
 }
 function htmlDescobrir(){
-  if(!top10.length&&!lancamentos.length) return "";
+  const chave=filtroStreaming||"todos";
+  const d=DESC[chave];
+  const sub=filtroStreaming?STREAMINGS[filtroStreaming].nome:"todos os streamings";
+  if(!d||d.carregando) return `<div class="carregando">Carregando sugestões...</div>`;
   let h="";
-  if(top10.length) h+=`<div class="secao"><h3>🔥 Top 10 da semana</h3>
-    <div class="carrossel">${top10.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
-  if(lancamentos.length) h+=`<div class="secao"><h3>🆕 Lançamentos nos seus streamings</h3>
-    <div class="carrossel">${lancamentos.map(x=>htmlPoster(x)).join("")}</div></div>`;
-  h+=`<div class="fonte">Sugestões: TMDB · disponibilidade por JustWatch</div>`;
+  if(d.filmes.length) h+=`<div class="secao"><h3>🔥 Top 10 Filmes da semana <span class="sub">· ${sub}</span></h3>
+    <div class="carrossel">${d.filmes.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
+  if(d.series.length) h+=`<div class="secao"><h3>📺 Top 10 Séries da semana <span class="sub">· ${sub}</span></h3>
+    <div class="carrossel">${d.series.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
+  if(d.lanc.length) h+=`<div class="secao"><h3>🆕 Lançamentos <span class="sub">· ${sub}</span></h3>
+    <div class="carrossel">${d.lanc.map(x=>htmlPoster(x)).join("")}</div></div>`;
+  if(h) h+=`<div class="fonte">Sugestões: TMDB · disponibilidade por JustWatch</div>`;
   return h;
 }
 
 /* ---------- lista ---------- */
 function estruturaDe(t){
-  try{ const a=JSON.parse(t.estrutura); return Array.isArray(a)&&a.length?a:null; }catch{ return null; }
+  try{
+    const a=JSON.parse(t.estrutura);
+    const limpa=Array.isArray(a)?a.filter(n=>Number.isFinite(n)&&n>0):[];
+    return limpa.length?limpa:null;
+  }catch{ return null; }
 }
+function valorContador(v,max){ return `${v}${max?`<span class="max">/${max}</span>`:""}`; }
+
+function htmlCard(t){
+  const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666",busca:x=>"https://www.google.com/search?q="+x};
+  const est=estruturaDe(t);
+  const maxT=est?est.length:null;
+  const maxE=est?est[Math.min(t.temporada??1,maxT)-1]:null;
+  const contador=(t.tipo!=="movie")?`
+    <div class="contador">
+      <div class="bloco"><span class="rotulo">TEMP</span>
+        <span class="valor" data-tval="${t.id}">${valorContador(t.temporada??1,maxT)}</span>
+        <div style="display:flex;gap:4px">
+          <button data-aj="${t.id}|temporada|-1">−</button>
+          <button data-aj="${t.id}|temporada|1">+</button>
+        </div>
+      </div>
+      <div class="bloco"><span class="rotulo">EP</span>
+        <span class="valor" data-eval="${t.id}">${valorContador(t.episodio??1,maxE)}</span>
+        <div style="display:flex;gap:4px">
+          <button data-aj="${t.id}|episodio|-1">−</button>
+          <button data-aj="${t.id}|episodio|1">+</button>
+        </div>
+      </div>
+    </div>`:"";
+  const mover=t.status==="assistindo"
+    ?`<button class="acao" data-mover="${t.id}|proximo">☆ Para depois</button>`
+    :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
+  return `
+  <div class="card">
+    <div class="card-topo">
+      ${t.capa?`<img class="capa" src="${esc(t.capa)}" alt="" loading="lazy">`:""}
+      <div class="card-nome">${esc(t.nome)}</div>
+      <span class="badge" style="background:${s.cor}">${iconeStreaming(t.streaming)}${s.nome}</span>
+    </div>
+    ${contador}
+    <div class="card-acoes">
+      <button class="acao principal" data-abrir="${t.id}">▶ Abrir no ${s.nome}</button>
+      ${mover}
+    </div>
+    <div class="card-acoes">
+      <button class="acao" data-editar="${t.id}">Editar</button>
+      <button class="acao" style="color:var(--danger)" data-excluir="${t.id}">Excluir</button>
+    </div>
+  </div>`;
+}
+
 function desenhar(){
   const lista=$("#lista");
   let itens=titulos.filter(t=>t.status===abaAtual);
   if(filtroStreaming) itens=itens.filter(t=>t.streaming===filtroStreaming);
-  let html="";
-  if(!itens.length){
-    const nomeF=filtroStreaming?` na ${STREAMINGS[filtroStreaming].nome}`:"";
-    html=abaAtual==="assistindo"
-      ?`<div class="vazio"><span class="icone">🎬</span>Nada por aqui${nomeF} ainda.<br>Toque em <b>+</b> para adicionar.</div>`
-      :`<div class="vazio"><span class="icone">☆</span>Sua fila${nomeF} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
-  }else{
-    html=itens.map(t=>{
-      const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666",busca:x=>"https://www.google.com/search?q="+x};
-      const est=estruturaDe(t);
-      const maxT=est?est.length:null;
-      const maxE=est?est[Math.min((t.temporada??1),maxT)-1]:null;
-      const contador=(t.status==="assistindo"&&t.tipo!=="movie")?`
-        <div class="contador">
-          <div class="bloco"><span class="rotulo">TEMP</span>
-            <span class="valor">${t.temporada??1}${maxT?`<span class="max">/${maxT}</span>`:""}</span>
-            <div style="display:flex;gap:4px">
-              <button data-aj="${t.id}|temporada|-1">−</button>
-              <button data-aj="${t.id}|temporada|1">+</button>
-            </div>
-          </div>
-          <div class="bloco"><span class="rotulo">EP</span>
-            <span class="valor">${t.episodio??1}${maxE?`<span class="max">/${maxE}</span>`:""}</span>
-            <div style="display:flex;gap:4px">
-              <button data-aj="${t.id}|episodio|-1">−</button>
-              <button data-aj="${t.id}|episodio|1">+</button>
-            </div>
-          </div>
-        </div>`:"";
-      const mover=t.status==="assistindo"
-        ?`<button class="acao" data-mover="${t.id}|proximo">☆ Para depois</button>`
-        :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
-      return `
-      <div class="card">
-        <div class="card-topo">
-          ${t.capa?`<img class="capa" src="${esc(t.capa)}" alt="" loading="lazy">`:""}
-          <div class="card-nome">${esc(t.nome)}</div>
-          <span class="badge" style="background:${s.cor}">${iconeStreaming(t.streaming)}${s.nome}</span>
-        </div>
-        ${contador}
-        <div class="card-acoes">
-          <button class="acao principal" data-abrir="${t.id}">▶ Abrir no ${s.nome}</button>
-          ${mover}
-        </div>
-        <div class="card-acoes">
-          <button class="acao" data-editar="${t.id}">Editar</button>
-          <button class="acao" style="color:var(--danger)" data-excluir="${t.id}">Excluir</button>
-        </div>
-      </div>`;
-    }).join("");
+  const nomeF=filtroStreaming?STREAMINGS[filtroStreaming].nome:null;
+
+  if(abaAtual==="proximo"){
+    lista.innerHTML=itens.length
+      ?`<div class="lista-vertical">${itens.map(htmlCard).join("")}</div>`
+      :`<div class="vazio" style="margin-top:50px"><span class="icone">☆</span>Sua fila${nomeF?` na ${nomeF}`:""} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
+    return;
   }
-  if(abaAtual==="assistindo") html+=htmlDescobrir();
-  lista.innerHTML=html;
+
+  // aba Assistindo (Início): descobertas em cima, assistindo embaixo
+  let h=htmlDescobrir();
+  h+=`<div class="secao"><h3>▶ Assistindo${nomeF?` <span class="sub">· ${nomeF}</span>`:""}</h3>`;
+  if(!itens.length){
+    h+=`<div class="vazio"><span class="icone">🎬</span>Nada por aqui${nomeF?` na ${nomeF}`:""} ainda.<br>Toque em <b>+</b> para adicionar.</div>`;
+  }else if(itens.length===1){
+    h+=`<div class="lista-vertical">${htmlCard(itens[0])}</div>`;
+  }else{
+    h+=`<div class="carrossel-cards">${itens.map(htmlCard).join("")}</div>`;
+  }
+  h+=`</div>`;
+  lista.innerHTML=h;
 }
 
-/* delegação de eventos da lista */
+/* delegação de eventos */
 $("#lista").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b) return;
   if(b.dataset.aj){ const [id,c,d]=b.dataset.aj.split("|"); ajustar(id,c,parseInt(d)); }
@@ -519,7 +574,16 @@ async function ajustar(id,campo,delta){
     const maxE=est?est[temporada-1]:Infinity;
     if(episodio>maxE) episodio=1;
   }
-  t.temporada=temporada; t.episodio=episodio; desenhar();
+  t.temporada=temporada; t.episodio=episodio;
+  // atualiza só os números no card, sem redesenhar a tela (não perde a rolagem)
+  const elT=document.querySelector(`[data-tval="${id}"]`);
+  const elE=document.querySelector(`[data-eval="${id}"]`);
+  const novoMaxT=est?est.length:null;
+  const novoMaxE=est?est[temporada-1]:null;
+  if(elT&&elE){
+    elT.innerHTML=valorContador(temporada,novoMaxT);
+    elE.innerHTML=valorContador(episodio,novoMaxE);
+  }else desenhar();
   try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",id),{temporada,episodio}); }catch(e){}
 }
 async function mover(id,status){
@@ -611,8 +675,7 @@ $("#f-busca").addEventListener("input",()=>{
 });
 async function buscarTMDB(q){
   try{
-    const r=await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB}&language=pt-BR&region=BR&query=${encodeURIComponent(q)}`);
-    const j=await r.json();
+    const j=await tmdbGet(`/search/multi?language=pt-BR&region=BR&query=${encodeURIComponent(q)}`);
     resultadosBusca=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,6);
   }catch(e){
     $("#busca-resultados").innerHTML=`<div class="aviso erro">Falha na busca. Verifique sua internet.</div>`; return;
@@ -648,8 +711,7 @@ function mapearProvedores(lista){
 }
 async function carregarProvedores(x,i){
   try{
-    const r=await fetch(`https://api.themoviedb.org/3/${x.media_type}/${x.id}/watch/providers?api_key=${TMDB}`);
-    const j=await r.json();
+    const j=await tmdbGet(`/${x.media_type}/${x.id}/watch/providers`);
     const br=j.results?.BR;
     x._provedores=mapearProvedores([...(br?.flatrate||[]),...(br?.ads||[])]);
   }catch(e){ x._provedores=[]; }
@@ -683,9 +745,10 @@ async function escolherResultado(i){
   $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
   if(tipoEscolhido==="tv"){
     try{
-      const r=await fetch(`https://api.themoviedb.org/3/tv/${x.id}?api_key=${TMDB}&language=pt-BR`);
-      const j=await r.json();
-      estruturaEscolhida=(j.seasons||[]).filter(s=>s.season_number>0).map(s=>s.episode_count);
+      const j=await tmdbGet(`/tv/${x.id}?language=pt-BR`);
+      estruturaEscolhida=(j.seasons||[])
+        .filter(s=>s.season_number>0&&s.episode_count>0)
+        .map(s=>s.episode_count);
       if(!estruturaEscolhida.length) estruturaEscolhida=null;
     }catch(e){ estruturaEscolhida=null; }
   }
@@ -693,7 +756,7 @@ async function escolherResultado(i){
   mostrarPasso("form");
 }
 async function abrirDescoberta(id,tipo){
-  const fonte=[...top10,...lancamentos].find(x=>x.id===id&&x.media_type===tipo);
+  const fonte=descIndex.get(tipo+"-"+id);
   if(!fonte) return;
   editandoId=null; gradeOrigem="busca";
   $("#modal-titulo").textContent="Adicionar título";
