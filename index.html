@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>CineLista</title>
+
+<!-- PWA / iOS -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CineLista">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#0E1220">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0E1220;
+  --bg-soft:#161B2E;
+  --card:#1B2138;
+  --line:#2A3152;
+  --text:#EDEFF7;
+  --muted:#8B92B0;
+  --amber:#F5B841;
+  --amber-ink:#1A1405;
+  --danger:#FF5C6C;
+  --radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+h1,h2,h3{font-family:'Sora',sans-serif}
+button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
+input,select{font-family:inherit;font-size:16px}
+.hidden{display:none!important}
+
+/* ---------- telas ---------- */
+.screen{min-height:100dvh;display:flex;flex-direction:column}
+
+/* ---------- login ---------- */
+#tela-login{justify-content:center;padding:28px;gap:8px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.logo-mark{width:52px;height:52px;border-radius:14px;background:var(--amber);display:grid;place-items:center;font-size:26px;color:var(--amber-ink)}
+.logo h1{font-size:28px;letter-spacing:-.5px}
+.logo span{color:var(--muted);font-size:13px;font-weight:400;display:block}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{
+  width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
+  background:var(--bg-soft);color:var(--text);outline:none;appearance:none;
+}
+.field input:focus,.field select:focus{border-color:var(--amber)}
+.btn{
+  width:100%;padding:15px;border-radius:14px;font-weight:700;font-size:16px;
+  background:var(--amber);color:var(--amber-ink);margin-top:6px;
+}
+.btn:active{transform:scale(.98)}
+.btn-ghost{background:none;color:var(--muted);font-weight:500;font-size:14px;margin-top:14px}
+.btn-ghost b{color:var(--amber)}
+.aviso{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--bg-soft);
+  border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5}
+.aviso.erro{border-color:var(--danger);color:var(--danger)}
+.aviso.ok{border-color:var(--amber);color:var(--amber)}
+
+/* ---------- app ---------- */
+header{
+  padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:5;
+}
+header h2{font-size:22px;letter-spacing:-.4px}
+header .sair{color:var(--muted);font-size:13px;padding:8px 10px}
+
+.abas{display:flex;gap:8px;padding:4px 20px 14px;position:sticky;z-index:5}
+.aba{
+  flex:1;padding:11px;border-radius:999px;font-weight:600;font-size:14px;
+  background:var(--bg-soft);color:var(--muted);border:1px solid var(--line);
+}
+.aba.ativa{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+
+main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
+
+.vazio{
+  margin-top:60px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7;padding:0 30px;
+}
+.vazio .icone{font-size:40px;display:block;margin-bottom:10px}
+
+/* ---------- card ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.card-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-nome{font-family:'Sora';font-weight:700;font-size:17px;line-height:1.3;word-break:break-word}
+.badge{
+  flex-shrink:0;font-size:11px;font-weight:700;letter-spacing:.4px;
+  padding:5px 10px;border-radius:999px;color:#fff;white-space:nowrap;
+}
+/* contador T/E — assinatura do app */
+.contador{display:flex;gap:10px}
+.bloco{
+  flex:1;background:var(--bg);border:1px solid var(--line);border-radius:14px;
+  display:flex;align-items:center;justify-content:space-between;padding:6px 8px;
+}
+.bloco .rotulo{font-size:10px;color:var(--muted);letter-spacing:1.2px;font-weight:600;padding-left:6px}
+.bloco .valor{font-family:'Sora';font-weight:800;font-size:22px;color:var(--amber);min-width:34px;text-align:center}
+.bloco button{
+  width:34px;height:34px;border-radius:10px;background:var(--bg-soft);
+  color:var(--text);font-size:18px;font-weight:700;border:1px solid var(--line);
+}
+.bloco button:active{background:var(--amber);color:var(--amber-ink)}
+.card-acoes{display:flex;gap:8px}
+.acao{
+  flex:1;padding:11px;border-radius:12px;font-weight:600;font-size:13px;
+  background:var(--bg-soft);border:1px solid var(--line);color:var(--text);
+}
+.acao.principal{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:700}
+.acao.mini{flex:0 0 44px}
+.acao:active{transform:scale(.97)}
+
+/* ---------- botão flutuante ---------- */
+#btn-add{
+  position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
+  width:60px;height:60px;border-radius:20px;background:var(--amber);color:var(--amber-ink);
+  font-size:30px;font-weight:700;box-shadow:0 8px 24px rgba(245,184,65,.35);z-index:6;
+}
+#btn-add:active{transform:scale(.94)}
+
+/* ---------- modal ---------- */
+#modal{
+  position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;z-index:10;
+}
+.folha{
+  width:100%;background:var(--bg-soft);border-radius:24px 24px 0 0;
+  padding:22px 20px calc(26px + env(safe-area-inset-bottom));
+  max-height:88dvh;overflow-y:auto;
+}
+.folha h3{font-size:19px;margin-bottom:16px}
+.linha-dupla{display:flex;gap:10px}
+.linha-dupla .field{flex:1}
+.folha .btn-ghost{width:100%;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ===== CONFIGURAÇÃO (cole os valores do seu projeto Supabase) ===== -->
+<script>
+  const SUPABASE_URL = "https://nutshjslqeqgtiycrquk.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_SyjAm8mEPB3EjftDELuw7A_YBsif-iJ";
+</script>
+<!-- =================================================================== -->
+
+<!-- TELA: configuração pendente -->
+<div id="tela-config" class="screen hidden" style="justify-content:center;padding:28px">
+  <div class="logo"><div class="logo-mark">▶</div><div><h1>CineLista</h1><span>configuração pendente</span></div></div>
+  <div class="aviso">Falta conectar o app ao seu Supabase. Abra o arquivo <b>index.html</b> no Bloco de Notas e substitua <b>COLE_AQUI_SUA_PROJECT_URL</b> e <b>COLE_AQUI_SUA_ANON_KEY</b> pelos valores do seu projeto (Settings → API).</div>
+</div>
+
+<!-- TELA: login -->
+<div id="tela-login" class="screen hidden">
+  <div class="logo">
+    <div class="logo-mark">▶</div>
+    <div><h1>CineLista</h1><span>seus filmes e séries, em um só lugar</span></div>
+  </div>
+  <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email" placeholder="voce@email.com"></div>
+  <div class="field"><label>Senha</label><input id="senha" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+  <button class="btn" id="btn-entrar">Entrar</button>
+  <button class="btn-ghost" id="alternar-modo">Não tem conta? <b>Criar conta</b></button>
+  <div id="msg-login" class="aviso hidden"></div>
+</div>
+
+<!-- TELA: app -->
+<div id="tela-app" class="screen hidden">
+  <header>
+    <h2 id="titulo-aba">Assistindo</h2>
+    <button class="sair" id="btn-sair">Sair</button>
+  </header>
+  <div class="abas">
+    <button class="aba ativa" data-aba="assistindo">▶ Assistindo</button>
+    <button class="aba" data-aba="proximo">☆ Próximos</button>
+  </div>
+  <main id="lista"></main>
+  <button id="btn-add">+</button>
+</div>
+
+<!-- MODAL: adicionar / editar -->
+<div id="modal" class="hidden">
+  <div class="folha">
+    <h3 id="modal-titulo">Adicionar título</h3>
+    <div class="field"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
+    <div class="field"><label>Streaming</label>
+      <select id="f-streaming"></select>
+    </div>
+    <div class="field"><label>Lista</label>
+      <select id="f-status">
+        <option value="assistindo">Assistindo</option>
+        <option value="proximo">Próximos</option>
+      </select>
+    </div>
+    <div class="linha-dupla" id="grupo-te">
+      <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="0" value="1"></div>
+      <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="0" value="1"></div>
+    </div>
+    <div class="field"><label>Link direto (opcional)</label><input id="f-link" placeholder="Cole o link do título no streaming"></div>
+    <button class="btn" id="btn-salvar">Salvar</button>
+    <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ---------- streamings ---------- */
+const STREAMINGS = {
+  netflix:   { nome:"Netflix",     cor:"#E50914", busca:t=>"https://www.netflix.com/search?q="+t },
+  prime:     { nome:"Prime Video", cor:"#00A8E1", busca:t=>"https://www.primevideo.com/search?phrase="+t },
+  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", busca:t=>"https://play.hbomax.com/search?q="+t },
+  paramount: { nome:"Paramount+",  cor:"#0064FF", busca:()=>"https://www.paramountplus.com/search/" },
+  globoplay: { nome:"Globoplay",   cor:"#FB0D54", busca:t=>"https://globoplay.globo.com/busca/?q="+t },
+  disney:    { nome:"Disney+",     cor:"#113CCF", busca:t=>"https://www.disneyplus.com/search?q="+t },
+  appletv:   { nome:"Apple TV",    cor:"#555A66", busca:t=>"https://tv.apple.com/search?term="+t },
+};
+
+/* ---------- estado ---------- */
+let db=null, usuario=null, titulos=[], abaAtual="assistindo", editandoId=null, modoCadastro=false;
+
+const $=s=>document.querySelector(s);
+const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- inicialização ---------- */
+window.addEventListener("DOMContentLoaded", async ()=>{
+  const sel=$("#f-streaming");
+  sel.innerHTML=Object.entries(STREAMINGS).map(([k,s])=>`<option value="${k}">${s.nome}</option>`).join("");
+
+  if(SUPABASE_URL.startsWith("COLE_AQUI")||SUPABASE_ANON_KEY.startsWith("COLE_AQUI")){
+    $("#tela-config").classList.remove("hidden"); return;
+  }
+  db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+  const {data:{session}}=await db.auth.getSession();
+  if(session){ usuario=session.user; abrirApp(); } else { $("#tela-login").classList.remove("hidden"); }
+
+  db.auth.onAuthStateChange((_e,sess)=>{
+    if(sess&&!usuario){ usuario=sess.user; abrirApp(); }
+    if(!sess){ usuario=null; location.reload(); }
+  });
+});
+
+/* ---------- login ---------- */
+$("#alternar-modo").onclick=()=>{
+  modoCadastro=!modoCadastro;
+  $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
+  $("#alternar-modo").innerHTML=modoCadastro?"Já tem conta? <b>Entrar</b>":"Não tem conta? <b>Criar conta</b>";
+  mostrarMsg("");
+};
+$("#btn-entrar").onclick=async ()=>{
+  const email=$("#email").value.trim(), password=$("#senha").value;
+  if(!email||!password){ mostrarMsg("Preencha e-mail e senha.","erro"); return; }
+  $("#btn-entrar").textContent="Aguarde...";
+  const fn=modoCadastro?db.auth.signUp({email,password}):db.auth.signInWithPassword({email,password});
+  const {error}=await fn;
+  $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
+  if(error){
+    const mapa={"Invalid login credentials":"E-mail ou senha incorretos.","User already registered":"Este e-mail já tem conta. Toque em Entrar.","Password should be at least 6 characters":"A senha precisa de ao menos 6 caracteres."};
+    mostrarMsg(mapa[error.message]||error.message,"erro"); return;
+  }
+  if(modoCadastro) mostrarMsg("Conta criada! Se pedir confirmação, verifique seu e-mail.","ok");
+};
+function mostrarMsg(txt,tipo){
+  const el=$("#msg-login");
+  if(!txt){ el.classList.add("hidden"); return; }
+  el.textContent=txt; el.className="aviso "+(tipo||"");
+}
+$("#btn-sair").onclick=()=>db.auth.signOut();
+
+/* ---------- app ---------- */
+async function abrirApp(){
+  $("#tela-login").classList.add("hidden");
+  $("#tela-app").classList.remove("hidden");
+  await carregar();
+}
+async function carregar(){
+  const {data,error}=await db.from("titulos").select("*").order("criado_em",{ascending:false});
+  if(error){ alert("Erro ao carregar: "+error.message); return; }
+  titulos=data||[]; desenhar();
+}
+
+document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
+  abaAtual=b.dataset.aba;
+  document.querySelectorAll(".aba").forEach(x=>x.classList.toggle("ativa",x===b));
+  $("#titulo-aba").textContent=abaAtual==="assistindo"?"Assistindo":"Próximos";
+  desenhar();
+});
+
+function desenhar(){
+  const lista=$("#lista");
+  const itens=titulos.filter(t=>t.status===abaAtual);
+  if(!itens.length){
+    lista.innerHTML=abaAtual==="assistindo"
+      ?`<div class="vazio"><span class="icone">🎬</span>Nada por aqui ainda.<br>Toque em <b>+</b> para adicionar o que você está assistindo.</div>`
+      :`<div class="vazio"><span class="icone">☆</span>Sua fila está vazia.<br>Toque em <b>+</b> para guardar os próximos da lista.</div>`;
+    return;
+  }
+  lista.innerHTML=itens.map(t=>{
+    const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666"};
+    const contador=t.status==="assistindo"?`
+      <div class="contador">
+        <div class="bloco"><span class="rotulo">TEMP</span>
+          <span class="valor">${t.temporada??1}</span>
+          <div style="display:flex;gap:4px">
+            <button onclick="ajustar('${t.id}','temporada',-1)">−</button>
+            <button onclick="ajustar('${t.id}','temporada',1)">+</button>
+          </div>
+        </div>
+        <div class="bloco"><span class="rotulo">EP</span>
+          <span class="valor">${t.episodio??1}</span>
+          <div style="display:flex;gap:4px">
+            <button onclick="ajustar('${t.id}','episodio',-1)">−</button>
+            <button onclick="ajustar('${t.id}','episodio',1)">+</button>
+          </div>
+        </div>
+      </div>`:"";
+    const mover=t.status==="assistindo"
+      ?`<button class="acao" onclick="mover('${t.id}','proximo')">☆ Para depois</button>`
+      :`<button class="acao" onclick="mover('${t.id}','assistindo')">▶ Comecei a ver</button>`;
+    return `
+    <div class="card">
+      <div class="card-topo">
+        <div class="card-nome">${esc(t.nome)}</div>
+        <span class="badge" style="background:${s.cor}">${s.nome}</span>
+      </div>
+      ${contador}
+      <div class="card-acoes">
+        <button class="acao principal" onclick="abrirStreaming('${t.id}')">▶ Abrir no ${s.nome}</button>
+        ${mover}
+      </div>
+      <div class="card-acoes">
+        <button class="acao" onclick="editar('${t.id}')">Editar</button>
+        <button class="acao" style="color:var(--danger)" onclick="excluir('${t.id}')">Excluir</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- ações ---------- */
+window.abrirStreaming=id=>{
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  const s=STREAMINGS[t.streaming];
+  const url=t.link_direto?.trim()||s.busca(encodeURIComponent(t.nome));
+  window.open(url,"_blank");
+};
+window.ajustar=async (id,campo,delta)=>{
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  const novo=Math.max(0,(t[campo]??1)+delta);
+  t[campo]=novo; desenhar();
+  await db.from("titulos").update({[campo]:novo}).eq("id",id);
+};
+window.mover=async (id,status)=>{
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  t.status=status; desenhar();
+  await db.from("titulos").update({status}).eq("id",id);
+};
+window.excluir=async id=>{
+  const t=titulos.find(x=>x.id===id);
+  if(!confirm(`Excluir "${t.nome}"?`)) return;
+  titulos=titulos.filter(x=>x.id!==id); desenhar();
+  await db.from("titulos").delete().eq("id",id);
+};
+window.editar=id=>{
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  editandoId=id;
+  $("#modal-titulo").textContent="Editar título";
+  $("#f-nome").value=t.nome; $("#f-streaming").value=t.streaming;
+  $("#f-status").value=t.status; $("#f-temporada").value=t.temporada??1;
+  $("#f-episodio").value=t.episodio??1; $("#f-link").value=t.link_direto||"";
+  $("#modal").classList.remove("hidden");
+};
+
+/* ---------- modal ---------- */
+$("#btn-add").onclick=()=>{
+  editandoId=null;
+  $("#modal-titulo").textContent="Adicionar título";
+  $("#f-nome").value=""; $("#f-streaming").value="netflix";
+  $("#f-status").value=abaAtual; $("#f-temporada").value=1;
+  $("#f-episodio").value=1; $("#f-link").value="";
+  $("#modal").classList.remove("hidden");
+};
+$("#btn-cancelar").onclick=()=>$("#modal").classList.add("hidden");
+$("#modal").onclick=e=>{ if(e.target.id==="modal") $("#modal").classList.add("hidden"); };
+
+$("#btn-salvar").onclick=async ()=>{
+  const nome=$("#f-nome").value.trim();
+  if(!nome){ alert("Digite o nome do filme ou série."); return; }
+  const registro={
+    nome,
+    streaming:$("#f-streaming").value,
+    status:$("#f-status").value,
+    temporada:parseInt($("#f-temporada").value)||1,
+    episodio:parseInt($("#f-episodio").value)||1,
+    link_direto:$("#f-link").value.trim()||null,
+  };
+  $("#btn-salvar").textContent="Salvando...";
+  let error;
+  if(editandoId){
+    ({error}=await db.from("titulos").update(registro).eq("id",editandoId));
+  }else{
+    registro.user_id=usuario.id;
+    ({error}=await db.from("titulos").insert(registro));
+  }
+  $("#btn-salvar").textContent="Salvar";
+  if(error){ alert("Erro ao salvar: "+error.message); return; }
+  $("#modal").classList.add("hidden");
+  await carregar();
+};
+</script>
+</body>
+</html>
