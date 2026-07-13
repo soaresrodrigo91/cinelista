@@ -128,6 +128,44 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 .acao.mini{flex:0 0 44px}
 .acao:active{transform:scale(.97)}
 
+/* ---------- grade de streamings ---------- */
+.grade-streamings{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px}
+.tile{
+  display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;
+  background:var(--bg);border:1px solid var(--line);font-weight:600;font-size:14px;
+  color:var(--text);text-align:left;
+}
+.tile:active{transform:scale(.97);border-color:var(--amber)}
+.mini-icone{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  font-family:'Sora';font-weight:800;font-size:13px;color:#fff;flex-shrink:0;
+}
+.seletor-streaming{
+  width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:14px;background:var(--bg);border:1px solid var(--line);
+  color:var(--text);font-weight:600;font-size:15px;
+}
+.seletor-streaming .trocar{margin-left:auto;color:var(--amber);font-size:13px;font-weight:600}
+.btn-secundario{
+  width:100%;padding:14px;border-radius:14px;font-weight:600;font-size:15px;
+  background:var(--bg);border:1px solid var(--line);color:var(--text);margin-top:10px;
+}
+
+/* ---------- busca de capas ---------- */
+.busca-resultados{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.resultado{
+  display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;
+  background:var(--bg);border:1px solid var(--line);text-align:left;color:var(--text);width:100%;
+}
+.resultado:active{border-color:var(--amber)}
+.resultado img,.resultado .sem-capa{width:42px;height:62px;object-fit:cover;border-radius:8px;background:var(--bg-soft);flex-shrink:0}
+.resultado .info{font-size:13px;font-weight:600;line-height:1.35}
+.resultado .info span{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.capa-preview{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.capa-preview img{width:54px;height:80px;object-fit:cover;border-radius:10px}
+.capa-preview .limpar{color:var(--muted);font-size:13px;text-decoration:underline}
+.card img.capa{width:56px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
+
 /* ---------- botão flutuante ---------- */
 #btn-add{
   position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
@@ -158,6 +196,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 <script>
   const SUPABASE_URL = "https://nutshjslqeqgtiycrquk.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_SyjAm8mEPB3EjftDELuw7A_YBsif-iJ";
+  const TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 </script>
 <!-- =================================================================== -->
 
@@ -197,24 +236,47 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:12px}
 <!-- MODAL: adicionar / editar -->
 <div id="modal" class="hidden">
   <div class="folha">
-    <h3 id="modal-titulo">Adicionar título</h3>
-    <div class="field"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
-    <div class="field"><label>Streaming</label>
-      <select id="f-streaming"></select>
+
+    <!-- Passo 1: escolher o streaming -->
+    <div id="passo-streaming">
+      <h3>Onde você vai assistir?</h3>
+      <div class="grade-streamings" id="grade-streamings"></div>
+      <button class="btn-ghost" id="btn-fechar-grade">Cancelar</button>
     </div>
-    <div class="field"><label>Lista</label>
-      <select id="f-status">
-        <option value="assistindo">Assistindo</option>
-        <option value="proximo">Próximos</option>
-      </select>
+
+    <!-- Passo 2: dados do título -->
+    <div id="passo-form" class="hidden">
+      <h3 id="modal-titulo">Adicionar título</h3>
+      <div class="field"><label>Streaming</label>
+        <button class="seletor-streaming" id="btn-trocar-streaming">
+          <span class="mini-icone" id="sel-icone"></span>
+          <span id="sel-nome"></span>
+          <span class="trocar">trocar</span>
+        </button>
+      </div>
+      <div class="field"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
+      <button class="btn-secundario" id="btn-buscar-capa" style="margin:0 0 14px">🔍 Buscar capa e nome oficial</button>
+      <div id="busca-resultados" class="busca-resultados hidden"></div>
+      <div id="capa-preview" class="capa-preview hidden">
+        <img id="capa-img" alt="Capa">
+        <button class="limpar" id="btn-limpar-capa">remover capa</button>
+      </div>
+      <div class="field"><label>Lista</label>
+        <select id="f-status">
+          <option value="assistindo">Assistindo</option>
+          <option value="proximo">Próximos</option>
+        </select>
+      </div>
+      <div class="linha-dupla" id="grupo-te">
+        <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="0" value="1"></div>
+        <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="0" value="1"></div>
+      </div>
+      <div class="field"><label>Link direto (opcional)</label><input id="f-link" placeholder="Cole o link do título no streaming"></div>
+      <button class="btn" id="btn-salvar-abrir">Salvar e abrir</button>
+      <button class="btn-secundario" id="btn-salvar">Só salvar</button>
+      <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
-    <div class="linha-dupla" id="grupo-te">
-      <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="0" value="1"></div>
-      <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="0" value="1"></div>
-    </div>
-    <div class="field"><label>Link direto (opcional)</label><input id="f-link" placeholder="Cole o link do título no streaming"></div>
-    <button class="btn" id="btn-salvar">Salvar</button>
-    <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
+
   </div>
 </div>
 
@@ -232,15 +294,14 @@ const STREAMINGS = {
 };
 
 /* ---------- estado ---------- */
-let db=null, usuario=null, titulos=[], abaAtual="assistindo", editandoId=null, modoCadastro=false;
+let db=null, usuario=null, titulos=[], abaAtual="assistindo", editandoId=null, modoCadastro=false, streamingEscolhido="netflix", gradeOrigem="novo";
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 /* ---------- inicialização ---------- */
 window.addEventListener("DOMContentLoaded", async ()=>{
-  const sel=$("#f-streaming");
-  sel.innerHTML=Object.entries(STREAMINGS).map(([k,s])=>`<option value="${k}">${s.nome}</option>`).join("");
+  montarGrade();
 
   if(SUPABASE_URL.startsWith("COLE_AQUI")||SUPABASE_ANON_KEY.startsWith("COLE_AQUI")){
     $("#tela-config").classList.remove("hidden"); return;
@@ -250,9 +311,9 @@ window.addEventListener("DOMContentLoaded", async ()=>{
   const {data:{session}}=await db.auth.getSession();
   if(session){ usuario=session.user; abrirApp(); } else { $("#tela-login").classList.remove("hidden"); }
 
-  db.auth.onAuthStateChange((_e,sess)=>{
-    if(sess&&!usuario){ usuario=sess.user; abrirApp(); }
-    if(!sess){ usuario=null; location.reload(); }
+  db.auth.onAuthStateChange((evento,sess)=>{
+    if(evento==="SIGNED_IN"&&sess&&!usuario){ usuario=sess.user; abrirApp(); }
+    if(evento==="SIGNED_OUT"){ usuario=null; location.reload(); }
   });
 });
 
@@ -336,7 +397,8 @@ function desenhar(){
     return `
     <div class="card">
       <div class="card-topo">
-        <div class="card-nome">${esc(t.nome)}</div>
+        ${t.capa?`<img class="capa" src="${esc(t.capa)}" alt="" loading="lazy">`:""}
+        <div class="card-nome" style="flex:1">${esc(t.nome)}</div>
         <span class="badge" style="background:${s.cor}">${s.nome}</span>
       </div>
       ${contador}
@@ -378,38 +440,119 @@ window.excluir=async id=>{
 };
 window.editar=id=>{
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  editandoId=id;
+  editandoId=id; gradeOrigem="trocar";
+  capaEscolhida=t.capa||null; resultadosBusca=[];
+  atualizarPreviewCapa(); $("#busca-resultados").classList.add("hidden");
+  streamingEscolhido=t.streaming; atualizarSeletor();
   $("#modal-titulo").textContent="Editar título";
-  $("#f-nome").value=t.nome; $("#f-streaming").value=t.streaming;
-  $("#f-status").value=t.status; $("#f-temporada").value=t.temporada??1;
-  $("#f-episodio").value=t.episodio??1; $("#f-link").value=t.link_direto||"";
+  $("#f-nome").value=t.nome; $("#f-status").value=t.status;
+  $("#f-temporada").value=t.temporada??1; $("#f-episodio").value=t.episodio??1;
+  $("#f-link").value=t.link_direto||"";
+  mostrarPasso("form");
   $("#modal").classList.remove("hidden");
 };
 
 /* ---------- modal ---------- */
+const SIGLAS={netflix:"N",prime:"PV",hbomax:"MAX",paramount:"P+",globoplay:"GP",disney:"D+",appletv:"TV"};
+let capaEscolhida=null, resultadosBusca=[];
+
+/* ---------- busca de capas (TMDB) ---------- */
+$("#btn-buscar-capa").onclick=async ()=>{
+  if(TMDB_KEY.startsWith("COLE_AQUI")){ alert("A busca de capas ainda não foi configurada."); return; }
+  const q=$("#f-nome").value.trim();
+  if(!q){ alert("Digite o nome do filme ou série primeiro."); return; }
+  const btn=$("#btn-buscar-capa"); btn.textContent="Buscando...";
+  try{
+    const r=await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&language=pt-BR&query=${encodeURIComponent(q)}`);
+    const j=await r.json();
+    resultadosBusca=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,6);
+  }catch(e){ alert("Falha na busca. Verifique sua internet."); btn.textContent="🔍 Buscar capa e nome oficial"; return; }
+  btn.textContent="🔍 Buscar capa e nome oficial";
+  const el=$("#busca-resultados"); el.classList.remove("hidden");
+  if(!resultadosBusca.length){
+    el.innerHTML=`<div class="aviso">Nada encontrado com esse nome. Tente escrever de outro jeito.</div>`;
+    return;
+  }
+  el.innerHTML=resultadosBusca.map((x,i)=>{
+    const nome=x.title||x.name;
+    const ano=(x.release_date||x.first_air_date||"").slice(0,4);
+    const capa=x.poster_path?"https://image.tmdb.org/t/p/w185"+x.poster_path:"";
+    const tipo=x.media_type==="movie"?"Filme":"Série";
+    return `<button class="resultado" onclick="escolherCapa(${i})">
+      ${capa?`<img src="${capa}" alt="">`:`<div class="sem-capa"></div>`}
+      <div class="info">${esc(nome)}<span>${tipo}${ano?" · "+ano:""}</span></div>
+    </button>`;
+  }).join("");
+};
+window.escolherCapa=i=>{
+  const x=resultadosBusca[i]; if(!x) return;
+  $("#f-nome").value=x.title||x.name;
+  capaEscolhida=x.poster_path?"https://image.tmdb.org/t/p/w342"+x.poster_path:null;
+  $("#busca-resultados").classList.add("hidden");
+  atualizarPreviewCapa();
+};
+function atualizarPreviewCapa(){
+  const box=$("#capa-preview");
+  if(capaEscolhida){ $("#capa-img").src=capaEscolhida; box.classList.remove("hidden"); }
+  else box.classList.add("hidden");
+}
+$("#btn-limpar-capa").onclick=()=>{ capaEscolhida=null; atualizarPreviewCapa(); };
+
+function montarGrade(){
+  $("#grade-streamings").innerHTML=Object.entries(STREAMINGS).map(([k,s])=>`
+    <button class="tile" onclick="escolherStreaming('${k}')">
+      <span class="mini-icone" style="background:${s.cor}">${SIGLAS[k]||s.nome[0]}</span>${s.nome}
+    </button>`).join("");
+}
+function atualizarSeletor(){
+  const s=STREAMINGS[streamingEscolhido];
+  $("#sel-icone").textContent=SIGLAS[streamingEscolhido]||s.nome[0];
+  $("#sel-icone").style.background=s.cor;
+  $("#sel-nome").textContent=s.nome;
+  $("#btn-salvar-abrir").textContent="▶ Salvar e abrir no "+s.nome;
+}
+function mostrarPasso(qual){
+  $("#passo-streaming").classList.toggle("hidden",qual!=="grade");
+  $("#passo-form").classList.toggle("hidden",qual!=="form");
+}
+window.escolherStreaming=k=>{
+  streamingEscolhido=k; atualizarSeletor(); mostrarPasso("form");
+};
+
 $("#btn-add").onclick=()=>{
-  editandoId=null;
+  editandoId=null; gradeOrigem="novo";
+  capaEscolhida=null; resultadosBusca=[];
+  atualizarPreviewCapa(); $("#busca-resultados").classList.add("hidden");
   $("#modal-titulo").textContent="Adicionar título";
-  $("#f-nome").value=""; $("#f-streaming").value="netflix";
-  $("#f-status").value=abaAtual; $("#f-temporada").value=1;
-  $("#f-episodio").value=1; $("#f-link").value="";
+  $("#f-nome").value=""; $("#f-status").value=abaAtual;
+  $("#f-temporada").value=1; $("#f-episodio").value=1; $("#f-link").value="";
+  mostrarPasso("grade");
   $("#modal").classList.remove("hidden");
+};
+$("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="trocar"; mostrarPasso("grade"); };
+$("#btn-fechar-grade").onclick=()=>{
+  if(gradeOrigem==="trocar") mostrarPasso("form");
+  else $("#modal").classList.add("hidden");
 };
 $("#btn-cancelar").onclick=()=>$("#modal").classList.add("hidden");
 $("#modal").onclick=e=>{ if(e.target.id==="modal") $("#modal").classList.add("hidden"); };
 
-$("#btn-salvar").onclick=async ()=>{
+async function salvarTitulo(abrir){
   const nome=$("#f-nome").value.trim();
   if(!nome){ alert("Digite o nome do filme ou série."); return; }
   const registro={
     nome,
-    streaming:$("#f-streaming").value,
+    streaming:streamingEscolhido,
     status:$("#f-status").value,
     temporada:parseInt($("#f-temporada").value)||1,
     episodio:parseInt($("#f-episodio").value)||1,
     link_direto:$("#f-link").value.trim()||null,
+    capa:capaEscolhida,
   };
-  $("#btn-salvar").textContent="Salvando...";
+  if(abrir){
+    const s=STREAMINGS[streamingEscolhido];
+    window.open(registro.link_direto||s.busca(encodeURIComponent(nome)),"_blank");
+  }
   let error;
   if(editandoId){
     ({error}=await db.from("titulos").update(registro).eq("id",editandoId));
@@ -417,11 +560,12 @@ $("#btn-salvar").onclick=async ()=>{
     registro.user_id=usuario.id;
     ({error}=await db.from("titulos").insert(registro));
   }
-  $("#btn-salvar").textContent="Salvar";
   if(error){ alert("Erro ao salvar: "+error.message); return; }
   $("#modal").classList.add("hidden");
   await carregar();
-};
+}
+$("#btn-salvar-abrir").onclick=()=>salvarTitulo(true);
+$("#btn-salvar").onclick=()=>salvarTitulo(false);
 </script>
 </body>
 </html>
