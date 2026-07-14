@@ -400,8 +400,14 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
     </div>
 
     <div id="painel-compartilhar" class="hidden">
-      <video id="video-promo" src="promo.mp4" controls playsinline preload="metadata" onerror="this.style.display='none'" style="width:100%;border-radius:16px;border:1px solid var(--line);margin-bottom:14px;background:var(--bg)"></video>
-      <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineList! No celular, a mensagem vai com o <b>vídeo de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
+      <div class="carrossel" style="margin-bottom:14px">
+        <img src="print1.jpg" alt="" onerror="this.style.display='none'" style="height:360px;border-radius:16px;border:1px solid var(--line);flex-shrink:0">
+        <img src="print2.jpg" alt="" onerror="this.style.display='none'" style="height:360px;border-radius:16px;border:1px solid var(--line);flex-shrink:0">
+        <img src="print3.jpg" alt="" onerror="this.style.display='none'" style="height:360px;border-radius:16px;border:1px solid var(--line);flex-shrink:0">
+        <img src="print4.jpg" alt="" onerror="this.style.display='none'" style="height:360px;border-radius:16px;border:1px solid var(--line);flex-shrink:0">
+        <img src="print5.jpg" alt="" onerror="this.style.display='none'" style="height:360px;border-radius:16px;border:1px solid var(--line);flex-shrink:0">
+      </div>
+      <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineList! A mensagem vai com uma <b>imagem de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
       <button class="btn" id="btn-compartilhar-app">📤 Compartilhar com amigos</button>
       <button class="btn-secundario" id="btn-compartilhar-zap">Enviar só o convite pelo WhatsApp</button>
       <div id="msg-compartilhar" class="aviso hidden"></div>
@@ -941,10 +947,10 @@ const MSG_APP="🎬 Descobri um app ótimo pra organizar os filmes e séries dos
 $("#btn-compartilhar-zap").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent(MSG_APP),"_blank");
 $("#btn-compartilhar-app").onclick=async ()=>{
   try{
-    const r=await fetch("promo.mp4");
+    const r=await fetch("convite.jpg");
     if(r.ok){
       const blob=await r.blob();
-      const file=new File([blob],"cinelista.mp4",{type:"video/mp4"});
+      const file=new File([blob],"cinelist.jpg",{type:"image/jpeg"});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
         await navigator.share({files:[file],text:MSG_APP,title:"CineList"});
         return;
