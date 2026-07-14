@@ -141,7 +141,22 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .gaveta .logo{margin-bottom:14px}
 .item-menu{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;font-weight:600;font-size:15px;text-align:left}
 .item-menu:active{background:var(--card)}
-.item-menu .ic{width:24px;text-align:center}
+.item-menu .ic{width:24px;text-align:center;display:grid;place-items:center;color:var(--amber)}
+
+/* ---------- caixa de confirmação ---------- */
+#confirma{position:fixed;inset:0;background:rgba(8,10,20,.75);backdrop-filter:blur(4px);
+  z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+.caixa-confirma{background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;
+  padding:22px;width:100%;max-width:340px}
+.caixa-confirma p{font-size:14px;line-height:1.6;margin-bottom:10px}
+.caixa-confirma p b{color:var(--amber)}
+.chk-linha{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:12px;
+  background:var(--bg);border:1px solid var(--line);font-size:13px;font-weight:600;line-height:1.5;margin:14px 0 6px}
+.chk-linha input{width:20px;height:20px;accent-color:var(--danger);flex-shrink:0;margin-top:1px}
+.caixa-confirma .botoes{display:flex;gap:10px;margin-top:12px}
+.caixa-confirma .botoes button{flex:1;padding:13px;border-radius:12px;font-weight:700;font-size:14px}
+.caixa-confirma .ok{background:var(--amber);color:var(--amber-ink)}
+.caixa-confirma .cancelar{background:var(--bg);border:1px solid var(--line);color:var(--text)}
 .item-menu.perigo{color:var(--danger);margin-top:auto}
 
 /* ---------- painel (telas do menu) ---------- */
@@ -242,9 +257,9 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <div class="gaveta">
     <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineLista</h1></div></div>
     <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
-    <button class="item-menu" data-painel="streamings"><span class="ic">📺</span>Streamings</button>
+    <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
     <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
-    <button class="item-menu" data-painel="ajuda"><span class="ic">✉️</span>Ajuda</button>
+    <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
     <button class="item-menu perigo" id="btn-sair"><span class="ic">🚪</span>Sair</button>
   </div>
 </div>
@@ -291,6 +306,19 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="aviso">Ao tocar em enviar, o app de e-mail do seu celular abre com a mensagem pronta para <b>rodrigosoares3691@gmail.com</b> — é só confirmar o envio.</div>
     </div>
 
+  </div>
+</div>
+
+<!-- CAIXA DE CONFIRMAÇÃO (remover streaming) -->
+<div id="confirma" class="hidden">
+  <div class="caixa-confirma">
+    <p id="conf-msg1"></p>
+    <p id="conf-msg2"></p>
+    <label class="chk-linha"><input type="checkbox" id="conf-chk"><span id="conf-chk-label"></span></label>
+    <div class="botoes">
+      <button class="cancelar" id="conf-cancelar">Cancelar</button>
+      <button class="ok" id="conf-ok">Ok</button>
+    </div>
   </div>
 </div>
 
@@ -544,6 +572,19 @@ $("#btn-salvar-perfil").onclick=async ()=>{
 };
 
 /* Streamings (checkboxes) */
+function confirmarRemocao(k,qtde){
+  return new Promise(resolve=>{
+    const nome=STREAMINGS[k].nome;
+    $("#conf-msg1").innerHTML=`Você tem <b>${qtde} título(s)</b> salvos na <b>${nome}</b>.`;
+    $("#conf-msg2").textContent=`Deseja remover ${nome} da sua lista?`;
+    $("#conf-chk-label").textContent=`Excluir todo o histórico de ${nome}`;
+    $("#conf-chk").checked=false;
+    $("#confirma").classList.remove("hidden");
+    const fechar=r=>{ $("#confirma").classList.add("hidden"); resolve(r); };
+    $("#conf-ok").onclick=()=>fechar({ok:true,excluir:$("#conf-chk").checked});
+    $("#conf-cancelar").onclick=()=>fechar({ok:false});
+  });
+}
 function montarPainelStreamings(){
   const at=ativos();
   $("#lista-streamings").innerHTML=TODAS.map(k=>{ const s=STREAMINGS[k];
@@ -558,15 +599,18 @@ function montarPainelStreamings(){
       if(!at.includes(k)) at.push(k);
     }else{
       if(at.length===1){ chk.checked=true; mostrarMsg("#msg-streamings","Mantenha pelo menos um streaming ativo.","erro"); return; }
-      at=at.filter(x=>x!==k);
       const salvos=titulos.filter(t=>t.streaming===k);
       if(salvos.length){
-        const apagar=confirm(`Você tem ${salvos.length} título(s) salvos na ${STREAMINGS[k].nome}.\n\nOK = EXCLUIR todo o histórico dela\nCancelar = manter salvo (fica oculto e volta quando você reativar)`);
-        if(apagar){
+        chk.checked=true; // segura o desmarque até o usuário confirmar
+        const r=await confirmarRemocao(k,salvos.length);
+        if(!r.ok) return; // Cancelar: nada acontece
+        chk.checked=false;
+        if(r.excluir){
           for(const t of salvos){ try{ await deleteDoc(doc(bd,"usuarios",usuario.uid,"titulos",t.id)); }catch(e){} }
           titulos=titulos.filter(t=>t.streaming!==k);
         }
       }
+      at=at.filter(x=>x!==k);
     }
     CONFIG.ativos=TODAS.filter(x=>at.includes(x));
     await salvarConfig();
