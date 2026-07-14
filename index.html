@@ -48,6 +48,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .btn{width:100%;padding:15px;border-radius:14px;font-weight:700;font-size:16px;
   background:var(--amber);color:var(--amber-ink);margin-top:6px}
 .btn:active{transform:scale(.98)}
+.btn.criar{background:linear-gradient(135deg,var(--amber),#f0813c)}
 .btn-ghost{background:none;color:var(--muted);font-weight:500;font-size:14px;margin-top:14px}
 .btn-ghost b{color:var(--amber)}
 .btn-secundario{width:100%;padding:14px;border-radius:14px;font-weight:600;font-size:15px;
@@ -313,6 +314,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
     <div class="logo-mark">▶</div>
     <div><h1>CineLista</h1><span>seus filmes e séries, em um só lugar</span></div>
   </div>
+  <h3 id="login-modo" style="font-size:19px;margin-bottom:16px">Entrar na sua conta</h3>
   <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email" placeholder="voce@email.com"></div>
   <div class="field"><label>Senha</label><input id="senha" type="password" autocomplete="current-password" placeholder="••••••••"></div>
   <button class="btn" id="btn-entrar">Entrar</button>
@@ -414,6 +416,16 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="aviso">Ao tocar em enviar, o app de e-mail do seu celular abre com a mensagem pronta para <b>rodrigosoares3691@gmail.com</b> — é só confirmar o envio.</div>
     </div>
 
+  </div>
+</div>
+
+<!-- BANNER: adicionar à tela de início -->
+<div id="banner-atalho" class="hidden" style="position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:8;background:var(--bg-soft);border:1px solid var(--amber);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.5)">
+  <div style="font-family:'Sora';font-weight:700;font-size:14px;margin-bottom:6px">📲 Leve o CineLista com você</div>
+  <div id="atalho-instrucao" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px"></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-secundario" id="btn-atalho-fechar" style="margin:0">Agora não</button>
+    <button class="btn hidden" id="btn-atalho-instalar" style="margin:0">Instalar</button>
   </div>
 </div>
 
@@ -532,7 +544,7 @@ let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroS
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
-    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null}, novoCadastro=false, listaAlterada=false;
+    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, listaAlterada=false, perfilObrigatorio=false, deferredPrompt=null;
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -581,7 +593,12 @@ window.addEventListener("DOMContentLoaded", ()=>{
 /* ---------- login ---------- */
 $("#alternar-modo").onclick=()=>{
   modoCadastro=!modoCadastro;
-  $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
+  $("#login-modo").textContent=modoCadastro?"Criar sua conta grátis ✨":"Entrar na sua conta";
+  $("#login-modo").style.color=modoCadastro?"var(--amber)":"var(--text)";
+  $("#btn-entrar").textContent=modoCadastro?"Criar conta grátis":"Entrar";
+  $("#btn-entrar").classList.toggle("criar",modoCadastro);
+  $("#senha").placeholder=modoCadastro?"Crie uma senha (mín. 6 caracteres)":"••••••••";
+  $("#senha").setAttribute("autocomplete",modoCadastro?"new-password":"current-password");
   $("#alternar-modo").innerHTML=modoCadastro?"Já tem conta? <b>Entrar</b>":"Não tem conta? <b>Criar conta</b>";
   mostrarMsg("#msg-login","");
 };
@@ -597,7 +614,7 @@ $("#btn-entrar").onclick=async ()=>{
     const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
     mostrarMsg("#msg-login",mapa[e.code]||"Erro: "+e.code,"erro");
   }
-  $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
+  $("#btn-entrar").textContent=modoCadastro?"Criar conta grátis":"Entrar";
 };
 function mostrarMsg(sel,txt,tipo){
   const el=$(sel);
@@ -617,20 +634,23 @@ async function abrirApp(){
   verificarNotificacoes();
   atualizarAvatar();
   if(novoCadastro){ novoCadastro=false; $("#escolha-plano").classList.remove("hidden"); }
-  else if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+  else if(!CONFIG.telefone){ perfilObrigatorio=true; abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+  talvezOferecerAtalho();
 }
 async function carregarConfig(){
   try{
     const d=await getDoc(docConfig());
     if(d.exists()){ const c=d.data(); CONFIG.telefone=c.telefone||""; CONFIG.ativos=c.ativos||null;
       CONFIG.nome=c.nome||""; CONFIG.sobrenome=c.sobrenome||""; CONFIG.foto=c.foto||"";
-      CONFIG.plano=c.plano||"free"; CONFIG.planoTipo=c.planoTipo||null; }
+      CONFIG.plano=c.plano||"free"; CONFIG.planoTipo=c.planoTipo||null;
+      CONFIG.formaPagamento=c.formaPagamento||null; CONFIG.atalhoOferecido=!!c.atalhoOferecido; }
   }catch(e){}
 }
 async function salvarConfig(){
   try{ await setDoc(docConfig(),{telefone:CONFIG.telefone,ativos:CONFIG.ativos||TODAS,
     nome:CONFIG.nome||"",sobrenome:CONFIG.sobrenome||"",foto:CONFIG.foto||"",
-    plano:CONFIG.plano||"free",planoTipo:CONFIG.planoTipo||null},{merge:true}); }catch(e){}
+    plano:CONFIG.plano||"free",planoTipo:CONFIG.planoTipo||null,
+    formaPagamento:CONFIG.formaPagamento||null,atalhoOferecido:!!CONFIG.atalhoOferecido},{merge:true}); }catch(e){}
 }
 async function carregar(){
   try{
@@ -728,6 +748,15 @@ $("#input-foto").onchange=e=>{
   e.target.value="";
 };
 $("#btn-abrir-seguranca").onclick=()=>abrirPainel("seguranca");
+$("#p-telefone").addEventListener("input",()=>{
+  const dig=$("#p-telefone").value.replace(/\D/g,"").slice(0,11);
+  let f="";
+  if(dig.length>0) f="("+dig.slice(0,2);
+  if(dig.length>2) f+=") ";
+  if(dig.length<=10){ f+=dig.slice(2,6); if(dig.length>6) f+="-"+dig.slice(6); }
+  else { f+=dig.slice(2,7)+"-"+dig.slice(7); }
+  $("#p-telefone").value=f;
+});
 $("#btn-salvar-perfil").onclick=async ()=>{
   const tel=$("#p-telefone").value.trim();
   if(tel.replace(/\D/g,"").length<8){ mostrarMsg("#msg-perfil","Informe um telefone válido — ele é obrigatório.","erro"); return; }
@@ -740,6 +769,10 @@ $("#btn-salvar-perfil").onclick=async ()=>{
   atualizarAvatar();
   mostrarMsg("#msg-perfil","Salvo com sucesso! ✔","ok");
   $("#aviso-telefone").classList.add("hidden");
+  if(perfilObrigatorio){ // primeiro acesso: volta para a tela inicial
+    perfilObrigatorio=false;
+    setTimeout(()=>$("#painel").classList.add("hidden"),700);
+  }
 };
 
 /* ---------- segurança (trocar senha) ---------- */
@@ -766,9 +799,48 @@ let planoSel="mensal", metodoSel="cartao";
 function montarAssinaturas(){
   const el=$("#assin-conteudo");
   if(isPremium()){
+    const fpNome={cartao:"Cartão de crédito",pix:"PIX",promo:"Código promocional"}[CONFIG.formaPagamento]||"Código promocional";
     el.innerHTML=`
       <div class="selo-premium"><div class="g">⭐ Você é Premium!</div>Plano ${CONFIG.planoTipo==="anual"?"Anual":"Mensal"} ativo</div>
-      <div class="beneficios">✔ Sinopse completa de filmes e séries<br>✔ Notificações de novas temporadas</div>`;
+      <div class="beneficios">✔ Sinopse completa de filmes e séries<br>✔ Notificações de novas temporadas</div>
+      <div class="aviso" style="margin-top:14px">Forma de pagamento atual: <b style="color:var(--amber)">${fpNome}</b></div>
+      <button class="btn-secundario" id="btn-alterar-fp">Alterar forma de pagamento</button>
+      <div id="area-fp" class="hidden" style="margin-top:16px">
+        <div class="metodos">
+          <button class="metodo sel" data-met="cartao">💳 Cartão de crédito</button>
+          <button class="metodo" data-met="pix">◆ PIX</button>
+        </div>
+        <div id="area-cartao">
+          <div class="field"><label>Número do cartão</label><input id="c-numero" inputmode="numeric" placeholder="0000 0000 0000 0000"></div>
+          <div class="field"><label>Nome impresso no cartão</label><input id="c-nome"></div>
+          <div class="linha-dupla">
+            <div class="field"><label>Validade</label><input id="c-validade" placeholder="MM/AA"></div>
+            <div class="field"><label>CVV</label><input id="c-cvv" inputmode="numeric" placeholder="123"></div>
+          </div>
+        </div>
+        <div id="area-pix" class="hidden">
+          <div class="pix-box"><div class="qr"></div>Escaneie o QR Code no app do seu banco<br>ou use o PIX copia e cola.</div>
+        </div>
+        <button class="btn" id="btn-salvar-fp">Salvar forma de pagamento</button>
+      </div>
+      <div id="msg-assin" class="aviso hidden"></div>`;
+    metodoSel="cartao";
+    $("#btn-alterar-fp").onclick=()=>$("#area-fp").classList.toggle("hidden");
+    el.querySelectorAll(".metodo").forEach(b=>b.onclick=()=>{
+      metodoSel=b.dataset.met;
+      el.querySelectorAll(".metodo").forEach(x=>x.classList.toggle("sel",x===b));
+      $("#area-cartao").classList.toggle("hidden",metodoSel!=="cartao");
+      $("#area-pix").classList.toggle("hidden",metodoSel!=="pix");
+    });
+    $("#btn-salvar-fp").onclick=async ()=>{
+      if(metodoSel==="cartao"&&(!$("#c-numero").value.trim()||!$("#c-nome").value.trim()||!$("#c-validade").value.trim()||!$("#c-cvv").value.trim())){
+        mostrarMsg("#msg-assin","Preencha todos os dados do cartão.","erro"); return;
+      }
+      CONFIG.formaPagamento=metodoSel;
+      await salvarConfig();
+      montarAssinaturas();
+      mostrarMsg("#msg-assin","Forma de pagamento atualizada. ✔","ok");
+    };
     return;
   }
   el.innerHTML=`
@@ -818,12 +890,41 @@ function montarAssinaturas(){
     // não há gateway integrado, então nenhum pagamento é aprovado e o plano permanece Free.
     mostrarMsg("#msg-assin","Pagamento não aprovado: o processamento real ainda não está disponível nesta versão de demonstração. Sua conta permanece no plano Free.","erro");
   };
+  $("#c-promo").addEventListener("input",()=>{
+    const v=$("#c-promo").value.trim().toUpperCase();
+    $("#btn-assinar").textContent=v===CODIGO_PROMOCIONAL?"⭐ Pagar com código promocional":"Confirmar pagamento";
+  });
 }
 async function ativarPremium(){
   CONFIG.plano="premium"; CONFIG.planoTipo=planoSel;
+  CONFIG.formaPagamento=CONFIG.formaPagamento||"promo";
   await salvarConfig();
   atualizarAvatar(); montarAssinaturas(); verificarNotificacoes();
 }
+
+/* ---------- atalho na tela de início ---------- */
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e; });
+function talvezOferecerAtalho(){
+  const instalado=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+  if(instalado||CONFIG.atalhoOferecido) return;
+  const ehIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  $("#atalho-instrucao").innerHTML=deferredPrompt
+    ?"Instale o app para abrir o CineLista direto da tela inicial, como um aplicativo."
+    :(ehIOS
+      ?"No Safari, toque em <b>Compartilhar</b> (o quadrado com a seta ⬆) e depois em <b>Adicionar à Tela de Início</b>."
+      :"No menu do navegador (⋮), toque em <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.");
+  $("#btn-atalho-instalar").classList.toggle("hidden",!deferredPrompt);
+  $("#banner-atalho").classList.remove("hidden");
+}
+function fecharAtalho(){
+  $("#banner-atalho").classList.add("hidden");
+  CONFIG.atalhoOferecido=true; salvarConfig();
+}
+$("#btn-atalho-fechar").onclick=fecharAtalho;
+$("#btn-atalho-instalar").onclick=async ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; }
+  fecharAtalho();
+};
 
 /* ---------- paywall ---------- */
 function abrirPaywall(recurso){
@@ -842,7 +943,7 @@ $("#paywall-ver").onclick=()=>{
 /* ---------- escolha de plano no cadastro ---------- */
 $("#ep-free").onclick=()=>{
   $("#escolha-plano").classList.add("hidden");
-  if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+  if(!CONFIG.telefone){ perfilObrigatorio=true; abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
 };
 $("#ep-premium").onclick=()=>{
   $("#escolha-plano").classList.add("hidden");
