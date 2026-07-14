@@ -1,6 +1,6 @@
 {
-  "name": "CineLista",
-  "short_name": "CineLista",
+  "name": "CineList",
+  "short_name": "CineList",
   "description": "Seus filmes e séries dos streamings, em um só lugar.",
   "start_url": ".",
   "display": "standalone",

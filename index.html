@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>CineLista</title>
+<title>CineList</title>
 
 <!-- PWA / iOS -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CineLista">
+<meta name="apple-mobile-web-app-title" content="CineList">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="theme-color" content="#0E1220">
 
@@ -305,14 +305,14 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 <!-- ======================== -->
 
 <div id="tela-config" class="screen hidden">
-  <div class="logo"><div class="logo-mark">▶</div><div><h1>CineLista</h1><span>configuração pendente</span></div></div>
+  <div class="logo"><div class="logo-mark">▶</div><div><h1>CineList</h1><span>configuração pendente</span></div></div>
   <div class="aviso">Falta conectar o app ao Firebase: preencha o bloco <b>FIREBASE_CONFIG</b> no index.html.</div>
 </div>
 
 <div id="tela-login" class="screen hidden">
   <div class="logo">
     <div class="logo-mark">▶</div>
-    <div><h1>CineLista</h1><span>seus filmes e séries, em um só lugar</span></div>
+    <div><h1>CineList</h1><span>seus filmes e séries, em um só lugar</span></div>
   </div>
   <h3 id="login-modo" style="font-size:19px;margin-bottom:16px">Entrar na sua conta</h3>
   <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email" placeholder="voce@email.com"></div>
@@ -325,7 +325,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 <div id="tela-app" class="screen hidden">
   <header>
     <button id="btn-menu" aria-label="Menu"><span></span><i class="pontinho hidden" id="menu-dot"></i></button>
-    <h2>CineLista</h2>
+    <h2>CineList</h2>
     <button id="btn-avatar" class="avatar"><span id="avatar-inicial">?</span><img id="avatar-img" class="hidden" alt=""><span class="estrela hidden" id="avatar-estrela"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></span></button>
   </header>
   <div class="abas">
@@ -340,7 +340,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 <!-- MENU LATERAL -->
 <div id="menu" class="hidden">
   <div class="gaveta">
-    <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineLista</h1></div></div>
+    <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineList</h1></div></div>
     <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
     <button class="item-menu" data-painel="seguranca"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Segurança</button>
     <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
@@ -401,7 +401,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
     <div id="painel-compartilhar" class="hidden">
       <video id="video-promo" src="promo.mp4" controls playsinline preload="metadata" onerror="this.style.display='none'" style="width:100%;border-radius:16px;border:1px solid var(--line);margin-bottom:14px;background:var(--bg)"></video>
-      <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineLista! No celular, a mensagem vai com o <b>vídeo de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
+      <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineList! No celular, a mensagem vai com o <b>vídeo de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
       <button class="btn" id="btn-compartilhar-app">📤 Compartilhar com amigos</button>
       <button class="btn-secundario" id="btn-compartilhar-zap">Enviar só o convite pelo WhatsApp</button>
       <div id="msg-compartilhar" class="aviso hidden"></div>
@@ -409,10 +409,10 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
     <div id="painel-sobre" class="hidden">
       <div class="texto-sobre">
-        <p><b>Sobre a CineLista</b></p>
-        <p>A CineLista é um aplicativo criado para ajudar você a organizar os filmes e séries que está assistindo e aqueles que ainda pretende assistir. Além disso, reúne os principais lançamentos dos streamings e o Top 10 da semana, para que você nunca perca as novidades.</p>
-        <p>Com uma interface moderna, intuitiva e fácil de usar, a CineLista oferece uma experiência prática para todos os fãs de entretenimento.</p>
-        <p>Desenvolvida em julho de 2026 por <b>Rodrigo Soares</b>, fã de filmes e séries, formado em Análise e Desenvolvimento de Sistemas e pós-graduado em Engenharia de Qualidade de Software, a CineLista nasceu com o propósito de tornar o acompanhamento de filmes e séries mais simples e organizado.</p>
+        <p><b>Sobre a CineList</b></p>
+        <p>A CineList é um aplicativo criado para ajudar você a organizar os filmes e séries que está assistindo e aqueles que ainda pretende assistir. Além disso, reúne os principais lançamentos dos streamings e o Top 10 da semana, para que você nunca perca as novidades.</p>
+        <p>Com uma interface moderna, intuitiva e fácil de usar, a CineList oferece uma experiência prática para todos os fãs de entretenimento.</p>
+        <p>Desenvolvida em julho de 2026 por <b>Rodrigo Soares</b>, fã de filmes e séries, formado em Análise e Desenvolvimento de Sistemas e pós-graduado em Engenharia de Qualidade de Software, a CineList nasceu com o propósito de tornar o acompanhamento de filmes e séries mais simples e organizado.</p>
         <p class="fonte">Dados de títulos e imagens: TMDB · disponibilidade por JustWatch.</p>
       </div>
     </div>
@@ -430,7 +430,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
 <!-- BANNER: adicionar à tela de início -->
 <div id="banner-atalho" class="hidden" style="position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:8;background:var(--bg-soft);border:1px solid var(--amber);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.5)">
-  <div style="font-family:'Sora';font-weight:700;font-size:14px;margin-bottom:6px">📲 Leve o CineLista com você</div>
+  <div style="font-family:'Sora';font-weight:700;font-size:14px;margin-bottom:6px">📲 Leve o CineList com você</div>
   <div id="atalho-instrucao" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px"></div>
   <div style="display:flex;gap:8px">
     <button class="btn-secundario" id="btn-atalho-fechar" style="margin:0">Agora não</button>
@@ -455,7 +455,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 <div id="escolha-plano" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.85);backdrop-filter:blur(6px);z-index:46;display:flex;align-items:center;justify-content:center;padding:24px">
   <div class="caixa-confirma" style="text-align:center">
     <div style="font-size:30px;margin-bottom:6px">🎬</div>
-    <p style="font-family:'Sora';font-weight:700;font-size:16px">Bem-vindo ao CineLista!</p>
+    <p style="font-family:'Sora';font-weight:700;font-size:16px">Bem-vindo ao CineList!</p>
     <p style="color:var(--muted)">Como você quer começar?</p>
     <button class="btn" id="ep-premium">⭐ Assinar o Premium</button>
     <button class="btn-secundario" id="ep-free">Continuar no plano Free</button>
@@ -918,7 +918,7 @@ function talvezOferecerAtalho(){
   if(instalado||CONFIG.atalhoOferecido) return;
   const ehIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
   $("#atalho-instrucao").innerHTML=deferredPrompt
-    ?"Instale o app para abrir o CineLista direto da tela inicial, como um aplicativo."
+    ?"Instale o app para abrir o CineList direto da tela inicial, como um aplicativo."
     :(ehIOS
       ?"No Safari, toque em <b>Compartilhar</b> (o quadrado com a seta ⬆) e depois em <b>Adicionar à Tela de Início</b>."
       :"No menu do navegador (⋮), toque em <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.");
@@ -937,7 +937,7 @@ $("#btn-atalho-instalar").onclick=async ()=>{
 
 /* ---------- compartilhar o app ---------- */
 const LINK_APP="https://cinelista-ivory.vercel.app";
-const MSG_APP="🎬 Descobri um app ótimo pra organizar os filmes e séries dos streamings: o *CineLista*!\n\nVocê salva o que está assistindo, marca a temporada e o episódio onde parou, e ainda vê o Top 10 da semana e os lançamentos.\n\nCrie sua conta grátis: "+LINK_APP;
+const MSG_APP="🎬 Descobri um app ótimo pra organizar os filmes e séries dos streamings: o *CineList*!\n\nVocê salva o que está assistindo, marca a temporada e o episódio onde parou, e ainda vê o Top 10 da semana e os lançamentos.\n\nCrie sua conta grátis: "+LINK_APP;
 $("#btn-compartilhar-zap").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent(MSG_APP),"_blank");
 $("#btn-compartilhar-app").onclick=async ()=>{
   try{
@@ -946,7 +946,7 @@ $("#btn-compartilhar-app").onclick=async ()=>{
       const blob=await r.blob();
       const file=new File([blob],"cinelista.mp4",{type:"video/mp4"});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],text:MSG_APP,title:"CineLista"});
+        await navigator.share({files:[file],text:MSG_APP,title:"CineList"});
         return;
       }
     }
@@ -960,7 +960,7 @@ $("#btn-compartilhar-titulo").onclick=()=>{
   const nome=$("#f-nome").value.trim()||$("#titulo-escolhido").textContent.trim();
   if(!nome){ alert("Selecione um título primeiro."); return; }
   const s=STREAMINGS[streamingEscolhido];
-  const msg=`🍿 Dica: assista *${nome}* na ${s.nome}!\n▶ ${s.busca(encodeURIComponent(nome))}\n\nEu acompanho meus filmes, séries e as novidades pelo *CineLista* — crie sua conta grátis: ${LINK_APP}`;
+  const msg=`🍿 Dica: assista *${nome}* na ${s.nome}!\n▶ ${s.busca(encodeURIComponent(nome))}\n\nEu acompanho meus filmes, séries e as novidades pelo *CineList* — crie sua conta grátis: ${LINK_APP}`;
   window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 };
 
@@ -1044,8 +1044,8 @@ function montarPainelStreamings(){
 $("#btn-enviar-ajuda").onclick=()=>{
   const msg=$("#h-mensagem").value.trim();
   if(!msg){ alert("Escreva sua mensagem primeiro."); return; }
-  const corpo=encodeURIComponent(msg+"\n\n—\nEnviado pelo CineLista ("+(usuario?.email||"")+")");
-  window.location.href=`mailto:rodrigosoares3691@gmail.com?subject=${encodeURIComponent("Ajuda - CineLista")}&body=${corpo}`;
+  const corpo=encodeURIComponent(msg+"\n\n—\nEnviado pelo CineList ("+(usuario?.email||"")+")");
+  window.location.href=`mailto:rodrigosoares3691@gmail.com?subject=${encodeURIComponent("Ajuda - CineList")}&body=${corpo}`;
 };
 
 /* ---------- notificações (novas temporadas) ---------- */
