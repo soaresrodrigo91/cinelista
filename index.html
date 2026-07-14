@@ -515,12 +515,12 @@ import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, d
 
 /* ---------- streamings ---------- */
 const STREAMINGS = {
-  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t },
-  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t },
-  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t },
+  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t,        app:t=>"nflx://www.netflix.com/search?q="+t },
+  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t, app:()=>"primevideo://" },
+  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t,          app:()=>"hbomax://" },
   paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],    busca:()=>"https://www.paramountplus.com/search/" },
-  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t },
-  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t },
+  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t,     app:()=>"globoplay://" },
+  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t,      app:()=>"disneyplus://" },
   appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t },
 };
 const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.themoviedb.org/3";
@@ -532,7 +532,7 @@ let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroS
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
-    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null}, novoCadastro=false;
+    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null}, novoCadastro=false, listaAlterada=false;
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -849,6 +849,9 @@ $("#ep-premium").onclick=()=>{
   abrirPainel("assinaturas");
 };
 
+/* o usuário mexeu no seletor Lista? então a escolha dele prevalece */
+$("#f-status").addEventListener("change",()=>listaAlterada=true);
+
 /* Streamings (checkboxes) */
 function confirmarRemocao(k,qtde){
   return new Promise(resolve=>{
@@ -1027,9 +1030,9 @@ function htmlDescobrir(){
   let h="";
   if(d.filmes.length) h+=`<div class="secao"><h3>🔥 Top 10 Filmes da semana <span class="sub">· ${sub}</span></h3>
     <div class="carrossel">${d.filmes.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
-  if(d.series.length) h+=`<div class="secao"><h3>📺 Top 10 Séries da semana <span class="sub">· ${sub}</span></h3>
+  if(d.series.length) h+=`<div class="secao"><h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="var(--amber)" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg> Top 10 Séries da semana <span class="sub">· ${sub}</span></h3>
     <div class="carrossel">${d.series.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
-  if(d.lanc.length) h+=`<div class="secao"><h3>🆕 Lançamentos <span class="sub">· ${sub}</span></h3>
+  if(d.lanc.length) h+=`<div class="secao"><h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3l1.8 4.9 4.9 1.8-4.9 1.8L12 16.4l-1.8-4.9-4.9-1.8 4.9-1.8z"/><path d="M19 14.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></svg> Lançamentos <span class="sub">· ${sub}</span></h3>
     <div class="carrossel">${d.lanc.map(x=>htmlPoster(x)).join("")}</div></div>`;
   return h;
 }
@@ -1180,10 +1183,27 @@ $("#lista").addEventListener("click",e=>{
 });
 
 /* ---------- ações ---------- */
+function abrirNoStreaming(k,titulo){
+  const s=STREAMINGS[k]; if(!s) return;
+  const web=s.busca(encodeURIComponent(titulo));
+  const ehIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(ehIOS&&s.app){
+    // tenta abrir o aplicativo; se não abrir (não instalado), cai no site
+    let saiu=false;
+    const marcar=()=>{ if(document.hidden) saiu=true; };
+    document.addEventListener("visibilitychange",marcar);
+    window.location.href=s.app(encodeURIComponent(titulo));
+    setTimeout(()=>{
+      document.removeEventListener("visibilitychange",marcar);
+      if(!saiu) window.open(web,"_blank");
+    },1400);
+  }else{
+    window.open(web,"_blank");
+  }
+}
 function abrirStreaming(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  const s=STREAMINGS[t.streaming];
-  window.open(s.busca(encodeURIComponent(t.nome)),"_blank");
+  abrirNoStreaming(t.streaming,t.nome);
 }
 async function ajustar(id,campo,delta){
   const t=titulos.find(x=>x.id===id); if(!t) return;
@@ -1222,7 +1242,7 @@ async function excluir(id){
 }
 function editar(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  editandoId=id; gradeOrigem="form";
+  editandoId=id; gradeOrigem="form"; listaAlterada=true; // em edição, a Lista mostrada é a escolha vigente
   streamingEscolhido=t.streaming; capaEscolhida=t.capa||null;
   tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv";
   estruturaEscolhida=estruturaDe(t);
@@ -1272,7 +1292,7 @@ function atualizarPreviewCapa(nome){
 }
 
 $("#btn-add").onclick=()=>{
-  editandoId=null; gradeOrigem="busca";
+  editandoId=null; gradeOrigem="busca"; listaAlterada=false;
   capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
   resultadosBusca=[];
   const at=ativos(); if(!at.includes(streamingEscolhido)) streamingEscolhido=at[0];
@@ -1466,6 +1486,7 @@ async function abrirDescoberta(id,tipo){
   if(!fonte) return;
   editandoId=null; gradeOrigem="busca";
   $("#modal-titulo").textContent="Adicionar título";
+  listaAlterada=false;
   $("#f-status").value="proximo"; // padrão: Favoritos — só vai para Assistindo se o usuário mudar ou usar "Salvar e abrir"
   resultadosBusca=[fonte];
   $("#modal").classList.remove("hidden");
@@ -1489,9 +1510,8 @@ async function salvarTitulo(abrir){
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
   };
   if(abrir){
-    registro.status="assistindo"; // abrir no streaming = começou a assistir
-    const s=STREAMINGS[streamingEscolhido];
-    window.open(s.busca(encodeURIComponent(nome)),"_blank");
+    if(!listaAlterada) registro.status="assistindo"; // padrão: abrir = começou a assistir; escolha manual da Lista é respeitada
+    abrirNoStreaming(streamingEscolhido,nome);
   }
   try{
     if(editandoId){
