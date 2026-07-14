@@ -246,6 +246,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
   #modal{align-items:center;padding:30px}
   .folha{max-width:560px;border-radius:24px;max-height:86dvh}
   #painel .conteudo{max-width:680px;margin:0 auto;width:100%}
+  #painel-compartilhar .carrossel{flex-wrap:wrap;justify-content:center;overflow:visible}
   #painel header{max-width:680px;margin:0 auto;width:100%}
   #btn-add{right:calc(50vw - 550px + 20px)}
 }
@@ -409,7 +410,6 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       </div>
       <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineList! A mensagem vai com uma <b>imagem de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
       <button class="btn" id="btn-compartilhar-app">📤 Compartilhar com amigos</button>
-      <button class="btn-secundario" id="btn-compartilhar-zap">Enviar só o convite pelo WhatsApp</button>
       <div id="msg-compartilhar" class="aviso hidden"></div>
     </div>
 
@@ -560,7 +560,7 @@ let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroS
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
-    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, listaAlterada=false, perfilObrigatorio=false, deferredPrompt=null;
+    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, listaAlterada=false, perfilObrigatorio=false, deferredPrompt=null, painelOrigem="direto";
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -627,7 +627,7 @@ $("#btn-entrar").onclick=async ()=>{
     else await signInWithEmailAndPassword(auth,email,senha);
   }catch(e){
     novoCadastro=false;
-    const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
+    const mapa={"auth/invalid-credential":"E-mail não cadastrado ou senha incorreta. Se ainda não tem conta, toque em Criar conta.","auth/user-not-found":"Este e-mail não está cadastrado. Toque em Criar conta.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
     mostrarMsg("#msg-login",mapa[e.code]||"Erro: "+e.code,"erro");
   }
   $("#btn-entrar").textContent=modoCadastro?"Criar conta grátis":"Entrar";
@@ -700,9 +700,11 @@ $("#btn-menu").onclick=()=>$("#menu").classList.remove("hidden");
 $("#menu").onclick=e=>{ if(e.target.id==="menu") $("#menu").classList.add("hidden"); };
 document.querySelectorAll("[data-painel]").forEach(b=>b.onclick=()=>{
   $("#menu").classList.add("hidden"); abrirPainel(b.dataset.painel);
+  painelOrigem="menu"; // veio da lista do menu: o Voltar retorna para ela
 });
 const TITULOS_PAINEL={perfil:"Perfil",seguranca:"Segurança",streamings:"Streamings",notificacoes:"Notificações",assinaturas:"Assinaturas",compartilhar:"Compartilhar",sobre:"Sobre",ajuda:"Ajuda"};
 function abrirPainel(qual){
+  painelOrigem="direto";
   $("#painel").classList.remove("hidden");
   $("#painel-titulo").textContent=TITULOS_PAINEL[qual];
   ["perfil","seguranca","streamings","notificacoes","assinaturas","compartilhar","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
@@ -725,6 +727,7 @@ function abrirPainel(qual){
 $("#btn-voltar-painel").onclick=()=>{
   $("#painel").classList.add("hidden");
   $("#aviso-telefone").classList.add("hidden");
+  if(painelOrigem==="menu") $("#menu").classList.remove("hidden");
 };
 
 /* ---------- perfil / avatar ---------- */
@@ -944,7 +947,6 @@ $("#btn-atalho-instalar").onclick=async ()=>{
 /* ---------- compartilhar o app ---------- */
 const LINK_APP="https://cinelista-ivory.vercel.app";
 const MSG_APP="🎬 Descobri um app ótimo pra organizar os filmes e séries dos streamings: o *CineList*!\n\nVocê salva o que está assistindo, marca a temporada e o episódio onde parou, e ainda vê o Top 10 da semana e os lançamentos.\n\nCrie sua conta grátis: "+LINK_APP;
-$("#btn-compartilhar-zap").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent(MSG_APP),"_blank");
 $("#btn-compartilhar-app").onclick=async ()=>{
   try{
     const r=await fetch("convite.jpg");
@@ -1116,18 +1118,20 @@ async function carregarDescobertas(){
   desenhar();
   await logosProntos;
   const hoje=new Date().toISOString().slice(0,10);
-  let filmes=[],series=[],lanc=[];
+  let filmes=[],series=[],lanc=[],cinema=[];
   try{
     if(chave==="todos"){
       const ids=ativos().map(k=>PROV_IDS[k]).filter(Boolean).join("|");
-      const [f,s,lf,ls]=await Promise.all([
+      const [f,s,cin,lf,ls]=await Promise.all([
         tmdbGet(`/trending/movie/week?language=pt-BR`),
         tmdbGet(`/trending/tv/week?language=pt-BR`),
+        tmdbGet(`/movie/now_playing?language=pt-BR&region=BR`),
         tmdbGet(`/discover/movie?language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=primary_release_date.desc&primary_release_date.lte=${hoje}&vote_count.gte=20`),
         tmdbGet(`/discover/tv?language=pt-BR&watch_region=BR&with_watch_providers=${ids}&with_watch_monetization_types=flatrate|ads&sort_by=first_air_date.desc&first_air_date.lte=${hoje}&vote_count.gte=20`),
       ]);
       filmes=(f.results||[]).slice(0,10).map(x=>({...x,media_type:"movie"}));
       series=(s.results||[]).slice(0,10).map(x=>({...x,media_type:"tv"}));
+      cinema=(cin.results||[]).slice(0,10).map(x=>({...x,media_type:"movie"}));
       lanc=[...(lf.results||[]).slice(0,6).map(x=>({...x,media_type:"movie"})),
             ...(ls.results||[]).slice(0,6).map(x=>({...x,media_type:"tv"}))]
         .sort((a,b)=>(b.release_date||b.first_air_date||"").localeCompare(a.release_date||a.first_air_date||""))
@@ -1151,19 +1155,21 @@ async function carregarDescobertas(){
       }
     }
   }catch(e){}
-  DESC[chave]={filmes,series,lanc};
-  [...filmes,...series,...lanc].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
+  DESC[chave]={filmes,series,lanc,cinema};
+  [...filmes,...series,...lanc,...cinema].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
   desenhar();
   pintarFlagsPosters();
 }
 
-function htmlPoster(x,rank){
+function htmlPoster(x,rank,cinema){
   const nome=esc(x.title||x.name);
   const capa=x.poster_path?IMG+"w185"+x.poster_path:"";
+  const selo=cinema?`<span style="position:absolute;top:8px;left:8px;font-size:10px;font-weight:800;letter-spacing:.8px;padding:4px 8px;border-radius:8px;background:rgba(14,18,32,.85);border:1px solid var(--amber);color:var(--amber);z-index:1">CINEMA</span>`:"";
   return `<button class="poster" data-desc-id="${x.id}" data-desc-tipo="${x.media_type}">
     ${rank?`<span class="rank">${rank}</span>`:""}
+    ${selo}
     ${capa?`<img class="pcapa" src="${capa}" alt="" loading="lazy">`:`<div style="width:104px;height:156px;border-radius:12px;background:var(--card)"></div>`}
-    <span class="prov-poster" data-pp="${x.media_type}-${x.id}"></span>
+    ${cinema?"":`<span class="prov-poster" data-pp="${x.media_type}-${x.id}"></span>`}
     <div class="nome-p">${nome}</div>
   </button>`;
 }
@@ -1179,6 +1185,8 @@ function htmlDescobrir(){
     <div class="carrossel">${d.series.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
   if(d.lanc.length) h+=`<div class="secao"><h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 3l1.8 4.9 4.9 1.8-4.9 1.8L12 16.4l-1.8-4.9-4.9-1.8 4.9-1.8z"/><path d="M19 14.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></svg> Lançamentos <span class="sub">· ${sub}</span></h3>
     <div class="carrossel">${d.lanc.map(x=>htmlPoster(x)).join("")}</div></div>`;
+  if(d.cinema&&d.cinema.length) h+=`<div class="secao"><h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" style="flex-shrink:0"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg> Nos cinemas <span class="sub">· em cartaz no Brasil</span></h3>
+    <div class="carrossel">${d.cinema.map(x=>htmlPoster(x,null,true)).join("")}</div></div>`;
   return h;
 }
 
