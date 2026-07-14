@@ -30,11 +30,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
   padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 h1,h2,h3{font-family:'Sora',sans-serif}
 button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
-input,select{font-family:inherit;font-size:16px}
+input,select,textarea{font-family:inherit;font-size:16px}
 .hidden{display:none!important}
 .screen{min-height:100dvh;display:flex;flex-direction:column}
 
-/* ---------- login ---------- */
+/* ---------- login / config ---------- */
 #tela-login,#tela-config{justify-content:center;padding:28px;gap:8px}
 .logo{display:flex;align-items:center;gap:12px;margin-bottom:26px}
 .logo-mark{width:52px;height:52px;border-radius:14px;background:var(--amber);display:grid;place-items:center;font-size:26px;color:var(--amber-ink)}
@@ -42,9 +42,9 @@ input,select{font-family:inherit;font-size:16px}
 .logo span{color:var(--muted);font-size:13px;font-weight:400;display:block}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
-.field input,.field select{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
-  background:var(--bg-soft);color:var(--text);outline:none;appearance:none}
-.field input:focus,.field select:focus{border-color:var(--amber)}
+.field input,.field select,.field textarea{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
+  background:var(--bg-soft);color:var(--text);outline:none;appearance:none;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--amber)}
 .btn{width:100%;padding:15px;border-radius:14px;font-weight:700;font-size:16px;
   background:var(--amber);color:var(--amber-ink);margin-top:6px}
 .btn:active{transform:scale(.98)}
@@ -58,35 +58,37 @@ input,select{font-family:inherit;font-size:16px}
 .aviso.ok{border-color:var(--amber);color:var(--amber)}
 
 /* ---------- app ---------- */
-header{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between;
+header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;
   position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:5}
-header h2{font-size:22px;letter-spacing:-.4px}
-header .sair{color:var(--muted);font-size:13px;padding:8px 10px}
+#btn-menu{width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);
+  display:grid;place-items:center;flex-shrink:0}
+#btn-menu span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;
+  box-shadow:0 -5px 0 var(--text),0 5px 0 var(--text)}
+header h2{font-size:20px;letter-spacing:-.4px;flex:1}
 .abas{display:flex;gap:8px;padding:4px 20px 10px}
 .aba{flex:1;padding:11px;border-radius:999px;font-weight:600;font-size:14px;
   background:var(--bg-soft);color:var(--muted);border:1px solid var(--line)}
 .aba.ativa{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
-
 .filtros{display:flex;gap:8px;padding:2px 20px 12px;overflow-x:auto;
   scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .filtros::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
   font-weight:600;font-size:12px;background:var(--bg-soft);border:1px solid var(--line);color:var(--muted)}
 .chip.ativo{border-color:var(--amber);color:var(--text);background:var(--card)}
-
 main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .vazio{margin:14px 0;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:0 20px}
 .vazio .icone{font-size:32px;display:block;margin-bottom:8px}
 
-/* logos dos streamings */
+/* logos */
 .logo-str{width:18px;height:18px;border-radius:5px;object-fit:cover;flex-shrink:0}
 .logo-str.g{width:38px;height:38px;border-radius:11px}
 .logo-str.m{width:22px;height:22px;border-radius:6px}
+.logo-str.pp{width:20px;height:20px;border-radius:6px;border:1.5px solid rgba(255,255,255,.85);box-shadow:0 2px 6px rgba(0,0,0,.6)}
 .mini-icone{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
   font-family:'Sora';font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
 .mini-icone.p{width:18px;height:18px;font-size:8px;border-radius:5px}
 
-/* ---------- seções e carrosséis ---------- */
+/* ---------- seções / carrosséis ---------- */
 .secao{margin-top:14px}
 .secao h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .secao h3 .sub{font-size:12px;color:var(--muted);font-weight:500}
@@ -94,49 +96,72 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
   scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .carrossel::-webkit-scrollbar{display:none}
 .poster{flex-shrink:0;width:104px;text-align:left;position:relative}
-.poster img{width:104px;height:156px;object-fit:cover;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.poster img.pcapa{width:104px;height:156px;object-fit:cover;border-radius:12px;background:var(--card);border:1px solid var(--line)}
 .poster .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .poster .rank{position:absolute;top:-6px;left:-4px;font-family:'Sora';font-weight:800;font-size:30px;
   color:var(--amber);text-shadow:0 2px 8px rgba(0,0,0,.8);z-index:1}
+.prov-poster{position:absolute;top:130px;left:6px;display:flex;gap:3px;z-index:1}
 .fonte{font-size:10px;color:var(--muted);margin-top:8px}
 .carregando{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;width:100%}
 
-/* ---------- card ---------- */
+/* ---------- cards ---------- */
 .carrossel-cards{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;
   scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .carrossel-cards::-webkit-scrollbar{display:none}
-.carrossel-cards .card{flex-shrink:0;width:300px}
+.carrossel-cards .card{flex-shrink:0;width:min(300px,84vw)}
 .lista-vertical{display:flex;flex-direction:column;gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px;display:flex;flex-direction:column;gap:12px}
-.card-topo{display:flex;gap:12px;align-items:flex-start}
-.card img.capa{width:56px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
-.card-nome{font-family:'Sora';font-weight:700;font-size:16px;line-height:1.3;word-break:break-word;flex:1}
-.badge{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
-  letter-spacing:.3px;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap}
-.contador{display:flex;gap:10px}
-.bloco{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:14px;
-  display:flex;align-items:center;justify-content:space-between;padding:6px 8px}
-.bloco .rotulo{font-size:10px;color:var(--muted);letter-spacing:1.2px;font-weight:600;padding-left:6px}
-.bloco .valor{font-family:'Sora';font-weight:800;font-size:22px;color:var(--amber);min-width:34px;text-align:center}
+  padding:14px;display:flex;flex-direction:column;gap:12px;max-width:100%;overflow:hidden}
+.card-topo{display:flex;gap:10px;align-items:flex-start;min-width:0}
+.card img.capa{width:52px;height:78px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
+.card-nome{font-family:'Sora';font-weight:700;font-size:15px;line-height:1.3;word-break:break-word;flex:1;min-width:0}
+.badge{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
+  letter-spacing:.2px;padding:4px 8px;border-radius:999px;color:#fff;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.contador{display:flex;gap:8px}
+.bloco{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:14px;
+  display:flex;align-items:center;justify-content:space-between;padding:6px;gap:4px}
+.bloco .rotulo{font-size:9px;color:var(--muted);letter-spacing:1px;font-weight:600;padding-left:4px}
+.bloco .valor{font-family:'Sora';font-weight:800;font-size:19px;color:var(--amber);text-align:center}
 .bloco .max{font-size:10px;color:var(--muted);font-weight:600}
-.bloco button{width:34px;height:34px;border-radius:10px;background:var(--bg-soft);
-  color:var(--text);font-size:18px;font-weight:700;border:1px solid var(--line)}
+.bloco button{width:30px;height:30px;border-radius:9px;background:var(--bg-soft);flex-shrink:0;
+  color:var(--text);font-size:16px;font-weight:700;border:1px solid var(--line)}
 .bloco button:active{background:var(--amber);color:var(--amber-ink)}
-.card-acoes{display:flex;gap:8px}
-.acao{flex:1;padding:11px;border-radius:12px;font-weight:600;font-size:13px;
-  background:var(--bg-soft);border:1px solid var(--line);color:var(--text)}
+.card-acoes{display:flex;gap:8px;min-width:0}
+.acao{flex:1;min-width:0;padding:10px 6px;border-radius:12px;font-weight:600;font-size:12px;
+  background:var(--bg-soft);border:1px solid var(--line);color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acao.principal{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:700}
 .acao:active{transform:scale(.97)}
 
-/* ---------- botão flutuante / modal ---------- */
+/* ---------- menu lateral ---------- */
+#menu{position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);z-index:20;display:flex}
+.gaveta{width:280px;max-width:82vw;background:var(--bg-soft);height:100%;padding:24px 16px calc(24px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line)}
+.gaveta .logo{margin-bottom:14px}
+.item-menu{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;font-weight:600;font-size:15px;text-align:left}
+.item-menu:active{background:var(--card)}
+.item-menu .ic{width:24px;text-align:center}
+.item-menu.perigo{color:var(--danger);margin-top:auto}
+
+/* ---------- painel (telas do menu) ---------- */
+#painel{position:fixed;inset:0;background:var(--bg);z-index:25;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top)}
+#painel header{position:static;background:none}
+#painel .conteudo{flex:1;overflow-y:auto;padding:8px 20px calc(30px + env(safe-area-inset-bottom))}
+.linha-streaming{display:flex;align-items:center;gap:12px;padding:13px 6px;border-bottom:1px solid var(--line);font-weight:600;font-size:15px}
+.linha-streaming input{width:22px;height:22px;accent-color:var(--amber);margin-left:auto;flex-shrink:0}
+.texto-sobre{font-size:14px;line-height:1.8;color:var(--text)}
+.texto-sobre p{margin-bottom:14px}
+.texto-sobre b{color:var(--amber)}
+
+/* ---------- botão + / modal ---------- */
 #btn-add{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
   width:60px;height:60px;border-radius:20px;background:var(--amber);color:var(--amber-ink);
   font-size:30px;font-weight:700;box-shadow:0 8px 24px rgba(245,184,65,.35);z-index:6}
 #btn-add:active{transform:scale(.94)}
 #modal{position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);
-  display:flex;align-items:flex-end;z-index:10}
+  display:flex;align-items:flex-end;z-index:30}
 .folha{width:100%;background:var(--bg-soft);border-radius:24px 24px 0 0;
   padding:22px 20px calc(26px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto}
 .folha h3{font-size:19px;margin-bottom:16px}
@@ -200,8 +225,8 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
 <div id="tela-app" class="screen hidden">
   <header>
-    <h2 id="titulo-aba">Início</h2>
-    <button class="sair" id="btn-sair">Sair</button>
+    <button id="btn-menu" aria-label="Menu"><span></span></button>
+    <h2>CineLista</h2>
   </header>
   <div class="abas">
     <button class="aba ativa" data-aba="assistindo">▶ Assistindo</button>
@@ -212,6 +237,64 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <button id="btn-add">+</button>
 </div>
 
+<!-- MENU LATERAL -->
+<div id="menu" class="hidden">
+  <div class="gaveta">
+    <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineLista</h1></div></div>
+    <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
+    <button class="item-menu" data-painel="streamings"><span class="ic">📺</span>Streamings</button>
+    <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
+    <button class="item-menu" data-painel="ajuda"><span class="ic">✉️</span>Ajuda</button>
+    <button class="item-menu perigo" id="btn-sair"><span class="ic">🚪</span>Sair</button>
+  </div>
+</div>
+
+<!-- PAINEL DAS TELAS DO MENU -->
+<div id="painel" class="hidden">
+  <header>
+    <button id="btn-voltar-painel" style="font-size:15px;color:var(--amber);font-weight:600">‹ Voltar</button>
+    <h2 id="painel-titulo" style="flex:1;text-align:center;margin-right:60px">Perfil</h2>
+  </header>
+  <div class="conteudo">
+
+    <div id="painel-perfil" class="hidden">
+      <div id="aviso-telefone" class="aviso ok hidden" style="margin:0 0 16px">Complete seu cadastro informando o telefone. 📱</div>
+      <div class="field"><label>E-mail</label><input id="p-email" disabled></div>
+      <div class="field"><label>Telefone (obrigatório)</label><input id="p-telefone" type="tel" placeholder="(38) 99999-9999"></div>
+      <div class="field"><label>Nova senha (opcional)</label><input id="p-nova-senha" type="password" placeholder="Deixe em branco para não alterar"></div>
+      <div class="field hidden" id="grupo-senha-atual"><label>Senha atual (necessária para trocar a senha)</label><input id="p-senha-atual" type="password"></div>
+      <button class="btn" id="btn-salvar-perfil">Salvar</button>
+      <div id="msg-perfil" class="aviso hidden"></div>
+    </div>
+
+    <div id="painel-streamings" class="hidden">
+      <div class="aviso" style="margin:0 0 10px">Marque os streamings que você usa. Só eles aparecem no app. Ao desmarcar, seus títulos daquele streaming ficam guardados (ou você pode escolher excluí-los).</div>
+      <div id="lista-streamings"></div>
+      <div id="msg-streamings" class="aviso hidden"></div>
+    </div>
+
+    <div id="painel-sobre" class="hidden">
+      <div class="texto-sobre">
+        <p><b>Sobre a CineLista</b></p>
+        <p>A CineLista é um aplicativo criado para ajudar você a organizar os filmes e séries que está assistindo e aqueles que ainda pretende assistir. Além disso, reúne os principais lançamentos dos streamings e o Top 10 da semana, para que você nunca perca as novidades.</p>
+        <p>Com uma interface moderna, intuitiva e fácil de usar, a CineLista oferece uma experiência prática para todos os fãs de entretenimento.</p>
+        <p>Desenvolvida em julho de 2026 por <b>Rodrigo Soares</b>, fã de filmes e séries, formado em Análise e Desenvolvimento de Sistemas e pós-graduado em Engenharia de Qualidade de Software, a CineLista nasceu com o propósito de tornar o acompanhamento de filmes e séries mais simples e organizado.</p>
+        <p class="fonte">Dados de títulos e imagens: TMDB · disponibilidade por JustWatch.</p>
+      </div>
+    </div>
+
+    <div id="painel-ajuda" class="hidden">
+      <div class="field"><label>Descreva sua dúvida ou problema</label>
+        <textarea id="h-mensagem" rows="6" placeholder="Escreva aqui sua mensagem..."></textarea>
+      </div>
+      <button class="btn" id="btn-enviar-ajuda">✉️ Enviar e-mail</button>
+      <div class="aviso">Ao tocar em enviar, o app de e-mail do seu celular abre com a mensagem pronta para <b>rodrigosoares3691@gmail.com</b> — é só confirmar o envio.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR/EDITAR -->
 <div id="modal" class="hidden">
   <div class="folha">
     <div id="passo-busca">
@@ -260,9 +343,11 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut }
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+         updatePassword, EmailAuthProvider, reauthenticateWithCredential }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp }
+import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc,
+         getDoc, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ---------- streamings ---------- */
@@ -276,24 +361,28 @@ const STREAMINGS = {
   appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t },
 };
 const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.themoviedb.org/3";
+const TODAS=Object.keys(STREAMINGS);
 
 /* ---------- estado ---------- */
 let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroStreaming=null,
     editandoId=null, modoCadastro=false, gradeOrigem="busca",
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null,
-    LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null;
+    LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
+    CONFIG={telefone:"",ativos:null};
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const colTitulos=()=>collection(bd,"usuarios",usuario.uid,"titulos");
+const docConfig=()=>doc(bd,"usuarios",usuario.uid,"config","app");
 const tmdbGet=async caminho=>{ const r=await fetch(`${API}${caminho}${caminho.includes("?")?"&":"?"}api_key=${TMDB}`); return r.json(); };
+const ativos=()=>CONFIG.ativos&&CONFIG.ativos.length?CONFIG.ativos.filter(k=>TODAS.includes(k)):TODAS;
 
 /* ---------- ícones ---------- */
 function iconeStreaming(k,tam){
-  const s=STREAMINGS[k];
+  const s=STREAMINGS[k]; if(!s) return "";
   if(LOGOS[k]) return `<img class="logo-str ${tam||""}" src="${LOGOS[k]}" alt="${s.nome}">`;
-  return `<span class="mini-icone ${tam?"":"p"}" style="background:${s.cor}">${s.sigla}</span>`;
+  return `<span class="mini-icone ${tam==="g"?"":"p"}" style="background:${s.cor}">${s.sigla}</span>`;
 }
 async function carregarLogos(){
   try{
@@ -331,23 +420,23 @@ $("#alternar-modo").onclick=()=>{
   modoCadastro=!modoCadastro;
   $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
   $("#alternar-modo").innerHTML=modoCadastro?"Já tem conta? <b>Entrar</b>":"Não tem conta? <b>Criar conta</b>";
-  mostrarMsg("");
+  mostrarMsg("#msg-login","");
 };
 $("#btn-entrar").onclick=async ()=>{
   const email=$("#email").value.trim(), senha=$("#senha").value;
-  if(!email||!senha){ mostrarMsg("Preencha e-mail e senha.","erro"); return; }
+  if(!email||!senha){ mostrarMsg("#msg-login","Preencha e-mail e senha.","erro"); return; }
   $("#btn-entrar").textContent="Aguarde...";
   try{
     if(modoCadastro) await createUserWithEmailAndPassword(auth,email,senha);
     else await signInWithEmailAndPassword(auth,email,senha);
   }catch(e){
     const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
-    mostrarMsg(mapa[e.code]||"Erro: "+e.code,"erro");
+    mostrarMsg("#msg-login",mapa[e.code]||"Erro: "+e.code,"erro");
   }
   $("#btn-entrar").textContent=modoCadastro?"Criar conta":"Entrar";
 };
-function mostrarMsg(txt,tipo){
-  const el=$("#msg-login");
+function mostrarMsg(sel,txt,tipo){
+  const el=$(sel);
   if(!txt){ el.classList.add("hidden"); return; }
   el.textContent=txt; el.className="aviso "+(tipo||"");
 }
@@ -357,8 +446,20 @@ $("#btn-sair").onclick=()=>signOut(auth);
 async function abrirApp(){
   $("#tela-login").classList.add("hidden");
   $("#tela-app").classList.remove("hidden");
+  await carregarConfig();
+  montarFiltros(); montarGrade();
   await carregar();
   carregarDescobertas();
+  if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+}
+async function carregarConfig(){
+  try{
+    const d=await getDoc(docConfig());
+    if(d.exists()){ const c=d.data(); CONFIG.telefone=c.telefone||""; CONFIG.ativos=c.ativos||null; }
+  }catch(e){}
+}
+async function salvarConfig(){
+  try{ await setDoc(docConfig(),{telefone:CONFIG.telefone,ativos:CONFIG.ativos||TODAS},{merge:true}); }catch(e){}
 }
 async function carregar(){
   try{
@@ -371,16 +472,15 @@ async function carregar(){
 document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
   abaAtual=b.dataset.aba;
   document.querySelectorAll(".aba").forEach(x=>x.classList.toggle("ativa",x===b));
-  $("#titulo-aba").textContent=abaAtual==="assistindo"?"Início":"Próximos";
   desenhar();
 });
 
 function montarFiltros(){
   const el=$("#filtros");
   el.innerHTML=`<button class="chip ${!filtroStreaming?"ativo":""}" data-f="">Todos</button>`+
-    Object.entries(STREAMINGS).map(([k,s])=>
-      `<button class="chip ${filtroStreaming===k?"ativo":""}" data-f="${k}">${iconeStreaming(k)}${s.nome}</button>`
-    ).join("");
+    ativos().map(k=>{ const s=STREAMINGS[k];
+      return `<button class="chip ${filtroStreaming===k?"ativo":""}" data-f="${k}">${iconeStreaming(k)}${s.nome}</button>`;
+    }).join("");
   el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
     filtroStreaming=c.dataset.f||null;
     el.querySelectorAll(".chip").forEach(x=>x.classList.toggle("ativo",x===c));
@@ -388,10 +488,106 @@ function montarFiltros(){
   });
 }
 
-/* ---------- descobrir: top 10 e lançamentos por streaming ---------- */
+/* ---------- menu lateral e painéis ---------- */
+$("#btn-menu").onclick=()=>$("#menu").classList.remove("hidden");
+$("#menu").onclick=e=>{ if(e.target.id==="menu") $("#menu").classList.add("hidden"); };
+document.querySelectorAll("[data-painel]").forEach(b=>b.onclick=()=>{
+  $("#menu").classList.add("hidden"); abrirPainel(b.dataset.painel);
+});
+const TITULOS_PAINEL={perfil:"Perfil",streamings:"Streamings",sobre:"Sobre",ajuda:"Ajuda"};
+function abrirPainel(qual){
+  $("#painel").classList.remove("hidden");
+  $("#painel-titulo").textContent=TITULOS_PAINEL[qual];
+  ["perfil","streamings","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
+  if(qual==="perfil"){
+    $("#p-email").value=usuario.email;
+    $("#p-telefone").value=CONFIG.telefone||"";
+    $("#p-nova-senha").value=""; $("#p-senha-atual").value="";
+    $("#grupo-senha-atual").classList.add("hidden");
+    mostrarMsg("#msg-perfil","");
+  }
+  if(qual==="streamings") montarPainelStreamings();
+}
+$("#btn-voltar-painel").onclick=()=>{
+  $("#painel").classList.add("hidden");
+  $("#aviso-telefone").classList.add("hidden");
+};
+
+/* Perfil */
+$("#p-nova-senha").addEventListener("input",()=>{
+  $("#grupo-senha-atual").classList.toggle("hidden",!$("#p-nova-senha").value);
+});
+$("#btn-salvar-perfil").onclick=async ()=>{
+  const tel=$("#p-telefone").value.trim();
+  if(tel.replace(/\D/g,"").length<8){ mostrarMsg("#msg-perfil","Informe um telefone válido — ele é obrigatório.","erro"); return; }
+  const novaSenha=$("#p-nova-senha").value;
+  $("#btn-salvar-perfil").textContent="Salvando...";
+  try{
+    if(novaSenha){
+      const atual=$("#p-senha-atual").value;
+      if(!atual){ mostrarMsg("#msg-perfil","Digite a senha atual para trocar a senha.","erro"); $("#btn-salvar-perfil").textContent="Salvar"; return; }
+      const cred=EmailAuthProvider.credential(usuario.email,atual);
+      await reauthenticateWithCredential(usuario,cred);
+      await updatePassword(usuario,novaSenha);
+    }
+    CONFIG.telefone=tel;
+    await salvarConfig();
+    mostrarMsg("#msg-perfil","Salvo com sucesso! ✔","ok");
+    $("#aviso-telefone").classList.add("hidden");
+    $("#p-nova-senha").value=""; $("#p-senha-atual").value="";
+    $("#grupo-senha-atual").classList.add("hidden");
+  }catch(e){
+    const mapa={"auth/invalid-credential":"Senha atual incorreta.","auth/wrong-password":"Senha atual incorreta.","auth/weak-password":"A nova senha precisa de ao menos 6 caracteres."};
+    mostrarMsg("#msg-perfil",mapa[e.code]||"Erro: "+(e.code||e.message),"erro");
+  }
+  $("#btn-salvar-perfil").textContent="Salvar";
+};
+
+/* Streamings (checkboxes) */
+function montarPainelStreamings(){
+  const at=ativos();
+  $("#lista-streamings").innerHTML=TODAS.map(k=>{ const s=STREAMINGS[k];
+    return `<label class="linha-streaming">${iconeStreaming(k,"m")}${s.nome}
+      <input type="checkbox" data-chk="${k}" ${at.includes(k)?"checked":""}></label>`;
+  }).join("");
+  mostrarMsg("#msg-streamings","");
+  document.querySelectorAll("[data-chk]").forEach(chk=>chk.onchange=async ()=>{
+    const k=chk.dataset.chk;
+    let at=[...ativos()];
+    if(chk.checked){
+      if(!at.includes(k)) at.push(k);
+    }else{
+      if(at.length===1){ chk.checked=true; mostrarMsg("#msg-streamings","Mantenha pelo menos um streaming ativo.","erro"); return; }
+      at=at.filter(x=>x!==k);
+      const salvos=titulos.filter(t=>t.streaming===k);
+      if(salvos.length){
+        const apagar=confirm(`Você tem ${salvos.length} título(s) salvos na ${STREAMINGS[k].nome}.\n\nOK = EXCLUIR todo o histórico dela\nCancelar = manter salvo (fica oculto e volta quando você reativar)`);
+        if(apagar){
+          for(const t of salvos){ try{ await deleteDoc(doc(bd,"usuarios",usuario.uid,"titulos",t.id)); }catch(e){} }
+          titulos=titulos.filter(t=>t.streaming!==k);
+        }
+      }
+    }
+    CONFIG.ativos=TODAS.filter(x=>at.includes(x));
+    await salvarConfig();
+    if(filtroStreaming&&!CONFIG.ativos.includes(filtroStreaming)) filtroStreaming=null;
+    DESC={}; montarFiltros(); montarGrade(); desenhar(); carregarDescobertas();
+    mostrarMsg("#msg-streamings","Preferências salvas. ✔","ok");
+  });
+}
+
+/* Ajuda */
+$("#btn-enviar-ajuda").onclick=()=>{
+  const msg=$("#h-mensagem").value.trim();
+  if(!msg){ alert("Escreva sua mensagem primeiro."); return; }
+  const corpo=encodeURIComponent(msg+"\n\n—\nEnviado pelo CineLista ("+(usuario?.email||"")+")");
+  window.location.href=`mailto:rodrigosoares3691@gmail.com?subject=${encodeURIComponent("Ajuda - CineLista")}&body=${corpo}`;
+};
+
+/* ---------- descobrir ---------- */
 async function carregarDescobertas(){
   const chave=filtroStreaming||"todos";
-  if(DESC[chave]){ desenhar(); return; }
+  if(DESC[chave]&&!DESC[chave].carregando){ desenhar(); pintarFlagsPosters(); return; }
   DESC[chave]={carregando:true};
   desenhar();
   await logosProntos;
@@ -399,7 +595,7 @@ async function carregarDescobertas(){
   let filmes=[],series=[],lanc=[];
   try{
     if(chave==="todos"){
-      const ids=Object.values(PROV_IDS).join("|");
+      const ids=ativos().map(k=>PROV_IDS[k]).filter(Boolean).join("|");
       const [f,s,lf,ls]=await Promise.all([
         tmdbGet(`/trending/movie/week?language=pt-BR`),
         tmdbGet(`/trending/tv/week?language=pt-BR`),
@@ -434,6 +630,7 @@ async function carregarDescobertas(){
   DESC[chave]={filmes,series,lanc};
   [...filmes,...series,...lanc].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
   desenhar();
+  pintarFlagsPosters();
 }
 
 function htmlPoster(x,rank){
@@ -441,7 +638,8 @@ function htmlPoster(x,rank){
   const capa=x.poster_path?IMG+"w185"+x.poster_path:"";
   return `<button class="poster" data-desc-id="${x.id}" data-desc-tipo="${x.media_type}">
     ${rank?`<span class="rank">${rank}</span>`:""}
-    ${capa?`<img src="${capa}" alt="" loading="lazy">`:`<div style="width:104px;height:156px;border-radius:12px;background:var(--card)"></div>`}
+    ${capa?`<img class="pcapa" src="${capa}" alt="" loading="lazy">`:`<div style="width:104px;height:156px;border-radius:12px;background:var(--card)"></div>`}
+    <span class="prov-poster" data-pp="${x.media_type}-${x.id}"></span>
     <div class="nome-p">${nome}</div>
   </button>`;
 }
@@ -461,6 +659,32 @@ function htmlDescobrir(){
   return h;
 }
 
+/* flags de streaming nos pôsteres */
+async function pintarFlagsPosters(){
+  if(abaAtual!=="assistindo") return;
+  const chave=filtroStreaming||"todos";
+  const d=DESC[chave]; if(!d||d.carregando) return;
+  const itens=[...(d.filmes||[]),...(d.series||[]),...(d.lanc||[])];
+  for(const x of itens){
+    if(filtroStreaming){
+      pintarFlag(x,[filtroStreaming]);
+    }else if(x._provedores){
+      pintarFlag(x,x._provedores);
+    }else{
+      carregarProvedores(x,null).then(()=>pintarFlag(x,x._provedores||[]));
+    }
+  }
+}
+function pintarFlag(x,provs){
+  document.querySelectorAll(`[data-pp="${x.media_type}-${x.id}"]`).forEach(el=>{
+    el.innerHTML=(provs||[]).slice(0,2).map(k=>{
+      const s=STREAMINGS[k];
+      return LOGOS[k]?`<img class="logo-str pp" src="${LOGOS[k]}" alt="${s.nome}">`
+        :`<span class="mini-icone p" style="background:${s.cor};border:1.5px solid rgba(255,255,255,.85)">${s.sigla}</span>`;
+    }).join("");
+  });
+}
+
 /* ---------- lista ---------- */
 function estruturaDe(t){
   try{
@@ -478,7 +702,7 @@ function htmlCard(t){
   const maxE=est?est[Math.min(t.temporada??1,maxT)-1]:null;
   const contador=(t.tipo!=="movie")?`
     <div class="contador">
-      <div class="bloco"><span class="rotulo">TEMP</span>
+      <div class="bloco"><span class="rotulo">T</span>
         <span class="valor" data-tval="${t.id}">${valorContador(t.temporada??1,maxT)}</span>
         <div style="display:flex;gap:4px">
           <button data-aj="${t.id}|temporada|-1">−</button>
@@ -505,7 +729,7 @@ function htmlCard(t){
     </div>
     ${contador}
     <div class="card-acoes">
-      <button class="acao principal" data-abrir="${t.id}">▶ Abrir no ${s.nome}</button>
+      <button class="acao principal" data-abrir="${t.id}">▶ Abrir</button>
       ${mover}
     </div>
     <div class="card-acoes">
@@ -517,7 +741,8 @@ function htmlCard(t){
 
 function desenhar(){
   const lista=$("#lista");
-  let itens=titulos.filter(t=>t.status===abaAtual);
+  const at=ativos();
+  let itens=titulos.filter(t=>t.status===abaAtual&&at.includes(t.streaming));
   if(filtroStreaming) itens=itens.filter(t=>t.streaming===filtroStreaming);
   const nomeF=filtroStreaming?STREAMINGS[filtroStreaming].nome:null;
 
@@ -527,8 +752,6 @@ function desenhar(){
       :`<div class="vazio" style="margin-top:50px"><span class="icone">☆</span>Sua fila${nomeF?` na ${nomeF}`:""} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
     return;
   }
-
-  // aba Assistindo (Início): descobertas em cima, assistindo embaixo
   let h=htmlDescobrir();
   h+=`<div class="secao"><h3>▶ Assistindo${nomeF?` <span class="sub">· ${nomeF}</span>`:""}</h3>`;
   if(!itens.length){
@@ -540,6 +763,7 @@ function desenhar(){
   }
   h+=`</div>`;
   lista.innerHTML=h;
+  pintarFlagsPosters();
 }
 
 /* delegação de eventos */
@@ -575,14 +799,11 @@ async function ajustar(id,campo,delta){
     if(episodio>maxE) episodio=1;
   }
   t.temporada=temporada; t.episodio=episodio;
-  // atualiza só os números no card, sem redesenhar a tela (não perde a rolagem)
   const elT=document.querySelector(`[data-tval="${id}"]`);
   const elE=document.querySelector(`[data-eval="${id}"]`);
-  const novoMaxT=est?est.length:null;
-  const novoMaxE=est?est[temporada-1]:null;
   if(elT&&elE){
-    elT.innerHTML=valorContador(temporada,novoMaxT);
-    elE.innerHTML=valorContador(episodio,novoMaxE);
+    elT.innerHTML=valorContador(temporada,est?est.length:null);
+    elE.innerHTML=valorContador(episodio,est?est[temporada-1]:null);
   }else desenhar();
   try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",id),{temporada,episodio}); }catch(e){}
 }
@@ -620,8 +841,9 @@ function mostrarPasso(qual){
   $("#passo-form").classList.toggle("hidden",qual!=="form");
 }
 function montarGrade(){
-  $("#grade-streamings").innerHTML=Object.entries(STREAMINGS).map(([k,s])=>`
-    <button class="tile" data-tile="${k}">${iconeStreaming(k,"g")}${s.nome}</button>`).join("");
+  $("#grade-streamings").innerHTML=ativos().map(k=>{ const s=STREAMINGS[k];
+    return `<button class="tile" data-tile="${k}">${iconeStreaming(k,"g")}${s.nome}</button>`;
+  }).join("");
   document.querySelectorAll("[data-tile]").forEach(b=>b.onclick=()=>{
     streamingEscolhido=b.dataset.tile; atualizarSeletor(); mostrarPasso("form");
   });
@@ -649,6 +871,7 @@ $("#btn-add").onclick=()=>{
   editandoId=null; gradeOrigem="busca";
   capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
   resultadosBusca=[];
+  const at=ativos(); if(!at.includes(streamingEscolhido)) streamingEscolhido=at[0];
   $("#f-busca").value=""; $("#busca-resultados").innerHTML="";
   $("#f-nome").value=""; $("#f-status").value=abaAtual;
   $("#f-temporada").value=1; $("#f-episodio").value=1;
@@ -700,11 +923,11 @@ async function buscarTMDB(q){
   resultadosBusca.forEach((x,i)=>carregarProvedores(x,i));
 }
 function mapearProvedores(lista){
-  const achados=[];
+  const achados=[], at=ativos();
   (lista||[]).forEach(p=>{
     const nome=(p.provider_name||"").toLowerCase();
-    for(const [k,s] of Object.entries(STREAMINGS)){
-      if(s.apelidos.some(a=>nome.includes(a)) && !achados.includes(k)) achados.push(k);
+    for(const k of at){
+      if(STREAMINGS[k].apelidos.some(a=>nome.includes(a)) && !achados.includes(k)) achados.push(k);
     }
   });
   return achados;
@@ -715,7 +938,7 @@ async function carregarProvedores(x,i){
     const br=j.results?.BR;
     x._provedores=mapearProvedores([...(br?.flatrate||[]),...(br?.ads||[])]);
   }catch(e){ x._provedores=[]; }
-  if(i===null) return;
+  if(i===null||i===undefined) return;
   const el=$("#prov-"+i); if(!el) return;
   el.innerHTML=x._provedores.length
     ?x._provedores.map(k=>iconeStreaming(k)).join("")+`<span style="color:var(--muted);font-size:10px">${x._provedores.map(k=>STREAMINGS[k].nome).join(", ")}</span>`
