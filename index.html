@@ -342,9 +342,11 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <div class="gaveta">
     <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineLista</h1></div></div>
     <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
+    <button class="item-menu" data-painel="seguranca"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Segurança</button>
     <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
     <button class="item-menu" data-painel="notificacoes"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Notificações<i class="pontinho hidden" id="item-notif-dot" style="position:static;margin-left:8px"></i></button>
     <button class="item-menu" data-painel="assinaturas"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l3 6.2 6.8.9-5 4.8 1.3 6.7L12 17.9 5.9 21.1l1.3-6.7-5-4.8 6.8-.9z"/></svg></span>Assinaturas</button>
+    <button class="item-menu" data-painel="compartilhar"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>Compartilhar</button>
     <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
     <button class="item-menu" data-painel="assinaturas" style="margin-top:auto"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 15h5M7 11h.01"/></svg></span><span style="text-align:left">Plano Atual<small id="plano-label">Free</small></span></button>
@@ -372,7 +374,6 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="field"><label>Telefone (obrigatório)</label><input id="p-telefone" type="tel" placeholder="(38) 99999-9999"></div>
       <div class="field"><label>E-mail (login — não pode ser alterado)</label><input id="p-email" disabled></div>
       <button class="btn" id="btn-salvar-perfil">Salvar</button>
-      <button class="btn-secundario" id="btn-abrir-seguranca">🔐 Segurança — alterar senha</button>
       <div id="msg-perfil" class="aviso hidden"></div>
     </div>
 
@@ -396,6 +397,14 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
     <div id="painel-notificacoes" class="hidden">
       <div id="lista-notifs"></div>
+    </div>
+
+    <div id="painel-compartilhar" class="hidden">
+      <video id="video-promo" src="promo.mp4" controls playsinline preload="metadata" onerror="this.style.display='none'" style="width:100%;border-radius:16px;border:1px solid var(--line);margin-bottom:14px;background:var(--bg)"></video>
+      <div class="aviso" style="margin:0 0 14px">Convide seus amigos para o CineLista! No celular, a mensagem vai com o <b>vídeo de apresentação</b> e o <b>link do app</b> — é só escolher o WhatsApp.</div>
+      <button class="btn" id="btn-compartilhar-app">📤 Compartilhar com amigos</button>
+      <button class="btn-secundario" id="btn-compartilhar-zap">Enviar só o convite pelo WhatsApp</button>
+      <div id="msg-compartilhar" class="aviso hidden"></div>
     </div>
 
     <div id="painel-sobre" class="hidden">
@@ -511,6 +520,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="info-te hidden" id="info-te"></div>
       <button class="btn" id="btn-salvar-abrir">Salvar e abrir</button>
       <button class="btn-secundario" id="btn-salvar">Só salvar</button>
+      <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Compartilhar no WhatsApp</button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
   </div>
@@ -685,11 +695,11 @@ $("#menu").onclick=e=>{ if(e.target.id==="menu") $("#menu").classList.add("hidde
 document.querySelectorAll("[data-painel]").forEach(b=>b.onclick=()=>{
   $("#menu").classList.add("hidden"); abrirPainel(b.dataset.painel);
 });
-const TITULOS_PAINEL={perfil:"Perfil",seguranca:"Segurança",streamings:"Streamings",notificacoes:"Notificações",assinaturas:"Assinaturas",sobre:"Sobre",ajuda:"Ajuda"};
+const TITULOS_PAINEL={perfil:"Perfil",seguranca:"Segurança",streamings:"Streamings",notificacoes:"Notificações",assinaturas:"Assinaturas",compartilhar:"Compartilhar",sobre:"Sobre",ajuda:"Ajuda"};
 function abrirPainel(qual){
   $("#painel").classList.remove("hidden");
   $("#painel-titulo").textContent=TITULOS_PAINEL[qual];
-  ["perfil","seguranca","streamings","notificacoes","assinaturas","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
+  ["perfil","seguranca","streamings","notificacoes","assinaturas","compartilhar","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
   if(qual==="perfil"){
     $("#p-email").value=usuario.email;
     $("#p-nome").value=CONFIG.nome||"";
@@ -747,7 +757,6 @@ $("#input-foto").onchange=e=>{
   img.src=URL.createObjectURL(f);
   e.target.value="";
 };
-$("#btn-abrir-seguranca").onclick=()=>abrirPainel("seguranca");
 $("#p-telefone").addEventListener("input",()=>{
   const dig=$("#p-telefone").value.replace(/\D/g,"").slice(0,11);
   let f="";
@@ -924,6 +933,35 @@ $("#btn-atalho-fechar").onclick=fecharAtalho;
 $("#btn-atalho-instalar").onclick=async ()=>{
   if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; }
   fecharAtalho();
+};
+
+/* ---------- compartilhar o app ---------- */
+const LINK_APP="https://cinelista-ivory.vercel.app";
+const MSG_APP="🎬 Descobri um app ótimo pra organizar os filmes e séries dos streamings: o *CineLista*!\n\nVocê salva o que está assistindo, marca a temporada e o episódio onde parou, e ainda vê o Top 10 da semana e os lançamentos.\n\nCrie sua conta grátis: "+LINK_APP;
+$("#btn-compartilhar-zap").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent(MSG_APP),"_blank");
+$("#btn-compartilhar-app").onclick=async ()=>{
+  try{
+    const r=await fetch("promo.mp4");
+    if(r.ok){
+      const blob=await r.blob();
+      const file=new File([blob],"cinelista.mp4",{type:"video/mp4"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],text:MSG_APP,title:"CineLista"});
+        return;
+      }
+    }
+  }catch(e){ if(e&&e.name==="AbortError") return; }
+  // sem suporte a compartilhar arquivo (ex.: PC): convite por texto + link
+  window.open("https://wa.me/?text="+encodeURIComponent(MSG_APP),"_blank");
+};
+
+/* ---------- compartilhar um título ---------- */
+$("#btn-compartilhar-titulo").onclick=()=>{
+  const nome=$("#f-nome").value.trim()||$("#titulo-escolhido").textContent.trim();
+  if(!nome){ alert("Selecione um título primeiro."); return; }
+  const s=STREAMINGS[streamingEscolhido];
+  const msg=`🍿 Dica: assista *${nome}* na ${s.nome}!\n▶ ${s.busca(encodeURIComponent(nome))}\n\nEu acompanho meus filmes, séries e as novidades pelo *CineLista* — crie sua conta grátis: ${LINK_APP}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 };
 
 /* ---------- paywall ---------- */
