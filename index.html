@@ -166,7 +166,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .caixa-confirma .botoes button{flex:1;padding:13px;border-radius:12px;font-weight:700;font-size:14px}
 .caixa-confirma .ok{background:var(--amber);color:var(--amber-ink)}
 .caixa-confirma .cancelar{background:var(--bg);border:1px solid var(--line);color:var(--text)}
-.item-menu.perigo{color:var(--danger);margin-top:auto}
+.item-menu.perigo{color:var(--danger)}
 
 /* ---------- painel (telas do menu) ---------- */
 #painel{position:fixed;inset:0;background:var(--bg);z-index:25;display:flex;flex-direction:column;
@@ -189,6 +189,46 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .info-te b{color:var(--amber)}
 .filtros-busca{display:flex;gap:8px;padding:0 0 12px;overflow-x:auto;scrollbar-width:none}
 .filtros-busca::-webkit-scrollbar{display:none}
+
+/* ---------- setas dos carrosséis (desktop) ---------- */
+.setas{display:none;gap:6px;margin-left:auto}
+.seta{width:30px;height:30px;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);
+  color:var(--text);font-size:17px;font-weight:700;line-height:1;display:grid;place-items:center}
+.seta:hover{border-color:var(--amber);color:var(--amber)}
+@media (min-width:768px){ .setas{display:flex} }
+
+/* ---------- avatar / premium ---------- */
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--bg-soft);border:1px solid var(--line);
+  position:relative;flex-shrink:0;display:grid;place-items:center;font-family:'Sora';font-weight:800;font-size:15px;color:var(--amber)}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0}
+.estrela{position:absolute;bottom:-3px;right:-3px;width:16px;height:16px;border-radius:50%;
+  background:var(--bg);display:grid;place-items:center;border:1px solid var(--line)}
+.estrela svg{width:9px;height:9px;fill:var(--amber)}
+.foto-grande{width:96px;height:96px;border-radius:50%;background:var(--bg);border:1px solid var(--line);
+  margin:6px auto;position:relative;display:grid;place-items:center;font-family:'Sora';font-weight:800;font-size:34px;color:var(--amber)}
+.foto-grande img{width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0}
+.foto-grande .estrela{width:26px;height:26px;bottom:0;right:0}
+.foto-grande .estrela svg{width:14px;height:14px}
+.trocar-foto{display:block;margin:0 auto 18px;color:var(--amber);font-size:13px;font-weight:600}
+.item-menu small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+.link-premium{color:var(--amber);font-size:12px;font-weight:700;margin-top:8px;text-align:left;padding:0;display:block}
+
+/* ---------- assinaturas ---------- */
+.planos{display:flex;gap:10px;margin-bottom:16px}
+.plano-card{flex:1;padding:16px 10px;border-radius:16px;background:var(--bg);border:1.5px solid var(--line);text-align:center}
+.plano-card .nome-plano{font-family:'Sora';font-weight:700;font-size:14px}
+.plano-card .preco{font-family:'Sora';font-weight:800;font-size:18px;color:var(--amber);margin-top:4px}
+.plano-card .por{font-size:11px;color:var(--muted);margin-top:2px}
+.plano-card.sel{border-color:var(--amber);background:var(--card)}
+.metodos{display:flex;gap:8px;margin-bottom:14px}
+.metodo{flex:1;padding:11px;border-radius:12px;font-weight:600;font-size:13px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.metodo.sel{border-color:var(--amber);color:var(--text);background:var(--card)}
+.pix-box{background:var(--bg);border:1px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:14px}
+.pix-box .qr{width:120px;height:120px;margin:0 auto 10px;border-radius:12px;border:1px solid var(--line);
+  background:repeating-conic-gradient(var(--line) 0% 25%, var(--bg-soft) 0% 50%) 50%/24px 24px}
+.beneficios{font-size:13px;line-height:2;color:var(--text);margin:4px 0 8px}
+.selo-premium{background:linear-gradient(135deg,var(--amber),#f6cc74);color:var(--amber-ink);border-radius:16px;padding:18px;text-align:center;font-weight:600;margin-bottom:14px}
+.selo-premium .g{font-size:20px;font-family:'Sora';font-weight:800}
 
 /* ---------- visual de navegador (Windows/desktop) ---------- */
 @media (min-width:768px){
@@ -284,9 +324,10 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
   <header>
     <button id="btn-menu" aria-label="Menu"><span></span><i class="pontinho hidden" id="menu-dot"></i></button>
     <h2>CineLista</h2>
+    <button id="btn-avatar" class="avatar"><span id="avatar-inicial">?</span><img id="avatar-img" class="hidden" alt=""><span class="estrela hidden" id="avatar-estrela"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></span></button>
   </header>
   <div class="abas">
-    <button class="aba ativa" data-aba="assistindo">▶ Assistindo</button>
+    <button class="aba ativa" data-aba="assistindo">🏠 Início</button>
     <button class="aba" data-aba="proximo">☆ Favoritos</button>
   </div>
   <div class="filtros" id="filtros"></div>
@@ -301,8 +342,10 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
     <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
     <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
     <button class="item-menu" data-painel="notificacoes"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Notificações<i class="pontinho hidden" id="item-notif-dot" style="position:static;margin-left:8px"></i></button>
+    <button class="item-menu" data-painel="assinaturas"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l3 6.2 6.8.9-5 4.8 1.3 6.7L12 17.9 5.9 21.1l1.3-6.7-5-4.8 6.8-.9z"/></svg></span>Assinaturas</button>
     <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
+    <button class="item-menu" data-painel="assinaturas" style="margin-top:auto"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 15h5M7 11h.01"/></svg></span><span style="text-align:left">Plano Atual<small id="plano-label">Free</small></span></button>
     <button class="item-menu perigo" id="btn-sair"><span class="ic">🚪</span>Sair</button>
   </div>
 </div>
@@ -317,12 +360,30 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
     <div id="painel-perfil" class="hidden">
       <div id="aviso-telefone" class="aviso ok hidden" style="margin:0 0 16px">Complete seu cadastro informando o telefone. 📱</div>
-      <div class="field"><label>E-mail</label><input id="p-email" disabled></div>
+      <div class="foto-grande"><span id="p-inicial">?</span><img id="p-foto" class="hidden" alt=""><span class="estrela hidden" id="p-estrela"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></span></div>
+      <button class="trocar-foto" id="btn-trocar-foto">Alterar foto</button>
+      <input type="file" id="input-foto" accept="image/*" class="hidden">
+      <div class="linha-dupla">
+        <div class="field"><label>Nome</label><input id="p-nome" placeholder="Seu nome"></div>
+        <div class="field"><label>Sobrenome</label><input id="p-sobrenome" placeholder="Seu sobrenome"></div>
+      </div>
       <div class="field"><label>Telefone (obrigatório)</label><input id="p-telefone" type="tel" placeholder="(38) 99999-9999"></div>
-      <div class="field"><label>Nova senha (opcional)</label><input id="p-nova-senha" type="password" placeholder="Deixe em branco para não alterar"></div>
-      <div class="field hidden" id="grupo-senha-atual"><label>Senha atual (necessária para trocar a senha)</label><input id="p-senha-atual" type="password"></div>
+      <div class="field"><label>E-mail (login — não pode ser alterado)</label><input id="p-email" disabled></div>
       <button class="btn" id="btn-salvar-perfil">Salvar</button>
+      <button class="btn-secundario" id="btn-abrir-seguranca">🔐 Segurança — alterar senha</button>
       <div id="msg-perfil" class="aviso hidden"></div>
+    </div>
+
+    <div id="painel-seguranca" class="hidden">
+      <div class="aviso" style="margin:0 0 16px">O e-mail de login não pode ser alterado. Aqui você troca apenas a senha.</div>
+      <div class="field"><label>Senha atual</label><input id="s-senha-atual" type="password"></div>
+      <div class="field"><label>Nova senha</label><input id="s-nova-senha" type="password"></div>
+      <button class="btn" id="btn-salvar-senha">Alterar senha</button>
+      <div id="msg-seguranca" class="aviso hidden"></div>
+    </div>
+
+    <div id="painel-assinaturas" class="hidden">
+      <div id="assin-conteudo"></div>
     </div>
 
     <div id="painel-streamings" class="hidden">
@@ -353,6 +414,30 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="aviso">Ao tocar em enviar, o app de e-mail do seu celular abre com a mensagem pronta para <b>rodrigosoares3691@gmail.com</b> — é só confirmar o envio.</div>
     </div>
 
+  </div>
+</div>
+
+<!-- PAYWALL (recurso Premium) -->
+<div id="paywall" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.78);backdrop-filter:blur(4px);z-index:45;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div class="caixa-confirma" style="text-align:center">
+    <div style="font-size:32px;margin-bottom:6px">⭐</div>
+    <p style="font-family:'Sora';font-weight:700;font-size:16px">Recurso Premium</p>
+    <p id="paywall-msg" style="color:var(--muted)"></p>
+    <div class="botoes">
+      <button class="cancelar" id="paywall-nao">Agora não</button>
+      <button class="ok" id="paywall-ver">Ver planos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESCOLHA DE PLANO (novo cadastro) -->
+<div id="escolha-plano" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.85);backdrop-filter:blur(6px);z-index:46;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div class="caixa-confirma" style="text-align:center">
+    <div style="font-size:30px;margin-bottom:6px">🎬</div>
+    <p style="font-family:'Sora';font-weight:700;font-size:16px">Bem-vindo ao CineLista!</p>
+    <p style="color:var(--muted)">Como você quer começar?</p>
+    <button class="btn" id="ep-premium">⭐ Assinar o Premium</button>
+    <button class="btn-secundario" id="ep-free">Continuar no plano Free</button>
   </div>
 </div>
 
@@ -447,7 +532,7 @@ let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroS
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
-    CONFIG={telefone:"",ativos:null};
+    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null}, novoCadastro=false;
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -505,9 +590,10 @@ $("#btn-entrar").onclick=async ()=>{
   if(!email||!senha){ mostrarMsg("#msg-login","Preencha e-mail e senha.","erro"); return; }
   $("#btn-entrar").textContent="Aguarde...";
   try{
-    if(modoCadastro) await createUserWithEmailAndPassword(auth,email,senha);
+    if(modoCadastro){ novoCadastro=true; await createUserWithEmailAndPassword(auth,email,senha); }
     else await signInWithEmailAndPassword(auth,email,senha);
   }catch(e){
+    novoCadastro=false;
     const mapa={"auth/invalid-credential":"E-mail ou senha incorretos.","auth/user-not-found":"E-mail não cadastrado.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
     mostrarMsg("#msg-login",mapa[e.code]||"Erro: "+e.code,"erro");
   }
@@ -529,16 +615,22 @@ async function abrirApp(){
   await carregar();
   carregarDescobertas();
   verificarNotificacoes();
-  if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+  atualizarAvatar();
+  if(novoCadastro){ novoCadastro=false; $("#escolha-plano").classList.remove("hidden"); }
+  else if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
 }
 async function carregarConfig(){
   try{
     const d=await getDoc(docConfig());
-    if(d.exists()){ const c=d.data(); CONFIG.telefone=c.telefone||""; CONFIG.ativos=c.ativos||null; }
+    if(d.exists()){ const c=d.data(); CONFIG.telefone=c.telefone||""; CONFIG.ativos=c.ativos||null;
+      CONFIG.nome=c.nome||""; CONFIG.sobrenome=c.sobrenome||""; CONFIG.foto=c.foto||"";
+      CONFIG.plano=c.plano||"free"; CONFIG.planoTipo=c.planoTipo||null; }
   }catch(e){}
 }
 async function salvarConfig(){
-  try{ await setDoc(docConfig(),{telefone:CONFIG.telefone,ativos:CONFIG.ativos||TODAS},{merge:true}); }catch(e){}
+  try{ await setDoc(docConfig(),{telefone:CONFIG.telefone,ativos:CONFIG.ativos||TODAS,
+    nome:CONFIG.nome||"",sobrenome:CONFIG.sobrenome||"",foto:CONFIG.foto||"",
+    plano:CONFIG.plano||"free",planoTipo:CONFIG.planoTipo||null},{merge:true}); }catch(e){}
 }
 async function carregar(){
   try{
@@ -573,18 +665,24 @@ $("#menu").onclick=e=>{ if(e.target.id==="menu") $("#menu").classList.add("hidde
 document.querySelectorAll("[data-painel]").forEach(b=>b.onclick=()=>{
   $("#menu").classList.add("hidden"); abrirPainel(b.dataset.painel);
 });
-const TITULOS_PAINEL={perfil:"Perfil",streamings:"Streamings",notificacoes:"Notificações",sobre:"Sobre",ajuda:"Ajuda"};
+const TITULOS_PAINEL={perfil:"Perfil",seguranca:"Segurança",streamings:"Streamings",notificacoes:"Notificações",assinaturas:"Assinaturas",sobre:"Sobre",ajuda:"Ajuda"};
 function abrirPainel(qual){
   $("#painel").classList.remove("hidden");
   $("#painel-titulo").textContent=TITULOS_PAINEL[qual];
-  ["perfil","streamings","notificacoes","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
+  ["perfil","seguranca","streamings","notificacoes","assinaturas","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
   if(qual==="perfil"){
     $("#p-email").value=usuario.email;
+    $("#p-nome").value=CONFIG.nome||"";
+    $("#p-sobrenome").value=CONFIG.sobrenome||"";
     $("#p-telefone").value=CONFIG.telefone||"";
-    $("#p-nova-senha").value=""; $("#p-senha-atual").value="";
-    $("#grupo-senha-atual").classList.add("hidden");
+    pintarPerfilFoto();
     mostrarMsg("#msg-perfil","");
   }
+  if(qual==="seguranca"){
+    $("#s-senha-atual").value=""; $("#s-nova-senha").value="";
+    mostrarMsg("#msg-seguranca","");
+  }
+  if(qual==="assinaturas") montarAssinaturas();
   if(qual==="streamings") montarPainelStreamings();
   if(qual==="notificacoes") renderNotifs();
 }
@@ -593,34 +691,162 @@ $("#btn-voltar-painel").onclick=()=>{
   $("#aviso-telefone").classList.add("hidden");
 };
 
-/* Perfil */
-$("#p-nova-senha").addEventListener("input",()=>{
-  $("#grupo-senha-atual").classList.toggle("hidden",!$("#p-nova-senha").value);
-});
+/* ---------- perfil / avatar ---------- */
+function isPremium(){ return CONFIG.plano==="premium"; }
+function letraInicial(){ return ((CONFIG.nome||usuario?.email||"?")[0]||"?").toUpperCase(); }
+function atualizarAvatar(){
+  const temFoto=!!CONFIG.foto;
+  $("#avatar-img").classList.toggle("hidden",!temFoto);
+  $("#avatar-inicial").classList.toggle("hidden",temFoto);
+  if(temFoto) $("#avatar-img").src=CONFIG.foto;
+  $("#avatar-inicial").textContent=letraInicial();
+  $("#avatar-estrela").classList.toggle("hidden",!isPremium());
+  $("#plano-label").textContent=isPremium()?"Premium ⭐":"Free";
+}
+function pintarPerfilFoto(){
+  const temFoto=!!CONFIG.foto;
+  $("#p-foto").classList.toggle("hidden",!temFoto);
+  $("#p-inicial").classList.toggle("hidden",temFoto);
+  if(temFoto) $("#p-foto").src=CONFIG.foto;
+  $("#p-inicial").textContent=letraInicial();
+  $("#p-estrela").classList.toggle("hidden",!isPremium());
+}
+$("#btn-avatar").onclick=()=>abrirPainel("perfil");
+$("#btn-trocar-foto").onclick=()=>$("#input-foto").click();
+$("#input-foto").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const img=new Image();
+  img.onload=async ()=>{
+    const TAM=220, c=document.createElement("canvas");
+    c.width=TAM; c.height=TAM;
+    const lado=Math.min(img.width,img.height);
+    c.getContext("2d").drawImage(img,(img.width-lado)/2,(img.height-lado)/2,lado,lado,0,0,TAM,TAM);
+    CONFIG.foto=c.toDataURL("image/jpeg",.82);
+    await salvarConfig(); atualizarAvatar(); pintarPerfilFoto();
+  };
+  img.src=URL.createObjectURL(f);
+  e.target.value="";
+};
+$("#btn-abrir-seguranca").onclick=()=>abrirPainel("seguranca");
 $("#btn-salvar-perfil").onclick=async ()=>{
   const tel=$("#p-telefone").value.trim();
   if(tel.replace(/\D/g,"").length<8){ mostrarMsg("#msg-perfil","Informe um telefone válido — ele é obrigatório.","erro"); return; }
-  const novaSenha=$("#p-nova-senha").value;
+  CONFIG.nome=$("#p-nome").value.trim();
+  CONFIG.sobrenome=$("#p-sobrenome").value.trim();
+  CONFIG.telefone=tel;
   $("#btn-salvar-perfil").textContent="Salvando...";
+  await salvarConfig();
+  $("#btn-salvar-perfil").textContent="Salvar";
+  atualizarAvatar();
+  mostrarMsg("#msg-perfil","Salvo com sucesso! ✔","ok");
+  $("#aviso-telefone").classList.add("hidden");
+};
+
+/* ---------- segurança (trocar senha) ---------- */
+$("#btn-salvar-senha").onclick=async ()=>{
+  const atual=$("#s-senha-atual").value, nova=$("#s-nova-senha").value;
+  if(!atual||!nova){ mostrarMsg("#msg-seguranca","Preencha a senha atual e a nova senha.","erro"); return; }
+  $("#btn-salvar-senha").textContent="Alterando...";
   try{
-    if(novaSenha){
-      const atual=$("#p-senha-atual").value;
-      if(!atual){ mostrarMsg("#msg-perfil","Digite a senha atual para trocar a senha.","erro"); $("#btn-salvar-perfil").textContent="Salvar"; return; }
-      const cred=EmailAuthProvider.credential(usuario.email,atual);
-      await reauthenticateWithCredential(usuario,cred);
-      await updatePassword(usuario,novaSenha);
-    }
-    CONFIG.telefone=tel;
-    await salvarConfig();
-    mostrarMsg("#msg-perfil","Salvo com sucesso! ✔","ok");
-    $("#aviso-telefone").classList.add("hidden");
-    $("#p-nova-senha").value=""; $("#p-senha-atual").value="";
-    $("#grupo-senha-atual").classList.add("hidden");
+    const cred=EmailAuthProvider.credential(usuario.email,atual);
+    await reauthenticateWithCredential(usuario,cred);
+    await updatePassword(usuario,nova);
+    $("#s-senha-atual").value=""; $("#s-nova-senha").value="";
+    mostrarMsg("#msg-seguranca","Senha alterada com sucesso! ✔","ok");
   }catch(e){
     const mapa={"auth/invalid-credential":"Senha atual incorreta.","auth/wrong-password":"Senha atual incorreta.","auth/weak-password":"A nova senha precisa de ao menos 6 caracteres."};
-    mostrarMsg("#msg-perfil",mapa[e.code]||"Erro: "+(e.code||e.message),"erro");
+    mostrarMsg("#msg-seguranca",mapa[e.code]||"Erro: "+(e.code||e.message),"erro");
   }
-  $("#btn-salvar-perfil").textContent="Salvar";
+  $("#btn-salvar-senha").textContent="Alterar senha";
+};
+
+/* ---------- assinaturas (planos Free / Premium) ---------- */
+const CODIGO_PROMOCIONAL="CINELISTAFREE"; // DEMONSTRAÇÃO: remover esta constante e o bloco do código promocional quando houver gateway de pagamento real
+let planoSel="mensal", metodoSel="cartao";
+function montarAssinaturas(){
+  const el=$("#assin-conteudo");
+  if(isPremium()){
+    el.innerHTML=`
+      <div class="selo-premium"><div class="g">⭐ Você é Premium!</div>Plano ${CONFIG.planoTipo==="anual"?"Anual":"Mensal"} ativo</div>
+      <div class="beneficios">✔ Sinopse completa de filmes e séries<br>✔ Notificações de novas temporadas</div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div class="beneficios">Assine o <b style="color:var(--amber)">Premium</b> e libere:<br>⭐ Sinopse completa de filmes e séries<br>🔔 Notificações de novas temporadas</div>
+    <div class="planos">
+      <button class="plano-card ${planoSel==="mensal"?"sel":""}" data-plano="mensal"><div class="nome-plano">Mensal</div><div class="preco">R$ 10,00</div><div class="por">por mês</div></button>
+      <button class="plano-card ${planoSel==="anual"?"sel":""}" data-plano="anual"><div class="nome-plano">Anual</div><div class="preco">R$ 100,00</div><div class="por">por ano · 2 meses grátis</div></button>
+    </div>
+    <div class="metodos">
+      <button class="metodo ${metodoSel==="cartao"?"sel":""}" data-met="cartao">💳 Cartão de crédito</button>
+      <button class="metodo ${metodoSel==="pix"?"sel":""}" data-met="pix">◆ PIX</button>
+    </div>
+    <div id="area-cartao" class="${metodoSel==="cartao"?"":"hidden"}">
+      <div class="field"><label>Número do cartão</label><input id="c-numero" inputmode="numeric" placeholder="0000 0000 0000 0000"></div>
+      <div class="field"><label>Nome impresso no cartão</label><input id="c-nome"></div>
+      <div class="linha-dupla">
+        <div class="field"><label>Validade</label><input id="c-validade" placeholder="MM/AA"></div>
+        <div class="field"><label>CVV</label><input id="c-cvv" inputmode="numeric" placeholder="123"></div>
+      </div>
+    </div>
+    <div id="area-pix" class="${metodoSel==="pix"?"":"hidden"}">
+      <div class="pix-box"><div class="qr"></div>Escaneie o QR Code no app do seu banco<br>ou use o PIX copia e cola.</div>
+    </div>
+    <div class="field"><label>Código Promocional (opcional)</label><input id="c-promo" placeholder="Tem um código? Digite aqui"></div>
+    <button class="btn" id="btn-assinar">Confirmar pagamento</button>
+    <div id="msg-assin" class="aviso hidden"></div>`;
+  el.querySelectorAll(".plano-card").forEach(b=>b.onclick=()=>{
+    planoSel=b.dataset.plano;
+    el.querySelectorAll(".plano-card").forEach(x=>x.classList.toggle("sel",x===b));
+  });
+  el.querySelectorAll(".metodo").forEach(b=>b.onclick=()=>{
+    metodoSel=b.dataset.met;
+    el.querySelectorAll(".metodo").forEach(x=>x.classList.toggle("sel",x===b));
+    $("#area-cartao").classList.toggle("hidden",metodoSel!=="cartao");
+    $("#area-pix").classList.toggle("hidden",metodoSel!=="pix");
+  });
+  $("#btn-assinar").onclick=async ()=>{
+    const promo=$("#c-promo").value.trim().toUpperCase();
+    if(promo){
+      if(promo===CODIGO_PROMOCIONAL){ await ativarPremium(); return; }
+      mostrarMsg("#msg-assin","Código promocional inválido.","erro"); return;
+    }
+    if(metodoSel==="cartao"&&(!$("#c-numero").value.trim()||!$("#c-nome").value.trim()||!$("#c-validade").value.trim()||!$("#c-cvv").value.trim())){
+      mostrarMsg("#msg-assin","Preencha todos os dados do cartão.","erro"); return;
+    }
+    // REGRA: a conta só vira Premium com pagamento APROVADO. Nesta versão de demonstração
+    // não há gateway integrado, então nenhum pagamento é aprovado e o plano permanece Free.
+    mostrarMsg("#msg-assin","Pagamento não aprovado: o processamento real ainda não está disponível nesta versão de demonstração. Sua conta permanece no plano Free.","erro");
+  };
+}
+async function ativarPremium(){
+  CONFIG.plano="premium"; CONFIG.planoTipo=planoSel;
+  await salvarConfig();
+  atualizarAvatar(); montarAssinaturas(); verificarNotificacoes();
+}
+
+/* ---------- paywall ---------- */
+function abrirPaywall(recurso){
+  const msgs={sinopse:"A sinopse completa dos filmes e séries é exclusiva para assinantes Premium.",
+              notificacoes:"As notificações de novas temporadas são exclusivas para assinantes Premium."};
+  $("#paywall-msg").textContent=msgs[recurso]||"Este recurso é exclusivo do plano Premium.";
+  $("#paywall").classList.remove("hidden");
+}
+$("#paywall-nao").onclick=()=>$("#paywall").classList.add("hidden");
+$("#paywall-ver").onclick=()=>{
+  $("#paywall").classList.add("hidden");
+  $("#modal").classList.add("hidden");
+  abrirPainel("assinaturas");
+};
+
+/* ---------- escolha de plano no cadastro ---------- */
+$("#ep-free").onclick=()=>{
+  $("#escolha-plano").classList.add("hidden");
+  if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
+};
+$("#ep-premium").onclick=()=>{
+  $("#escolha-plano").classList.add("hidden");
+  abrirPainel("assinaturas");
 };
 
 /* Streamings (checkboxes) */
@@ -684,6 +910,7 @@ $("#btn-enviar-ajuda").onclick=()=>{
 let NOTIFS=[];
 async function verificarNotificacoes(){
   NOTIFS=[];
+  if(!isPremium()){ atualizarBadgeNotifs(); return; }
   const series=titulos.filter(t=>t.tipo!=="movie"&&t.tmdb_id);
   for(const t of series){
     try{
@@ -703,6 +930,11 @@ function atualizarBadgeNotifs(){
 }
 function renderNotifs(){
   const el=$("#lista-notifs");
+  if(!isPremium()){
+    el.innerHTML=`<div class="vazio" style="margin-top:40px"><span class="icone">⭐</span>As notificações de novas temporadas são exclusivas do <b style="color:var(--amber)">Premium</b>.<br><br><button class="btn-mini" id="btn-notif-premium" style="background:var(--amber);color:var(--amber-ink)">Ver planos</button></div>`;
+    $("#btn-notif-premium").onclick=()=>abrirPainel("assinaturas");
+    return;
+  }
   if(!NOTIFS.length){
     el.innerHTML=`<div class="vazio" style="margin-top:40px"><span class="icone">🔔</span>Nenhuma novidade por enquanto.<br>Quando alguma série da sua lista ganhar temporada nova, ela aparece aqui.</div>`;
     return;
@@ -907,7 +1139,34 @@ function desenhar(){
   h+=`</div>`;
   lista.innerHTML=h;
   pintarFlagsPosters();
+  instalarSetas();
 }
+
+/* setas ‹ › nos carrosséis (desktop) */
+function instalarSetas(){
+  document.querySelectorAll("#lista .secao").forEach(sec=>{
+    const c=sec.querySelector(".carrossel,.carrossel-cards");
+    const h=sec.querySelector("h3");
+    if(!c||!h||h.querySelector(".setas")) return;
+    const s=document.createElement("span");
+    s.className="setas";
+    s.innerHTML=`<button class="seta" data-rol="-1">‹</button><button class="seta" data-rol="1">›</button>`;
+    h.appendChild(s);
+    s.querySelectorAll(".seta").forEach(b=>b.onclick=e=>{
+      e.stopPropagation();
+      c.scrollBy({left:parseInt(b.dataset.rol)*c.clientWidth*0.85,behavior:"smooth"});
+    });
+  });
+}
+/* rodinha do mouse rola o carrossel na horizontal */
+$("#lista").addEventListener("wheel",e=>{
+  const c=e.target.closest(".carrossel,.carrossel-cards");
+  if(!c) return;
+  if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&c.scrollWidth>c.clientWidth){
+    c.scrollLeft+=e.deltaY;
+    e.preventDefault();
+  }
+},{passive:false});
 
 /* delegação de eventos */
 $("#lista").addEventListener("click",e=>{
@@ -1082,7 +1341,7 @@ async function buscarTMDB(q){
     const tipo=x.media_type==="movie"?"Filme":"Série";
     return `<button class="resultado" data-res="${i}">
       ${capa?`<img class="capa-r" src="${capa}" alt="">`:`<div class="sem-capa"></div>`}
-      <div class="info">${esc(nome)}<span>${tipo}${ano?" · "+ano:""}</span>
+      <div class="info">${esc(nome)}<span>${tipo}${ano?" · "+ano:""}${(x.original_title||x.original_name)&&(x.original_title||x.original_name)!==nome?" · "+esc(x.original_title||x.original_name):""}</span>
         <div class="mini-badges" id="prov-${i}"><span style="color:var(--muted);font-size:10px">verificando streamings...</span></div>
       </div>
     </button>`;
@@ -1166,11 +1425,22 @@ function mostrarDetalhes(j,tipo){
   const generos=(j.genres||[]).map(g=>g.name).join(" · ");
   const elenco=(j.credits?.cast||[]).slice(0,5).map(c=>c.name).join(", ");
   const sinopse=j.overview||"Sinopse não disponível em português.";
+  let sinopseHTML;
+  if(isPremium()){
+    sinopseHTML=`<div class="sinopse" style="-webkit-line-clamp:unset">${esc(sinopse)}</div>`;
+  }else{
+    const resumo=sinopse.length>90?sinopse.slice(0,90).trim()+"…":sinopse;
+    sinopseHTML=`<div class="sinopse">${esc(resumo)}</div><button class="link-premium" id="btn-sinopse-premium">⭐ Ver sinopse completa com o Premium</button>`;
+  }
+  const tituloOriginal=j.original_title||j.original_name;
+  const nomeExibido=j.title||j.name;
   $("#detalhes").innerHTML=`
     <div class="meta">${partes.join(" &nbsp;·&nbsp; ")}</div>
+    ${tituloOriginal&&tituloOriginal!==nomeExibido?`<div class="generos">Título original: ${esc(tituloOriginal)}</div>`:""}
     ${generos?`<div class="generos">${esc(generos)}</div>`:""}
-    <div class="sinopse">${esc(sinopse)}</div>
+    ${sinopseHTML}
     ${elenco?`<div class="elenco"><b>Elenco:</b> ${esc(elenco)}</div>`:""}`;
+  const bsp=$("#btn-sinopse-premium"); if(bsp) bsp.onclick=()=>abrirPaywall("sinopse");
   $("#detalhes").classList.remove("hidden");
 }
 
@@ -1196,7 +1466,7 @@ async function abrirDescoberta(id,tipo){
   if(!fonte) return;
   editandoId=null; gradeOrigem="busca";
   $("#modal-titulo").textContent="Adicionar título";
-  $("#f-status").value=abaAtual==="proximo"?"proximo":"assistindo";
+  $("#f-status").value="proximo"; // padrão: Favoritos — só vai para Assistindo se o usuário mudar ou usar "Salvar e abrir"
   resultadosBusca=[fonte];
   $("#modal").classList.remove("hidden");
   mostrarPasso("form");
@@ -1219,6 +1489,7 @@ async function salvarTitulo(abrir){
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
   };
   if(abrir){
+    registro.status="assistindo"; // abrir no streaming = começou a assistir
     const s=STREAMINGS[streamingEscolhido];
     window.open(s.busca(encodeURIComponent(nome)),"_blank");
   }
