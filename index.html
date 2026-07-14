@@ -179,6 +179,39 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .texto-sobre p{margin-bottom:14px}
 .texto-sobre b{color:var(--amber)}
 
+.detalhes{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.6}
+.detalhes .meta{color:var(--amber);font-weight:700;font-size:12px;margin-bottom:6px}
+.detalhes .generos{color:var(--muted);font-size:12px;margin-bottom:8px}
+.detalhes .sinopse{color:var(--text);display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.detalhes .elenco{color:var(--muted);font-size:12px;margin-top:8px}
+.detalhes .elenco b{color:var(--text)}
+.info-te{font-size:12px;color:var(--muted);margin:-6px 0 14px;line-height:1.5}
+.info-te b{color:var(--amber)}
+.filtros-busca{display:flex;gap:8px;padding:0 0 12px;overflow-x:auto;scrollbar-width:none}
+.filtros-busca::-webkit-scrollbar{display:none}
+
+/* ---------- visual de navegador (Windows/desktop) ---------- */
+@media (min-width:768px){
+  #tela-app{max-width:1100px;margin:0 auto;width:100%}
+  #tela-login,#tela-config{max-width:460px;margin:0 auto;width:100%}
+  main{padding:4px 24px 110px}
+  .poster{width:150px}
+  .poster img.pcapa{width:150px;height:225px}
+  .poster .rank{font-size:40px;top:-10px}
+  .poster .nome-p{font-size:12px}
+  .prov-poster{top:193px;left:8px}
+  .carrossel,.carrossel-cards{padding-bottom:10px}
+  .carrossel-cards .card{width:340px}
+  #modal{align-items:center;padding:30px}
+  .folha{max-width:560px;border-radius:24px;max-height:86dvh}
+  #painel .conteudo{max-width:680px;margin:0 auto;width:100%}
+  #painel header{max-width:680px;margin:0 auto;width:100%}
+  #btn-add{right:calc(50vw - 550px + 20px)}
+}
+@media (min-width:768px) and (max-width:1140px){
+  #btn-add{right:24px}
+}
+
 /* ---------- botão + / modal ---------- */
 #btn-add{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
   width:60px;height:60px;border-radius:20px;background:var(--amber);color:var(--amber-ink);
@@ -342,6 +375,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
     <div id="passo-busca">
       <h3>O que você vai assistir?</h3>
       <div class="field"><input id="f-busca" placeholder="Digite o nome do filme ou série..." autocomplete="off"></div>
+      <div class="filtros-busca" id="filtros-busca"></div>
       <div id="busca-resultados" class="busca-resultados"></div>
       <button class="btn-ghost" id="btn-manual">Não achei — <b>adicionar manualmente</b></button>
       <button class="btn-ghost" id="btn-fechar-busca">Cancelar</button>
@@ -359,6 +393,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
         <img id="capa-img" alt="Capa">
         <div class="titulo-escolhido" id="titulo-escolhido"></div>
       </div>
+      <div id="detalhes" class="detalhes hidden"></div>
       <div class="field" id="grupo-nome"><label>Nome do filme ou série</label><input id="f-nome" placeholder="Ex.: Round 6"></div>
       <div class="field"><label>Streaming</label>
         <button class="seletor-streaming" id="btn-trocar-streaming">
@@ -376,6 +411,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
         <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="1" value="1"></div>
         <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="1" value="1"></div>
       </div>
+      <div class="info-te hidden" id="info-te"></div>
       <button class="btn" id="btn-salvar-abrir">Salvar e abrir</button>
       <button class="btn-secundario" id="btn-salvar">Só salvar</button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
@@ -409,7 +445,7 @@ const TODAS=Object.keys(STREAMINGS);
 let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroStreaming=null,
     editandoId=null, modoCadastro=false, gradeOrigem="busca",
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
-    estruturaEscolhida=null, resultadosBusca=[], timerBusca=null,
+    estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
     CONFIG={telefone:"",ativos:null};
 
@@ -937,6 +973,8 @@ function editar(id){
   $("#f-temporada").value=t.temporada??1; $("#f-episodio").value=t.episodio??1;
   $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
   $("#disponivel").classList.add("hidden");
+  $("#detalhes").classList.add("hidden");
+  atualizarInfoTE();
   mostrarPasso("form");
   $("#modal").classList.remove("hidden");
 }
@@ -979,6 +1017,8 @@ $("#btn-add").onclick=()=>{
   capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
   resultadosBusca=[];
   const at=ativos(); if(!at.includes(streamingEscolhido)) streamingEscolhido=at[0];
+  buscaEscopo=null; montarFiltrosBusca();
+  $("#detalhes").classList.add("hidden"); $("#info-te").classList.add("hidden");
   $("#f-busca").value=""; $("#busca-resultados").innerHTML="";
   $("#f-nome").value=""; $("#f-status").value=abaAtual;
   $("#f-temporada").value=1; $("#f-episodio").value=1;
@@ -988,7 +1028,7 @@ $("#btn-add").onclick=()=>{
   $("#modal").classList.remove("hidden");
   setTimeout(()=>$("#f-busca").focus(),100);
 };
-$("#btn-manual").onclick=()=>{ gradeOrigem="busca"; tipoEscolhido="tv"; estruturaEscolhida=null; capaEscolhida=null; tmdbId=null; atualizarPreviewCapa(); $("#grupo-te").classList.remove("hidden"); mostrarPasso("grade"); };
+$("#btn-manual").onclick=()=>{ gradeOrigem="busca"; tipoEscolhido="tv"; estruturaEscolhida=null; capaEscolhida=null; tmdbId=null; atualizarPreviewCapa(); $("#detalhes").classList.add("hidden"); $("#info-te").classList.add("hidden"); $("#grupo-te").classList.remove("hidden"); mostrarPasso("grade"); };
 $("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="form"; mostrarPasso("grade"); };
 $("#btn-fechar-grade").onclick=()=>{ mostrarPasso(gradeOrigem==="form"?"form":"busca"); };
 $("#btn-fechar-busca").onclick=()=>$("#modal").classList.add("hidden");
@@ -996,6 +1036,19 @@ $("#btn-cancelar").onclick=()=>$("#modal").classList.add("hidden");
 $("#modal").onclick=e=>{ if(e.target.id==="modal") $("#modal").classList.add("hidden"); };
 
 /* ---------- busca livre ---------- */
+function montarFiltrosBusca(){
+  const el=$("#filtros-busca");
+  el.innerHTML=`<button class="chip ${!buscaEscopo?"ativo":""}" data-fb="">Todos</button>`+
+    ativos().map(k=>{ const s=STREAMINGS[k];
+      return `<button class="chip ${buscaEscopo===k?"ativo":""}" data-fb="${k}">${iconeStreaming(k)}${s.nome}</button>`;
+    }).join("");
+  el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    buscaEscopo=c.dataset.fb||null;
+    el.querySelectorAll(".chip").forEach(x=>x.classList.toggle("ativo",x===c));
+    const q=$("#f-busca").value.trim();
+    if(q.length>=2){ $("#busca-resultados").innerHTML=`<div class="buscando">Buscando...</div>`; buscarTMDB(q); }
+  });
+}
 $("#f-busca").addEventListener("input",()=>{
   clearTimeout(timerBusca);
   const q=$("#f-busca").value.trim();
@@ -1004,15 +1057,23 @@ $("#f-busca").addEventListener("input",()=>{
   timerBusca=setTimeout(()=>buscarTMDB(q),450);
 });
 async function buscarTMDB(q){
+  const escopo=buscaEscopo;
+  let brutos=[];
   try{
     const j=await tmdbGet(`/search/multi?language=pt-BR&region=BR&query=${encodeURIComponent(q)}`);
-    resultadosBusca=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,6);
+    brutos=(j.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").slice(0,12);
   }catch(e){
     $("#busca-resultados").innerHTML=`<div class="aviso erro">Falha na busca. Verifique sua internet.</div>`; return;
   }
-  if($("#f-busca").value.trim()!==q) return;
+  if(escopo){
+    await Promise.all(brutos.map(x=>x._provedores?null:carregarProvedores(x,null)));
+    brutos=brutos.filter(x=>(x._provedores||[]).includes(escopo));
+  }
+  resultadosBusca=brutos.slice(0,6);
+  if($("#f-busca").value.trim()!==q||escopo!==buscaEscopo) return;
   if(!resultadosBusca.length){
-    $("#busca-resultados").innerHTML=`<div class="aviso">Nada encontrado. Tente outro nome ou adicione manualmente.</div>`; return;
+    const nomeE=escopo?` na ${STREAMINGS[escopo].nome}`:"";
+    $("#busca-resultados").innerHTML=`<div class="aviso">Nada encontrado${nomeE}. Tente outro nome${escopo?", outro streaming":""} ou adicione manualmente.</div>`; return;
   }
   $("#busca-resultados").innerHTML=resultadosBusca.map((x,i)=>{
     const nome=x.title||x.name;
@@ -1072,19 +1133,64 @@ async function escolherResultado(i){
   disp.classList.remove("hidden");
 
   estruturaEscolhida=null;
+  $("#detalhes").classList.add("hidden");
   $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
-  if(tipoEscolhido==="tv"){
-    try{
-      const j=await tmdbGet(`/tv/${x.id}?language=pt-BR`);
+  try{
+    const j=await tmdbGet(`/${tipoEscolhido}/${x.id}?language=pt-BR&append_to_response=credits`);
+    if(tipoEscolhido==="tv"){
       estruturaEscolhida=(j.seasons||[])
         .filter(s=>s.season_number>0&&s.episode_count>0)
         .map(s=>s.episode_count);
       if(!estruturaEscolhida.length) estruturaEscolhida=null;
-    }catch(e){ estruturaEscolhida=null; }
-  }
+    }
+    mostrarDetalhes(j,tipoEscolhido);
+  }catch(e){ estruturaEscolhida=null; }
   $("#f-temporada").value=1; $("#f-episodio").value=1;
+  atualizarInfoTE();
   mostrarPasso("form");
 }
+
+/* ficha do título (sinopse, gênero, duração, elenco) */
+function mostrarDetalhes(j,tipo){
+  const partes=[];
+  if(j.vote_average) partes.push(`⭐ ${j.vote_average.toFixed(1)}`);
+  if(tipo==="movie"&&j.runtime){
+    const h=Math.floor(j.runtime/60), m=j.runtime%60;
+    partes.push(`⏱ ${h?h+"h ":""}${m}min`);
+  }
+  if(tipo==="tv"&&j.number_of_seasons){
+    partes.push(`📺 ${j.number_of_seasons} temporada${j.number_of_seasons>1?"s":""} · ${j.number_of_episodes||"?"} episódios`);
+  }
+  const ano=(j.release_date||j.first_air_date||"").slice(0,4);
+  if(ano) partes.push(ano);
+  const generos=(j.genres||[]).map(g=>g.name).join(" · ");
+  const elenco=(j.credits?.cast||[]).slice(0,5).map(c=>c.name).join(", ");
+  const sinopse=j.overview||"Sinopse não disponível em português.";
+  $("#detalhes").innerHTML=`
+    <div class="meta">${partes.join(" &nbsp;·&nbsp; ")}</div>
+    ${generos?`<div class="generos">${esc(generos)}</div>`:""}
+    <div class="sinopse">${esc(sinopse)}</div>
+    ${elenco?`<div class="elenco"><b>Elenco:</b> ${esc(elenco)}</div>`:""}`;
+  $("#detalhes").classList.remove("hidden");
+}
+
+/* mostra os limites reais de temporada/episódio no formulário */
+function atualizarInfoTE(){
+  const el=$("#info-te");
+  if(!estruturaEscolhida||tipoEscolhido==="movie"){ el.classList.add("hidden"); return; }
+  const maxT=estruturaEscolhida.length;
+  let t=parseInt($("#f-temporada").value)||1;
+  t=Math.min(Math.max(1,t),maxT);
+  $("#f-temporada").value=t; $("#f-temporada").max=maxT;
+  const maxE=estruturaEscolhida[t-1];
+  let e=parseInt($("#f-episodio").value)||1;
+  if(e>maxE){ e=maxE; $("#f-episodio").value=e; }
+  $("#f-episodio").max=maxE;
+  el.innerHTML=`Esta série tem <b>${maxT} temporada${maxT>1?"s":""}</b> · a T${t} tem <b>${maxE} episódio${maxE>1?"s":""}</b>`;
+  el.classList.remove("hidden");
+}
+$("#f-temporada").addEventListener("input",atualizarInfoTE);
+$("#f-episodio").addEventListener("input",atualizarInfoTE);
 async function abrirDescoberta(id,tipo){
   const fonte=descIndex.get(tipo+"-"+id);
   if(!fonte) return;
