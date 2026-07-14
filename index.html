@@ -61,7 +61,16 @@ input,select,textarea{font-family:inherit;font-size:16px}
 header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;
   position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:5}
 #btn-menu{width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);
-  display:grid;place-items:center;flex-shrink:0}
+  display:grid;place-items:center;flex-shrink:0;position:relative}
+.pontinho{width:9px;height:9px;background:var(--danger);border-radius:50%;display:inline-block;
+  position:absolute;top:7px;right:7px}
+.notif-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;
+  background:var(--card);border:1px solid var(--line);margin-bottom:12px}
+.notif-item img{width:44px;height:66px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--bg)}
+.notif-item .txt{flex:1;font-size:13px;line-height:1.5}
+.notif-item .txt b{color:var(--amber)}
+.notif-item .btn-mini{display:inline-block;margin-top:8px;padding:9px 14px;border-radius:10px;
+  background:var(--amber);color:var(--amber-ink);font-weight:700;font-size:12px}
 #btn-menu span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;
   box-shadow:0 -5px 0 var(--text),0 5px 0 var(--text)}
 header h2{font-size:20px;letter-spacing:-.4px;flex:1}
@@ -240,12 +249,12 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
 <div id="tela-app" class="screen hidden">
   <header>
-    <button id="btn-menu" aria-label="Menu"><span></span></button>
+    <button id="btn-menu" aria-label="Menu"><span></span><i class="pontinho hidden" id="menu-dot"></i></button>
     <h2>CineLista</h2>
   </header>
   <div class="abas">
     <button class="aba ativa" data-aba="assistindo">▶ Assistindo</button>
-    <button class="aba" data-aba="proximo">☆ Próximos</button>
+    <button class="aba" data-aba="proximo">☆ Favoritos</button>
   </div>
   <div class="filtros" id="filtros"></div>
   <main id="lista"></main>
@@ -258,6 +267,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
     <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineLista</h1></div></div>
     <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
     <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
+    <button class="item-menu" data-painel="notificacoes"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Notificações<i class="pontinho hidden" id="item-notif-dot" style="position:static;margin-left:8px"></i></button>
     <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
     <button class="item-menu perigo" id="btn-sair"><span class="ic">🚪</span>Sair</button>
@@ -286,6 +296,10 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="aviso" style="margin:0 0 10px">Marque os streamings que você usa. Só eles aparecem no app. Ao desmarcar, seus títulos daquele streaming ficam guardados (ou você pode escolher excluí-los).</div>
       <div id="lista-streamings"></div>
       <div id="msg-streamings" class="aviso hidden"></div>
+    </div>
+
+    <div id="painel-notificacoes" class="hidden">
+      <div id="lista-notifs"></div>
     </div>
 
     <div id="painel-sobre" class="hidden">
@@ -355,7 +369,7 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
       <div class="field"><label>Lista</label>
         <select id="f-status">
           <option value="assistindo">Assistindo</option>
-          <option value="proximo">Próximos</option>
+          <option value="proximo">Favoritos</option>
         </select>
       </div>
       <div class="linha-dupla" id="grupo-te">
@@ -478,6 +492,7 @@ async function abrirApp(){
   montarFiltros(); montarGrade();
   await carregar();
   carregarDescobertas();
+  verificarNotificacoes();
   if(!CONFIG.telefone){ abrirPainel("perfil"); $("#aviso-telefone").classList.remove("hidden"); }
 }
 async function carregarConfig(){
@@ -522,11 +537,11 @@ $("#menu").onclick=e=>{ if(e.target.id==="menu") $("#menu").classList.add("hidde
 document.querySelectorAll("[data-painel]").forEach(b=>b.onclick=()=>{
   $("#menu").classList.add("hidden"); abrirPainel(b.dataset.painel);
 });
-const TITULOS_PAINEL={perfil:"Perfil",streamings:"Streamings",sobre:"Sobre",ajuda:"Ajuda"};
+const TITULOS_PAINEL={perfil:"Perfil",streamings:"Streamings",notificacoes:"Notificações",sobre:"Sobre",ajuda:"Ajuda"};
 function abrirPainel(qual){
   $("#painel").classList.remove("hidden");
   $("#painel-titulo").textContent=TITULOS_PAINEL[qual];
-  ["perfil","streamings","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
+  ["perfil","streamings","notificacoes","sobre","ajuda"].forEach(p=>$("#painel-"+p).classList.toggle("hidden",p!==qual));
   if(qual==="perfil"){
     $("#p-email").value=usuario.email;
     $("#p-telefone").value=CONFIG.telefone||"";
@@ -535,6 +550,7 @@ function abrirPainel(qual){
     mostrarMsg("#msg-perfil","");
   }
   if(qual==="streamings") montarPainelStreamings();
+  if(qual==="notificacoes") renderNotifs();
 }
 $("#btn-voltar-painel").onclick=()=>{
   $("#painel").classList.add("hidden");
@@ -628,6 +644,54 @@ $("#btn-enviar-ajuda").onclick=()=>{
   window.location.href=`mailto:rodrigosoares3691@gmail.com?subject=${encodeURIComponent("Ajuda - CineLista")}&body=${corpo}`;
 };
 
+/* ---------- notificações (novas temporadas) ---------- */
+let NOTIFS=[];
+async function verificarNotificacoes(){
+  NOTIFS=[];
+  const series=titulos.filter(t=>t.tipo!=="movie"&&t.tmdb_id);
+  for(const t of series){
+    try{
+      const j=await tmdbGet(`/tv/${t.tmdb_id}?language=pt-BR`);
+      const nova=(j.seasons||[]).filter(s=>s.season_number>0&&s.episode_count>0).map(s=>s.episode_count);
+      const antiga=estruturaDe(t)||[];
+      if(nova.length>antiga.length){
+        NOTIFS.push({id:t.id,nome:t.nome,capa:t.capa,deT:antiga.length,paraT:nova.length,estruturaNova:nova});
+      }
+    }catch(e){}
+  }
+  atualizarBadgeNotifs();
+}
+function atualizarBadgeNotifs(){
+  $("#menu-dot").classList.toggle("hidden",!NOTIFS.length);
+  $("#item-notif-dot").classList.toggle("hidden",!NOTIFS.length);
+}
+function renderNotifs(){
+  const el=$("#lista-notifs");
+  if(!NOTIFS.length){
+    el.innerHTML=`<div class="vazio" style="margin-top:40px"><span class="icone">🔔</span>Nenhuma novidade por enquanto.<br>Quando alguma série da sua lista ganhar temporada nova, ela aparece aqui.</div>`;
+    return;
+  }
+  el.innerHTML=NOTIFS.map((n,i)=>`
+    <div class="notif-item">
+      ${n.capa?`<img src="${esc(n.capa)}" alt="">`:""}
+      <div class="txt">
+        🎉 <b>${esc(n.nome)}</b> ganhou temporada nova!<br>
+        A série agora tem <b>${n.paraT} temporada${n.paraT>1?"s":""}</b>${n.deT?` (você tinha registrado ${n.deT})`:""}.
+        <br><button class="btn-mini" data-notif="${i}">Atualizar na minha lista</button>
+      </div>
+    </div>`).join("");
+  el.querySelectorAll("[data-notif]").forEach(b=>b.onclick=async ()=>{
+    const n=NOTIFS[parseInt(b.dataset.notif)]; if(!n) return;
+    const t=titulos.find(x=>x.id===n.id);
+    if(t){
+      t.estrutura=JSON.stringify(n.estruturaNova);
+      try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",n.id),{estrutura:t.estrutura}); }catch(e){}
+    }
+    NOTIFS=NOTIFS.filter(x=>x!==n);
+    atualizarBadgeNotifs(); renderNotifs(); desenhar();
+  });
+}
+
 /* ---------- descobrir ---------- */
 async function carregarDescobertas(){
   const chave=filtroStreaming||"todos";
@@ -699,7 +763,6 @@ function htmlDescobrir(){
     <div class="carrossel">${d.series.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
   if(d.lanc.length) h+=`<div class="secao"><h3>🆕 Lançamentos <span class="sub">· ${sub}</span></h3>
     <div class="carrossel">${d.lanc.map(x=>htmlPoster(x)).join("")}</div></div>`;
-  if(h) h+=`<div class="fonte">Sugestões: TMDB · disponibilidade por JustWatch</div>`;
   return h;
 }
 
@@ -762,7 +825,7 @@ function htmlCard(t){
       </div>
     </div>`:"";
   const mover=t.status==="assistindo"
-    ?`<button class="acao" data-mover="${t.id}|proximo">☆ Para depois</button>`
+    ?`<button class="acao" data-mover="${t.id}|proximo">☆ Favoritar</button>`
     :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
   return `
   <div class="card">
@@ -793,7 +856,7 @@ function desenhar(){
   if(abaAtual==="proximo"){
     lista.innerHTML=itens.length
       ?`<div class="lista-vertical">${itens.map(htmlCard).join("")}</div>`
-      :`<div class="vazio" style="margin-top:50px"><span class="icone">☆</span>Sua fila${nomeF?` na ${nomeF}`:""} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
+      :`<div class="vazio" style="margin-top:50px"><span class="icone">☆</span>Sua lista de favoritos${nomeF?` na ${nomeF}`:""} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
     return;
   }
   let h=htmlDescobrir();
