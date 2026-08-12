@@ -25,7 +25,8 @@
   --danger:#FF5C6C; --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html,body{height:100%;scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
   padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 h1,h2,h3{font-family:'Sora',sans-serif}
@@ -61,8 +62,9 @@ input,select,textarea{font-family:inherit;font-size:16px}
 /* ---------- app ---------- */
 header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;
   position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:5}
-#btn-menu{width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);
+#btn-menu,#btn-sino{width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);
   display:grid;place-items:center;flex-shrink:0;position:relative}
+#btn-sino{color:var(--text)}
 .pontinho{width:9px;height:9px;background:var(--danger);border-radius:50%;display:inline-block;
   position:absolute;top:7px;right:7px}
 .notif-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;
@@ -76,8 +78,8 @@ header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;
   box-shadow:0 -5px 0 var(--text),0 5px 0 var(--text)}
 header h2{font-size:20px;letter-spacing:-.4px;flex:1}
 .abas{display:flex;gap:8px;padding:4px 20px 10px}
-.aba{flex:1;padding:11px;border-radius:999px;font-weight:600;font-size:14px;
-  background:var(--bg-soft);color:var(--muted);border:1px solid var(--line)}
+.aba{flex:1;padding:11px 6px;border-radius:999px;font-weight:600;font-size:13px;
+  white-space:nowrap;background:var(--bg-soft);color:var(--muted);border:1px solid var(--line)}
 .aba.ativa{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
 .filtros{display:flex;gap:8px;padding:2px 20px 12px;overflow-x:auto;
   scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -115,19 +117,22 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .fonte{font-size:10px;color:var(--muted);margin-top:8px}
 .carregando{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;width:100%}
 
-/* ---------- cards ---------- */
-.carrossel-cards{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;
+/* ---------- carrossel em foco (coverflow) ---------- */
+.carrossel-foco{display:flex;align-items:center;gap:12px;overflow-x:auto;
+  padding:26px 24px 16px;scroll-snap-type:x mandatory;
   scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.carrossel-cards::-webkit-scrollbar{display:none}
-.carrossel-cards .card{flex-shrink:0;width:min(300px,84vw)}
-.lista-vertical{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:14px;display:flex;flex-direction:column;gap:12px;max-width:100%;overflow:hidden}
-.card-topo{display:flex;gap:10px;align-items:flex-start;min-width:0}
-.card img.capa{width:52px;height:78px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--bg)}
-.card-nome{font-family:'Sora';font-weight:700;font-size:15px;line-height:1.3;word-break:break-word;flex:1;min-width:0}
-.badge{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
-  letter-spacing:.2px;padding:4px 8px;border-radius:999px;color:#fff;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.carrossel-foco::-webkit-scrollbar{display:none}
+.poster-foco{flex-shrink:0;width:84px;scroll-snap-align:center;text-align:left;
+  transition:transform .12s linear;transform-origin:center center}
+.poster-foco .cap-wrap{position:relative}
+.poster-foco .pcapa{display:block;width:84px;height:126px;object-fit:cover;border-radius:12px;
+  background:var(--card);border:1px solid var(--line)}
+.badge-mini{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+.badge-mini .logo-str{width:14px;height:14px;border:none;box-shadow:none}
+.poster-foco .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
+  text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#detalhe-foco{display:flex;flex-direction:column;gap:12px;padding:4px 4px 0;max-width:340px;margin:0 auto;width:100%}
 .contador{display:flex;gap:8px}
 .bloco{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:14px;
   display:flex;align-items:center;justify-content:space-between;padding:6px;gap:4px}
@@ -243,8 +248,9 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
   .poster .rank{font-size:40px;top:-10px}
   .poster .nome-p{font-size:12px}
   .prov-poster{top:193px;left:8px}
-  .carrossel,.carrossel-cards{padding-bottom:10px}
-  .carrossel-cards .card{width:340px}
+  .carrossel,.carrossel-foco{padding-bottom:10px}
+  .poster-foco{width:110px}
+  .poster-foco .pcapa{width:110px;height:165px}
   #modal{align-items:center;padding:30px}
   .folha{max-width:560px;border-radius:24px;max-height:86dvh}
   #painel .conteudo{max-width:680px;margin:0 auto;width:100%}
@@ -326,12 +332,14 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 
 <div id="tela-app" class="screen hidden">
   <header>
-    <button id="btn-menu" aria-label="Menu"><span></span><i class="pontinho hidden" id="menu-dot"></i></button>
+    <button id="btn-menu" aria-label="Menu"><span></span></button>
     <h2>CineList</h2>
+    <button id="btn-sino" aria-label="Notificações"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><i class="pontinho hidden" id="sino-dot"></i></button>
     <button id="btn-avatar" class="avatar"><span id="avatar-inicial">?</span><img id="avatar-img" class="hidden" alt=""><span class="estrela hidden" id="avatar-estrela"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></span></button>
   </header>
   <div class="abas">
-    <button class="aba ativa" data-aba="assistindo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Início</button>
+    <button class="aba ativa" data-aba="inicio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Início</button>
+    <button class="aba" data-aba="assistindo"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M8 5v14l11-7z"/></svg>Assistindo</button>
     <button class="aba" data-aba="proximo">☆ Favoritos</button>
   </div>
   <div class="filtros" id="filtros"></div>
@@ -343,10 +351,8 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 <div id="menu" class="hidden">
   <div class="gaveta">
     <div class="logo"><div class="logo-mark">▶</div><div><h1 style="font-size:22px">CineList</h1></div></div>
-    <button class="item-menu" data-painel="perfil"><span class="ic">👤</span>Perfil</button>
     <button class="item-menu" data-painel="seguranca"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Segurança</button>
     <button class="item-menu" data-painel="streamings"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><polygon points="10 8.6 15 11 10 13.4" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21"/></svg></span>Streamings</button>
-    <button class="item-menu" data-painel="notificacoes"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Notificações<i class="pontinho hidden" id="item-notif-dot" style="position:static;margin-left:8px"></i></button>
     <button class="item-menu" data-painel="assinaturas"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l3 6.2 6.8.9-5 4.8 1.3 6.7L12 17.9 5.9 21.1l1.3-6.7-5-4.8 6.8-.9z"/></svg></span>Assinaturas</button>
     <button class="item-menu" data-painel="compartilhar"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>Compartilhar</button>
     <button class="item-menu" data-painel="sobre"><span class="ic">ℹ️</span>Sobre</button>
@@ -518,20 +524,16 @@ window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
         </button>
       </div>
       <div class="disponivel hidden" id="disponivel"></div>
-      <div class="field"><label>Lista</label>
-        <select id="f-status">
-          <option value="assistindo">Assistindo</option>
-          <option value="proximo">Favoritos</option>
-        </select>
-      </div>
       <div class="linha-dupla" id="grupo-te">
         <div class="field"><label>Temporada</label><input id="f-temporada" type="number" min="1" value="1"></div>
         <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="1" value="1"></div>
       </div>
       <div class="info-te hidden" id="info-te"></div>
-      <button class="btn" id="btn-salvar-abrir">Salvar e abrir</button>
-      <button class="btn-secundario" id="btn-salvar">Só salvar</button>
-      <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Compartilhar no WhatsApp</button>
+      <div class="linha-dupla">
+        <button class="btn" id="btn-favoritar" style="flex:1">☆ Favoritar</button>
+        <button class="btn-secundario" id="btn-assistir" style="flex:1">▶ Assistir</button>
+      </div>
+      <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Compartilhar <span id="txt-tipo-compartilhar">Filme</span></button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
   </div>
@@ -560,12 +562,12 @@ const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.
 const TODAS=Object.keys(STREAMINGS);
 
 /* ---------- estado ---------- */
-let auth=null, bd=null, usuario=null, titulos=[], abaAtual="assistindo", filtroStreaming=null,
+let auth=null, bd=null, usuario=null, titulos=[], abaAtual="inicio", filtroStreaming=null,
     editandoId=null, modoCadastro=false, gradeOrigem="busca",
     streamingEscolhido="netflix", capaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
     estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
-    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, listaAlterada=false, perfilObrigatorio=false, deferredPrompt=null, painelOrigem="direto";
+    CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, perfilObrigatorio=false, deferredPrompt=null, painelOrigem="direto";
 
 const $=s=>document.querySelector(s);
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -756,6 +758,7 @@ function pintarPerfilFoto(){
   $("#p-estrela").classList.toggle("hidden",!isPremium());
 }
 $("#btn-avatar").onclick=()=>abrirPainel("perfil");
+$("#btn-sino").onclick=()=>abrirPainel("notificacoes");
 $("#btn-trocar-foto").onclick=()=>$("#input-foto").click();
 $("#input-foto").onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
@@ -1003,9 +1006,6 @@ $("#ep-premium").onclick=()=>{
   abrirPainel("assinaturas");
 };
 
-/* o usuário mexeu no seletor Lista? então a escolha dele prevalece */
-$("#f-status").addEventListener("change",()=>listaAlterada=true);
-
 /* Streamings (checkboxes) */
 function confirmarRemocao(k,qtde){
   return new Promise(resolve=>{
@@ -1082,8 +1082,7 @@ async function verificarNotificacoes(){
   atualizarBadgeNotifs();
 }
 function atualizarBadgeNotifs(){
-  $("#menu-dot").classList.toggle("hidden",!NOTIFS.length);
-  $("#item-notif-dot").classList.toggle("hidden",!NOTIFS.length);
+  $("#sino-dot").classList.toggle("hidden",!NOTIFS.length);
 }
 function renderNotifs(){
   const el=$("#lista-notifs");
@@ -1199,7 +1198,7 @@ function htmlDescobrir(){
 
 /* flags de streaming nos pôsteres */
 async function pintarFlagsPosters(){
-  if(abaAtual!=="assistindo") return;
+  if(abaAtual!=="inicio") return;
   const chave=filtroStreaming||"todos";
   const d=DESC[chave]; if(!d||d.carregando) return;
   const itens=[...(d.filmes||[]),...(d.series||[]),...(d.lanc||[])];
@@ -1233,8 +1232,18 @@ function estruturaDe(t){
 }
 function valorContador(v,max){ return `${v}${max?`<span class="max">/${max}</span>`:""}`; }
 
-function htmlCard(t){
-  const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666",busca:x=>"https://www.google.com/search?q="+x};
+function htmlPosterFoco(t){
+  const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666"};
+  return `<button class="poster-foco" data-foco="${t.id}">
+    <div class="cap-wrap">
+      ${t.capa?`<img class="pcapa" src="${esc(t.capa)}" alt="" loading="lazy">`:`<div class="pcapa"></div>`}
+      <span class="badge-mini" style="background:${s.cor}">${iconeStreaming(t.streaming)}</span>
+    </div>
+    <div class="nome-p">${esc(t.nome)}</div>
+  </button>`;
+}
+
+function htmlDetalheFoco(t){
   const est=estruturaDe(t);
   const maxT=est?est.length:null;
   const maxE=est?est[Math.min(t.temporada??1,maxT)-1]:null;
@@ -1259,12 +1268,6 @@ function htmlCard(t){
     ?`<button class="acao" data-mover="${t.id}|proximo">☆ Favoritar</button>`
     :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
   return `
-  <div class="card">
-    <div class="card-topo">
-      ${t.capa?`<img class="capa" src="${esc(t.capa)}" alt="" loading="lazy">`:""}
-      <div class="card-nome">${esc(t.nome)}</div>
-      <span class="badge" style="background:${s.cor}">${iconeStreaming(t.streaming)}${s.nome}</span>
-    </div>
     ${contador}
     <div class="card-acoes">
       <button class="acao principal" data-abrir="${t.id}">▶ Abrir</button>
@@ -1273,42 +1276,77 @@ function htmlCard(t){
     <div class="card-acoes">
       <button class="acao" data-editar="${t.id}">Editar</button>
       <button class="acao" style="color:var(--danger)" data-excluir="${t.id}">Excluir</button>
-    </div>
-  </div>`;
+    </div>`;
+}
+
+function renderDetalheFoco(t){
+  const el=document.getElementById("detalhe-foco");
+  if(el&&t) el.innerHTML=htmlDetalheFoco(t);
+}
+
+/* escala tipo "coverflow": o item mais próximo do centro fica maior */
+function instalarFoco(itens){
+  const cont=document.getElementById("carrossel-foco");
+  if(!cont) return;
+  let raf=null, focoId=null;
+  function atualizar(){
+    raf=null;
+    const rect=cont.getBoundingClientRect();
+    if(!rect.width) return;
+    const centro=rect.left+rect.width/2;
+    let melhor=null, melhorDist=Infinity;
+    cont.querySelectorAll(".poster-foco").forEach(el=>{
+      const r=el.getBoundingClientRect();
+      const c=r.left+r.width/2;
+      const dist=Math.abs(c-centro);
+      const ratio=Math.min(dist/(rect.width/2),1);
+      el.style.transform=`scale(${(1.32-ratio*0.42).toFixed(3)})`;
+      el.style.opacity=(1-ratio*0.3).toFixed(2);
+      el.style.zIndex=String(Math.round((1-ratio)*4));
+      if(dist<melhorDist){melhorDist=dist;melhor=el;}
+    });
+    if(melhor&&melhor.dataset.foco!==focoId){
+      focoId=melhor.dataset.foco;
+      const t=itens.find(x=>String(x.id)===focoId);
+      if(t) renderDetalheFoco(t);
+    }
+  }
+  cont.addEventListener("scroll",()=>{ if(!raf) raf=requestAnimationFrame(atualizar); },{passive:true});
+  atualizar();
 }
 
 function desenhar(){
   const lista=$("#lista");
+
+  if(abaAtual==="inicio"){
+    lista.innerHTML=htmlDescobrir();
+    pintarFlagsPosters();
+    instalarSetas();
+    return;
+  }
+
   const at=ativos();
   let itens=titulos.filter(t=>t.status===abaAtual&&at.includes(t.streaming));
   if(filtroStreaming) itens=itens.filter(t=>t.streaming===filtroStreaming);
   const nomeF=filtroStreaming?STREAMINGS[filtroStreaming].nome:null;
 
-  if(abaAtual==="proximo"){
-    lista.innerHTML=itens.length
-      ?`<div class="lista-vertical">${itens.map(htmlCard).join("")}</div>`
-      :`<div class="vazio" style="margin-top:50px"><span class="icone">☆</span>Sua lista de favoritos${nomeF?` na ${nomeF}`:""} está vazia.<br>Toque em <b>+</b> para adicionar.</div>`;
+  if(!itens.length){
+    const vazioIcone=abaAtual==="proximo"?"☆":"🎬";
+    const vazioTexto=abaAtual==="proximo"
+      ?`Sua lista de favoritos${nomeF?` na ${nomeF}`:""} está vazia.`
+      :`Nada por aqui${nomeF?` na ${nomeF}`:""} ainda.`;
+    lista.innerHTML=`<div class="vazio" style="margin-top:50px"><span class="icone">${vazioIcone}</span>${vazioTexto}<br>Toque em <b>+</b> para adicionar.</div>`;
     return;
   }
-  let h=htmlDescobrir();
-  h+=`<div class="secao"><h3>▶ Assistindo${nomeF?` <span class="sub">· ${nomeF}</span>`:""}</h3>`;
-  if(!itens.length){
-    h+=`<div class="vazio"><span class="icone">🎬</span>Nada por aqui${nomeF?` na ${nomeF}`:""} ainda.<br>Toque em <b>+</b> para adicionar.</div>`;
-  }else if(itens.length===1){
-    h+=`<div class="lista-vertical">${htmlCard(itens[0])}</div>`;
-  }else{
-    h+=`<div class="carrossel-cards">${itens.map(htmlCard).join("")}</div>`;
-  }
-  h+=`</div>`;
-  lista.innerHTML=h;
-  pintarFlagsPosters();
-  instalarSetas();
+  lista.innerHTML=`<div class="carrossel-foco" id="carrossel-foco">${itens.map(htmlPosterFoco).join("")}</div>
+    <div id="detalhe-foco"></div>`;
+  instalarFoco(itens);
 }
 
 /* setas ‹ › nos carrosséis (desktop) */
 function instalarSetas(){
   document.querySelectorAll("#lista .secao").forEach(sec=>{
-    const c=sec.querySelector(".carrossel,.carrossel-cards");
+    const c=sec.querySelector(".carrossel");
     const h=sec.querySelector("h3");
     if(!c||!h||h.querySelector(".setas")) return;
     const s=document.createElement("span");
@@ -1332,6 +1370,7 @@ $("#lista").addEventListener("click",e=>{
   else if(b.dataset.editar) editar(b.dataset.editar);
   else if(b.dataset.excluir) excluir(b.dataset.excluir);
   else if(b.dataset.descId) abrirDescoberta(parseInt(b.dataset.descId),b.dataset.descTipo);
+  else if(b.dataset.foco) editar(b.dataset.foco);
 });
 
 /* ---------- ações ---------- */
@@ -1392,15 +1431,15 @@ async function excluir(id){
   titulos=titulos.filter(x=>x.id!==id); desenhar();
   try{ await deleteDoc(doc(bd,"usuarios",usuario.uid,"titulos",id)); }catch(e){}
 }
-function editar(id){
+async function editar(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
-  editandoId=id; gradeOrigem="form"; listaAlterada=true; // em edição, a Lista mostrada é a escolha vigente
+  editandoId=id; gradeOrigem="form";
   streamingEscolhido=t.streaming; capaEscolhida=t.capa||null;
   tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv";
   estruturaEscolhida=estruturaDe(t);
   atualizarSeletor(); atualizarPreviewCapa(t.nome);
   $("#modal-titulo").textContent="Editar título";
-  $("#f-nome").value=t.nome; $("#f-status").value=t.status;
+  $("#f-nome").value=t.nome;
   $("#f-temporada").value=t.temporada??1; $("#f-episodio").value=t.episodio??1;
   $("#grupo-te").classList.toggle("hidden",tipoEscolhido==="movie");
   $("#disponivel").classList.add("hidden");
@@ -1408,6 +1447,12 @@ function editar(id){
   atualizarInfoTE();
   mostrarPasso("form");
   $("#modal").classList.remove("hidden");
+  if(t.tmdb_id){
+    try{
+      const j=await tmdbGet(`/${tipoEscolhido}/${t.tmdb_id}?language=pt-BR&append_to_response=credits`);
+      if(editandoId===id) mostrarDetalhes(j,tipoEscolhido);
+    }catch(e){}
+  }
 }
 
 /* ---------- modal ---------- */
@@ -1415,6 +1460,7 @@ function mostrarPasso(qual){
   $("#passo-busca").classList.toggle("hidden",qual!=="busca");
   $("#passo-streaming").classList.toggle("hidden",qual!=="grade");
   $("#passo-form").classList.toggle("hidden",qual!=="form");
+  if(qual==="form") $("#txt-tipo-compartilhar").textContent=tipoEscolhido==="movie"?"Filme":"Série";
 }
 function montarGrade(){
   $("#grade-streamings").innerHTML=ativos().map(k=>{ const s=STREAMINGS[k];
@@ -1428,7 +1474,6 @@ function atualizarSeletor(){
   const s=STREAMINGS[streamingEscolhido];
   $("#sel-icone").innerHTML=iconeStreaming(streamingEscolhido,"m");
   $("#sel-nome").textContent=s.nome;
-  $("#btn-salvar-abrir").textContent="▶ Salvar e abrir no "+s.nome;
 }
 function atualizarPreviewCapa(nome){
   const box=$("#capa-preview");
@@ -1444,14 +1489,14 @@ function atualizarPreviewCapa(nome){
 }
 
 $("#btn-add").onclick=()=>{
-  editandoId=null; gradeOrigem="busca"; listaAlterada=false;
+  editandoId=null; gradeOrigem="busca";
   capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
   resultadosBusca=[];
   const at=ativos(); if(!at.includes(streamingEscolhido)) streamingEscolhido=at[0];
   buscaEscopo=null; montarFiltrosBusca();
   $("#detalhes").classList.add("hidden"); $("#info-te").classList.add("hidden");
   $("#f-busca").value=""; $("#busca-resultados").innerHTML="";
-  $("#f-nome").value=""; $("#f-status").value=abaAtual;
+  $("#f-nome").value="";
   $("#f-temporada").value=1; $("#f-episodio").value=1;
   $("#modal-titulo").textContent="Adicionar título";
   $("#disponivel").classList.add("hidden");
@@ -1638,8 +1683,6 @@ async function abrirDescoberta(id,tipo){
   if(!fonte) return;
   editandoId=null; gradeOrigem="busca";
   $("#modal-titulo").textContent="Adicionar título";
-  listaAlterada=false;
-  $("#f-status").value="proximo"; // padrão: Favoritos — só vai para Assistindo se o usuário mudar ou usar "Salvar e abrir"
   resultadosBusca=[fonte];
   $("#modal").classList.remove("hidden");
   mostrarPasso("form");
@@ -1647,13 +1690,13 @@ async function abrirDescoberta(id,tipo){
 }
 
 /* ---------- salvar ---------- */
-async function salvarTitulo(abrir){
+async function salvarTitulo(status,perguntarAbrir){
   const nome=$("#f-nome").value.trim();
   if(!nome){ alert("Digite o nome do filme ou série."); return; }
   const registro={
     nome,
     streaming:streamingEscolhido,
-    status:$("#f-status").value,
+    status,
     temporada:parseInt($("#f-temporada").value)||1,
     episodio:parseInt($("#f-episodio").value)||1,
     capa:capaEscolhida||null,
@@ -1661,8 +1704,7 @@ async function salvarTitulo(abrir){
     tipo:tipoEscolhido,
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
   };
-  if(abrir){
-    if(!listaAlterada) registro.status="assistindo"; // padrão: abrir = começou a assistir; escolha manual da Lista é respeitada
+  if(perguntarAbrir&&confirm(`Deseja abrir "${nome}" no ${STREAMINGS[streamingEscolhido].nome} agora?`)){
     abrirNoStreaming(streamingEscolhido,nome);
   }
   try{
@@ -1676,8 +1718,8 @@ async function salvarTitulo(abrir){
   $("#modal").classList.add("hidden");
   await carregar();
 }
-$("#btn-salvar-abrir").onclick=()=>salvarTitulo(true);
-$("#btn-salvar").onclick=()=>salvarTitulo(false);
+$("#btn-favoritar").onclick=()=>salvarTitulo("proximo",false);
+$("#btn-assistir").onclick=()=>salvarTitulo("assistindo",true);
 </script>
 </body>
 </html>
