@@ -149,9 +149,6 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .cp-card .cp-play svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 .cp-card .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cp-player{background:var(--bg-soft);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:4px}
-.cp-player iframe{border-radius:12px;aspect-ratio:16/9;height:auto;display:block}
-.cp-player h4{font-size:14px;margin:10px 0 0}
 .cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:16px 10px}
 .cp-grid .cp-card{width:100%}
 .cp-grid .cp-card .cp-thumb{width:100%;height:auto;aspect-ratio:2/3}
@@ -229,6 +226,13 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 #tela-generos{position:fixed;inset:0;background:var(--bg);z-index:27;display:flex;flex-direction:column;
   padding-top:env(safe-area-inset-top)}
 #tela-generos main{overflow-y:auto}
+#tela-player-cp{position:fixed;inset:0;background:#000;z-index:60;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top)}
+#tela-player-cp header{background:var(--bg);border-bottom:1px solid var(--line)}
+#tela-player-cp main{flex:1;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+#tela-player-cp iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+.selo-cplus{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:9px;font-weight:800;letter-spacing:.3px;
+  padding:3px 7px;border-radius:7px;background:rgba(245,184,65,.15);border:1px solid var(--amber);color:var(--amber)}
 .linha-streaming{display:flex;align-items:center;gap:12px;padding:13px 6px;border-bottom:1px solid var(--line);font-weight:600;font-size:15px}
 .linha-streaming input{width:22px;height:22px;accent-color:var(--amber);margin-left:auto;flex-shrink:0}
 .texto-sobre{font-size:14px;line-height:1.8;color:var(--text)}
@@ -363,7 +367,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.04"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.05"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -416,7 +420,7 @@ window.APP_VERSION = "01.04"; // bump a cada correção/alteração publicada: 0
     <button class="item-menu" data-painel="atualizacao"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span>Atualização</button>
     <button class="item-menu" data-painel="sobre"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
-    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.04</div>
+    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.05</div>
     <button class="item-menu perigo" id="btn-sair"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Sair</button>
   </div>
 </div>
@@ -429,6 +433,14 @@ window.APP_VERSION = "01.04"; // bump a cada correção/alteração publicada: 0
   </header>
   <div class="filtros" id="filtros-generos"></div>
   <main id="lista-generos"></main>
+</div>
+
+<div id="tela-player-cp" class="hidden">
+  <header>
+    <button id="btn-fechar-player-cp" aria-label="Fechar" style="width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0;color:var(--text);font-size:20px;font-weight:700">‹</button>
+    <h2 id="player-cp-titulo" style="font-size:16px">Filme</h2>
+  </header>
+  <main id="player-cp-main"></main>
 </div>
 
 <!-- PAINEL DAS TELAS DO MENU -->
@@ -494,7 +506,7 @@ window.APP_VERSION = "01.04"; // bump a cada correção/alteração publicada: 0
     </div>
 
     <div id="painel-atualizacao" class="hidden">
-      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.04</b></div>
+      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.05</b></div>
       <button class="btn" id="btn-verificar-atualizacao">🔄 Verificar atualização</button>
       <div id="msg-atualizacao" class="aviso hidden"></div>
     </div>
@@ -694,8 +706,8 @@ const GENEROS_CINELIST_PLUS=[
   {label:"Terror",termo:"Terror"},{label:"Suspense",termo:"Suspense"},{label:"Romance",termo:"Romance"},
   {label:"Filmes Brasileiros",termo:"cinema nacional brasileiro"},
 ];
-let CP_CANAL_IDS={}, CP_DADOS={}, CP_META_CACHE={}, cpCarregado=false, cpCarregando=false, cpTocando=null,
-    cpFiltroGenero=null, cpFiltroAnos=new Set(), cpFiltroNota=null;
+let CP_CANAL_IDS={}, CP_DADOS={}, CP_META_CACHE={}, cpCarregado=false, cpCarregando=false,
+    cpFiltroGenero=null, cpFiltroAnos=new Set(), cpFiltroNota=null, cpOrigemAtual=null;
 
 const ICONE_F_STREAMING='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>';
 const ICONE_F_GENERO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M12.59 2.59 20 10a2 2 0 0 1 0 2.83l-6.17 6.17a2 2 0 0 1-2.83 0L3.59 11.59A2 2 0 0 1 3 10.17V4a1 1 0 0 1 1-1h6.17a2 2 0 0 1 1.42.59Z"/><circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/></svg>';
@@ -1728,11 +1740,9 @@ function desenharCinelistPlus(){
         <button id="cp-busca-btn" aria-label="Pesquisar" style="width:46px;height:46px;border-radius:14px;background:var(--amber);color:var(--amber-ink);display:grid;place-items:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
       </div>
     </div>
-    <div id="cp-player-wrap"></div>
     <div id="cp-resultados"></div>`;
   $("#cp-busca-btn").onclick=()=>pesquisarCinelistPlus();
   $("#cp-busca").addEventListener("keydown",e=>{ if(e.key==="Enter") pesquisarCinelistPlus(); });
-  cpTocando=null;
   if(cpCarregado){ renderizarCinelistPlusCarrosseis(); return; }
   $("#cp-resultados").innerHTML=`<div class="carregando">Carregando filmes...</div>`;
   carregarCinelistPlus();
@@ -1766,10 +1776,16 @@ function generosDoVideoCP(v){
 }
 async function buscarUploadsCanal(channelId,limite){
   const uploadsId=channelId.replace(/^UC/,"UU");
+  const itens=[];
+  let pageToken="";
   try{
-    const r=await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=${limite||50}&key=${window.YOUTUBE_KEY}`);
-    const j=await r.json();
-    const itens=(j.items||[]).filter(it=>it.snippet&&it.snippet.resourceId&&it.snippet.resourceId.videoId);
+    while(itens.length<(limite||150)){
+      const r=await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&pageToken=${pageToken}&key=${window.YOUTUBE_KEY}`);
+      const j=await r.json();
+      itens.push(...(j.items||[]).filter(it=>it.snippet&&it.snippet.resourceId&&it.snippet.resourceId.videoId));
+      if(!j.nextPageToken) break;
+      pageToken=j.nextPageToken;
+    }
     if(!itens.length) return [];
     const ids=itens.map(it=>it.snippet.resourceId.videoId);
     const durMap={};
@@ -1804,7 +1820,8 @@ async function buscarMetaTMDB(titulo){
       nota:m.vote_average||null,
       ano:m.release_date?parseInt(m.release_date.slice(0,4)):null,
       generoIds:m.genre_ids||[],
-      idioma:m.original_language||null
+      idioma:m.original_language||null,
+      tmdb:{...m,media_type:"movie"}
     }:null;
     CP_META_CACHE[chave]=meta;
     return meta;
@@ -1813,7 +1830,7 @@ async function buscarMetaTMDB(titulo){
 async function enriquecerComTMDB(videos){
   await Promise.all(videos.map(async v=>{
     const meta=await buscarMetaTMDB(v.titulo);
-    if(meta){ v.nota=meta.nota; v.ano=meta.ano; v.generoIds=meta.generoIds; v.idioma=meta.idioma; }
+    if(meta){ v.nota=meta.nota; v.ano=meta.ano; v.generoIds=meta.generoIds; v.idioma=meta.idioma; v.tmdb=meta.tmdb; }
   }));
 }
 function passaFiltroCP(v){
@@ -1822,7 +1839,7 @@ function passaFiltroCP(v){
   return true;
 }
 let CP_BRUTOS=[];
-const CP_CACHE_KEY="cp_cache_v3";
+const CP_CACHE_KEY="cp_cache_v5";
 async function carregarCinelistPlus(){
   if(cpCarregando) return;
   cpCarregando=true;
@@ -1834,7 +1851,7 @@ async function carregarCinelistPlus(){
   }catch(e){}
   if(!brutos){
     const ids=(await Promise.all(CANAIS_CINELIST_PLUS.map(c=>resolverCanalId(c.handle)))).filter(Boolean);
-    const lotes=await Promise.all(ids.map(id=>buscarUploadsCanal(id,50)));
+    const lotes=await Promise.all(ids.map(id=>buscarUploadsCanal(id,100)));
     const vistos=new Set(); brutos=[];
     lotes.flat().forEach(v=>{ if(!vistos.has(v.id)){ vistos.add(v.id); brutos.push(v); } });
     ordenarPorRecencia(brutos);
@@ -1843,9 +1860,9 @@ async function carregarCinelistPlus(){
   }
   CP_BRUTOS=brutos;
   CP_DADOS={};
-  if(brutos.length) CP_DADOS["Lançamentos"]=brutos.slice(0,14);
+  if(brutos.length) CP_DADOS["Lançamentos"]=brutos.slice(0,18);
   GENEROS_CINELIST_PLUS.forEach(g=>{
-    const lista=brutos.filter(v=>generosDoVideoCP(v).includes(g.label)).slice(0,12);
+    const lista=brutos.filter(v=>generosDoVideoCP(v).includes(g.label)).slice(0,16);
     if(lista.length) CP_DADOS[g.label]=lista;
   });
   cpCarregando=false;
@@ -1886,19 +1903,38 @@ function renderizarCinelistPlusCarrosseis(){
 }
 function pintarCliquesCinelistPlus(){
   $("#cp-resultados").querySelectorAll(".cp-card").forEach(c=>{
-    c.onclick=()=>abrirPlayerCinelistPlus({id:c.dataset.id,titulo:c.dataset.titulo});
+    c.onclick=()=>{
+      const v=CP_BRUTOS.find(x=>x.id===c.dataset.id)||{id:c.dataset.id,titulo:c.dataset.titulo};
+      abrirDetalheCinelistPlus(v);
+    };
   });
 }
-function abrirPlayerCinelistPlus(v){
-  cpTocando=v;
-  const wrap=$("#cp-player-wrap");
-  const buscaLink=`https://www.youtube.com/results?search_query=${encodeURIComponent(v.titulo+" comprar ou alugar")}`;
-  wrap.innerHTML=`<div class="cp-player">
-    <iframe width="100%" src="https://www.youtube.com/embed/${esc(v.id)}?autoplay=1&rel=0" title="${esc(v.titulo)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    <h4>${esc(v.titulo)}</h4>
-    <a class="btn-secundario" href="${buscaLink}" target="_blank" rel="noopener" style="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">🔎 Procurar para alugar/comprar</a>
-  </div>`;
-  wrap.scrollIntoView({behavior:"smooth",block:"start"});
+function abrirPlayerTelaCheia(v){
+  $("#modal").classList.add("hidden");
+  $("#player-cp-titulo").textContent=v.titulo;
+  $("#player-cp-main").innerHTML=`<iframe src="https://www.youtube.com/embed/${esc(v.id)}?autoplay=1&rel=0" title="${esc(v.titulo)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  $("#tela-player-cp").classList.remove("hidden");
+}
+$("#btn-fechar-player-cp").onclick=()=>{
+  $("#tela-player-cp").classList.add("hidden");
+  $("#player-cp-main").innerHTML="";
+};
+async function abrirDetalheCinelistPlus(v){
+  if(!v.tmdb){ abrirPlayerTelaCheia(v); return; }
+  descIndex.set("movie-"+v.tmdb.id,v.tmdb);
+  await abrirDescoberta(v.tmdb.id,"movie",false);
+  const detalhes=$("#detalhes");
+  const btn=document.createElement("button");
+  btn.className="btn-secundario";
+  btn.style.cssText="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px";
+  btn.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Assistir filme completo`;
+  btn.onclick=async ()=>{
+    cpOrigemAtual={id:v.id,titulo:v.titulo};
+    await salvarTitulo("assistindo",false);
+    cpOrigemAtual=null;
+    abrirPlayerTelaCheia(v);
+  };
+  detalhes.appendChild(btn);
 }
 async function pesquisarCinelistPlus(){
   const termo=$("#cp-busca").value.trim();
@@ -2002,6 +2038,7 @@ function htmlPosterFoco(t,sel){
       ${t.capa?`<img class="pcapa" src="${esc(t.capa)}" alt="" loading="lazy">`:`<div class="pcapa"></div>`}
       ${flag}
     </div>
+    ${t.cinelistYoutubeId?`<span class="selo-cplus">Cinelist+</span>`:""}
     <div class="nome-p">${esc(t.nome)}</div>
   </button>`;
 }
@@ -2045,7 +2082,7 @@ function htmlDetalheFoco(t){
     :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
   const abrir=t.streaming==="cinema"
     ?`<button class="acao principal" disabled style="opacity:.65;cursor:default">🎬 Nos cinemas</button>`
-    :`<button class="acao principal" data-abrir="${t.id}">▶ Abrir</button>`;
+    :`<button class="acao principal" data-abrir="${t.id}">▶ ${t.cinelistYoutubeId?"Continuar no Cinelist+":"Abrir"}</button>`;
   return `
     ${contador}
     <div class="card-acoes">
@@ -2183,6 +2220,7 @@ function abrirNoStreaming(k,titulo){
 }
 function abrirStreaming(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
+  if(t.cinelistYoutubeId){ abrirPlayerTelaCheia({id:t.cinelistYoutubeId,titulo:t.nome}); return; }
   abrirNoStreaming(t.streaming,t.nome);
 }
 async function ajustar(id,campo,delta){
@@ -2539,6 +2577,11 @@ async function salvarTitulo(status,perguntarAbrir){
   if(!editandoId){
     const dup=encontrarDuplicata(nome,tipoEscolhido,tmdbId);
     if(dup){
+      if(cpOrigemAtual){
+        try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",dup.id),{status:"assistindo",cinelistYoutubeId:cpOrigemAtual.id}); }catch(e){}
+        await carregar();
+        return;
+      }
       const onde=dup.status==="assistindo"?"na lista de Assistindo":"nos Favoritos";
       avisarApp(`"${nome}" já está salvo ${onde}.`);
       return;
@@ -2555,6 +2598,7 @@ async function salvarTitulo(status,perguntarAbrir){
     tipo:tipoEscolhido,
     nota:notaEscolhida||null,
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
+    cinelistYoutubeId:cpOrigemAtual?cpOrigemAtual.id:(editandoId?(titulos.find(t=>t.id===editandoId)?.cinelistYoutubeId||null):null),
   };
   if(perguntarAbrir&&streamingEscolhido!=="cinema"&&await confirmarApp(`Deseja abrir "${nome}" no ${STREAMINGS[streamingEscolhido].nome} agora?`)){
     abrirNoStreaming(streamingEscolhido,nome);
