@@ -346,7 +346,7 @@ window.FIREBASE_CONFIG = {
   appId: "1:268669291770:web:ee9b61c4d148ef96c3cd43"
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
-window.APP_VERSION = "01.01"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.02"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -398,7 +398,7 @@ window.APP_VERSION = "01.01"; // bump a cada correção/alteração publicada: 0
     <button class="item-menu" data-painel="atualizacao"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span>Atualização</button>
     <button class="item-menu" data-painel="sobre"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
-    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.01</div>
+    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.02</div>
     <button class="item-menu perigo" id="btn-sair"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Sair</button>
   </div>
 </div>
@@ -476,7 +476,7 @@ window.APP_VERSION = "01.01"; // bump a cada correção/alteração publicada: 0
     </div>
 
     <div id="painel-atualizacao" class="hidden">
-      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.01</b></div>
+      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.02</b></div>
       <button class="btn" id="btn-verificar-atualizacao">🔄 Verificar atualização</button>
       <div id="msg-atualizacao" class="aviso hidden"></div>
     </div>
@@ -1631,16 +1631,23 @@ function desenharGeneros(){
     desenharGeneros();
   });
 }
+function resetarFiltrosGeneros(){
+  filtroGeneros.clear(); filtroAnos.clear(); filtroNota=null;
+  generoExpandido=null; generoOrdenacao="popularidade";
+}
 function abrirTelaGeneros(){
   $("#modal").classList.add("hidden");
   $("#tela-generos").classList.remove("hidden");
-  generoExpandido=null;
+  resetarFiltrosGeneros();
   montarFiltrosGeneros();
   desenharGeneros();
   carregarGeneros();
 }
 $("#btn-generos").onclick=()=>abrirTelaGeneros();
-$("#btn-voltar-generos").onclick=()=>$("#tela-generos").classList.add("hidden");
+$("#btn-voltar-generos").onclick=()=>{
+  resetarFiltrosGeneros();
+  $("#tela-generos").classList.add("hidden");
+};
 
 function htmlDescobrir(){
   const chave=filtroStreamings.size?[...filtroStreamings].sort().join(","):"todos";
