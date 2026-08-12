@@ -1593,7 +1593,7 @@ function renderizarGradeGeneros(nomes,titulo,podeVoltar){
   ).join("")}</div>`;
   lista.innerHTML=`<div class="secao">${tituloHtml}
     ${ordenarHtml}
-    <div class="grade-generos">${itens.map(x=>htmlPoster(x,null,ehFilmeDeCinema(x.id),true)).join("")}</div>
+    <div class="grade-generos">${itens.map(x=>htmlPoster(x,null,ehFilmeDeCinema(x.id))).join("")}</div>
     ${carregandoMais?`<div class="carregando">Carregando mais filmes...</div>`:""}
     ${!itens.length?`<div class="vazio" style="margin-top:20px"><span class="icone">🎬</span>Nenhum filme encontrado com esses filtros.</div>`:""}
   </div>`;
@@ -1622,7 +1622,7 @@ function desenharGeneros(){
     if(!itens.length) return;
     itens.forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
     h+=`<div class="secao"><button class="titulo-genero" data-genero="${esc(g.nome)}"><h3>${esc(g.nome)}</h3><span class="seta-genero">›</span></button>
-      <div class="carrossel">${itens.map(x=>htmlPoster(x,null,ehFilmeDeCinema(x.id),true)).join("")}</div></div>`;
+      <div class="carrossel">${itens.map(x=>htmlPoster(x,null,ehFilmeDeCinema(x.id))).join("")}</div></div>`;
   });
   lista.innerHTML=h||`<div class="vazio" style="margin-top:50px"><span class="icone">🎬</span>Nenhum filme encontrado com esses filtros.</div>`;
   pintarFlagsGeneros();
