@@ -125,6 +125,9 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
   padding:2px 5px;border-radius:6px;background:rgba(14,18,32,.9);color:var(--amber);z-index:1;line-height:1.4}
 .selo-existente{display:inline-block;margin-top:6px;font-size:9px;font-weight:800;letter-spacing:.3px;
   padding:3px 7px;border-radius:7px;background:rgba(245,184,65,.15);border:1px solid var(--amber);color:var(--amber)}
+.selo-ano{position:absolute;bottom:6px;right:6px;font-size:9px;font-weight:800;white-space:nowrap;
+  padding:2px 6px;border-radius:6px;background:rgba(14,18,32,.94);border:1px solid rgba(255,255,255,.22);
+  color:#fff;z-index:1;line-height:1.4;box-shadow:0 1px 4px rgba(0,0,0,.5)}
 .fonte{font-size:10px;color:var(--muted);margin-top:8px}
 .carregando{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;width:100%}
 .titulo-genero{display:flex;align-items:center;justify-content:space-between;width:100%;
@@ -145,8 +148,6 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .cp-card{flex-shrink:0;width:104px;text-align:left}
 .cp-card .cp-thumb-wrap{position:relative;border-radius:12px;overflow:hidden}
 .cp-card .cp-thumb{display:block;width:104px;height:156px;object-fit:cover;border-radius:12px;background:var(--card);border:1px solid var(--line)}
-.cp-card .cp-play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.15)}
-.cp-card .cp-play svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 .cp-card .nome-p{font-size:11px;font-weight:600;line-height:1.3;margin-top:6px;color:var(--text);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:16px 10px}
@@ -368,7 +369,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.07"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.08"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -624,6 +625,14 @@ window.APP_VERSION = "01.07"; // bump a cada correção/alteração publicada: 0
       <button class="btn-ghost" id="btn-fechar-grade">Voltar</button>
     </div>
 
+    <div id="passo-cp-busca" class="hidden">
+      <h3>Buscar no Cinelist+</h3>
+      <div class="field"><input id="cpm-busca" placeholder="Buscar no Cinelist+" autocomplete="off"></div>
+      <div class="filtros compacta" id="cpm-filtros" style="padding:0 0 12px"></div>
+      <div id="cpm-resultados" class="busca-resultados"></div>
+      <button class="btn-ghost" id="btn-fechar-busca-cp">Cancelar</button>
+    </div>
+
     <div id="passo-form" class="hidden">
       <h3 id="modal-titulo">Adicionar título</h3>
       <div id="capa-preview" class="capa-preview hidden">
@@ -643,11 +652,11 @@ window.APP_VERSION = "01.07"; // bump a cada correção/alteração publicada: 0
         <div class="field"><label>Episódio</label><input id="f-episodio" type="number" min="1" value="1"></div>
       </div>
       <div class="info-te hidden" id="info-te"></div>
-      <div class="linha-dupla">
+      <div class="linha-dupla" id="grupo-status">
         <button class="btn" id="btn-favoritar" style="flex:1">☆ Favoritar</button>
         <button class="btn-secundario" id="btn-assistir" style="flex:1">▶ Assistir</button>
       </div>
-      <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Compartilhar <span id="txt-tipo-compartilhar">Filme</span></button>
+      <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.13 0 4.13.83 5.64 2.34a7.93 7.93 0 0 1 2.33 5.65c0 4.4-3.58 7.98-7.98 7.98a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-2.99.78.8-2.91-.19-.3a7.9 7.9 0 0 1-1.21-4.22c0-4.4 3.58-7.98 7.99-7.98zm-4.38 4.55c-.15 0-.4.06-.61.29-.21.23-.8.78-.8 1.9s.82 2.2.94 2.35c.11.15 1.62 2.47 3.93 3.46 1.94.83 2.34.66 2.76.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.99.13-1.09-.06-.1-.21-.15-.44-.27-.23-.11-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.11-.96-.35-1.83-1.12-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.11-.13.15-.23.23-.38.08-.15.04-.29-.02-.4-.06-.11-.51-1.28-.72-1.75-.19-.46-.38-.4-.51-.4z"/></svg>Compartilhar <span id="txt-tipo-compartilhar">Filme</span></button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
   </div>
@@ -677,9 +686,9 @@ const TODAS=Object.keys(STREAMINGS);
 
 /* ---------- estado ---------- */
 let auth=null, bd=null, usuario=null, titulos=[], abaAtual="inicio", filtroStreamings=new Set(),
-    editandoId=null, modoCadastro=false, gradeOrigem="busca",
-    streamingEscolhido="netflix", capaEscolhida=null, notaEscolhida=null, tmdbId=null, tipoEscolhido="tv",
-    estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, buscaEscopo=null,
+    editandoId=null, statusEditando=null, modoCadastro=false, gradeOrigem="busca",
+    streamingEscolhido="netflix", capaEscolhida=null, notaEscolhida=null, anoEscolhido=null, tmdbId=null, tipoEscolhido="tv",
+    estruturaEscolhida=null, resultadosBusca=[], timerBusca=null, timerBuscaCP=null, buscaEscopo=null,
     LOGOS={}, PROV_IDS={}, DESC={}, descIndex=new Map(), logosProntos=null,
     CONFIG={telefone:"",ativos:null,nome:"",sobrenome:"",foto:"",plano:"free",planoTipo:null,formaPagamento:null,atalhoOferecido:false}, novoCadastro=false, perfilObrigatorio=false, deferredPrompt=null, painelOrigem="direto",
     filtroGeneros=new Set(), filtroAnos=new Set(), filtroNota=null, filtroTipoAtual=null, EXTRAS=null, GENEROS_DADOS=null, generoOrdenacao="popularidade";
@@ -869,22 +878,28 @@ document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
   if(abaAtual==="inicio") carregarDescobertas(); else desenhar();
 });
 
+function htmlFiltrosCinelistPlus(){
+  const itens=[
+    {tipo:"cpgenero",label:"Gênero",icone:ICONE_F_GENERO,ativo:!!cpFiltroGenero},
+    {tipo:"cpano",label:"Ano",icone:ICONE_F_ANO,ativo:cpFiltroAnos.size>0},
+    {tipo:"cpnota",label:"Nota",icone:ICONE_F_NOTA,ativo:!!cpFiltroNota},
+  ];
+  return itens.map(it=>
+    `<button class="chip ${it.ativo?"ativo":""}" data-filtro="${it.tipo}">${it.icone}${it.label}</button>`
+  ).join("");
+}
+function ligarFiltrosCinelistPlus(el){
+  el.querySelectorAll("[data-filtro]").forEach(b=>b.onclick=()=>abrirFiltro(b.dataset.filtro));
+}
 function montarFiltros(){
   const el=$("#filtros");
   el.classList.remove("compacta");
   if(abaAtual==="cinelistplus"){
-    el.classList.add("compacta");
-    const itens=[
-      {tipo:"cpgenero",label:"Gênero",icone:ICONE_F_GENERO,ativo:!!cpFiltroGenero},
-      {tipo:"cpano",label:"Ano",icone:ICONE_F_ANO,ativo:cpFiltroAnos.size>0},
-      {tipo:"cpnota",label:"Nota",icone:ICONE_F_NOTA,ativo:!!cpFiltroNota},
-    ];
-    el.innerHTML=itens.map(it=>
-      `<button class="chip ${it.ativo?"ativo":""}" data-filtro="${it.tipo}">${it.icone}${it.label}</button>`
-    ).join("");
-    el.querySelectorAll("[data-filtro]").forEach(b=>b.onclick=()=>abrirFiltro(b.dataset.filtro));
+    el.classList.add("hidden");
+    el.innerHTML="";
     return;
   }
+  el.classList.remove("hidden");
   if(abaAtual!=="inicio"){
     el.innerHTML=`<button class="chip ${!filtroStreamings.size?"ativo":""}" data-f="__todos__">Todos</button>`+
       ativos().map(k=>{ const s=STREAMINGS[k];
@@ -1006,6 +1021,11 @@ function fecharFiltrosOverlay(){
 $("#btn-fechar-filtros").onclick=()=>{
   $("#modal-filtros").classList.add("hidden");
   if(fecharFiltrosOverlay()) return;
+  if(!$("#passo-cp-busca").classList.contains("hidden")){
+    $("#cpm-filtros").innerHTML=htmlFiltrosCinelistPlus();
+    ligarFiltrosCinelistPlus($("#cpm-filtros"));
+    pesquisarCinelistPlus();
+  }
   montarFiltros();
   DESC={}; EXTRAS=null;
   if(abaAtual==="inicio") carregarDescobertas(); else desenhar();
@@ -1592,6 +1612,8 @@ function htmlPoster(x,rank,cinema,mostrarExistente){
   const capa=x.poster_path?IMG+"w185"+x.poster_path:"";
   const selo=cinema?`<span class="selo-cinema">CINEMA</span>`:"";
   const nota=x.vote_average?`<span class="selo-nota">⭐ ${x.vote_average.toFixed(1)}</span>`:"";
+  const ano=(x.release_date||x.first_air_date||"").slice(0,4);
+  const seloAno=ano?`<span class="selo-ano">${ano}</span>`:"";
   const existente=mostrarExistente?existenteNaLista(x.id,x.media_type):null;
   const seloExistente=existente?`<span class="selo-existente">${existente.status==="assistindo"?"Assistindo":"Favorito"}</span>`:"";
   return `<button class="poster" data-desc-id="${x.id}" data-desc-tipo="${x.media_type}" ${cinema?'data-cinema="1"':""}>
@@ -1599,6 +1621,7 @@ function htmlPoster(x,rank,cinema,mostrarExistente){
     <div class="cap-wrap">
       ${selo}
       ${nota}
+      ${seloAno}
       ${capa?`<img class="pcapa" src="${capa}" alt="" loading="lazy">`:`<div class="pcapa"></div>`}
       ${cinema?"":`<span class="prov-poster" data-pp="${x.media_type}-${x.id}"></span>`}
     </div>
@@ -1747,17 +1770,7 @@ $("#btn-voltar-generos").onclick=()=>{
 /* ---------- Cinelist+ (filmes completos de canais licenciados) ---------- */
 function desenharCinelistPlus(){
   const lista=$("#lista");
-  lista.innerHTML=`
-    <div class="secao" style="margin-top:4px">
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="cp-busca" placeholder="Buscar no Cinelist+" style="flex:1;padding:13px 16px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--line);color:var(--text);font-size:15px">
-        <button id="cp-busca-btn" aria-label="Pesquisar" style="width:46px;height:46px;border-radius:14px;background:var(--amber);color:var(--amber-ink);display:grid;place-items:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-      </div>
-    </div>
-    <div id="cp-resultados"></div>`;
-  $("#cp-busca-btn").onclick=()=>pesquisarCinelistPlus();
-  $("#cp-busca").addEventListener("keydown",e=>{ if(e.key==="Enter") pesquisarCinelistPlus(); });
-  $("#cp-busca").addEventListener("input",()=>{ if(!$("#cp-busca").value.trim()) pesquisarCinelistPlus(); });
+  lista.innerHTML=`<div id="cp-resultados"></div>`;
   if(cpCarregado){ renderizarCinelistPlusCarrosseis(); return; }
   $("#cp-resultados").innerHTML=`<div class="carregando">Carregando filmes...</div>`;
   carregarCinelistPlus();
@@ -1949,19 +1962,21 @@ async function carregarCinelistPlus(){
   cpCarregando=false;
   cpCarregado=true;
   if(abaAtual==="cinelistplus") renderizarCinelistPlusCarrosseis();
+  if(!$("#passo-cp-busca").classList.contains("hidden")) pesquisarCinelistPlus();
 }
 function htmlCartaoVideo(v){
   return `<div class="cp-card" data-id="${esc(v.id)}" data-titulo="${esc(v.titulo)}">
     <div class="cp-thumb-wrap">
       <img class="cp-thumb" src="${esc(v.thumb)}" loading="lazy" alt="">
-      <div class="cp-play"><svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="12" fill="rgba(14,18,32,.55)"/><path d="M10 8.3v7.4l6-3.7z"/></svg></div>
       ${v.nota?`<div class="selo-nota">⭐ ${v.nota.toFixed(1)}</div>`:""}
+      ${v.ano?`<div class="selo-ano">${v.ano}</div>`:""}
     </div>
     <div class="nome-p">${esc(v.titulo)}</div>
   </div>`;
 }
-function renderizarCinelistPlusCarrosseis(){
-  const el=$("#cp-resultados");
+function renderizarCinelistPlusCarrosseis(containerId){
+  containerId=containerId||"cp-resultados";
+  const el=$("#"+containerId);
   const labels=Object.keys(CP_DADOS).filter(l=>!cpFiltroGenero||l===cpFiltroGenero);
   const secoesFiltradas=labels.map(label=>({label,videos:CP_DADOS[label].filter(passaFiltroCP)})).filter(s=>s.videos.length);
   if(!secoesFiltradas.length){
@@ -1973,17 +1988,17 @@ function renderizarCinelistPlusCarrosseis(){
   if(cpFiltroGenero){
     el.innerHTML=`<div class="secao"><h3>${esc(cpFiltroGenero)}</h3>
       <div class="cp-grid">${secoesFiltradas[0].videos.map(htmlCartaoVideo).join("")}</div></div>`;
-    pintarCliquesCinelistPlus();
+    pintarCliquesCinelistPlus(containerId);
     return;
   }
   el.innerHTML=secoesFiltradas.map(s=>`
     <div class="secao"><h3>${esc(s.label)}</h3>
       <div class="carrossel">${s.videos.map(htmlCartaoVideo).join("")}</div>
     </div>`).join("");
-  pintarCliquesCinelistPlus();
+  pintarCliquesCinelistPlus(containerId);
 }
-function pintarCliquesCinelistPlus(){
-  $("#cp-resultados").querySelectorAll(".cp-card").forEach(c=>{
+function pintarCliquesCinelistPlus(containerId){
+  $("#"+(containerId||"cp-resultados")).querySelectorAll(".cp-card").forEach(c=>{
     c.onclick=()=>{
       let v=null;
       for(const lista of Object.values(CP_DADOS)){ v=lista.find(x=>x.id===c.dataset.id); if(v) break; }
@@ -2003,9 +2018,20 @@ $("#btn-fechar-player-cp").onclick=()=>{
   $("#tela-player-cp").classList.add("hidden");
   $("#player-cp-main").innerHTML="";
 };
+function abrirLinkExterno(url){
+  // abre em uma aba própria e navega via meta-refresh: evita que o Android/iOS
+  // intercepte o link e abra o app nativo (ex.: Mercado Livre) em vez do navegador
+  const w=window.open("","_blank","noopener");
+  if(w){
+    w.document.write(`<!doctype html><meta http-equiv="refresh" content="0;url=${esc(url)}"><script>location.replace(${JSON.stringify(url)})<\/script>`);
+    w.document.close();
+  }else{
+    window.open(url,"_blank","noopener");
+  }
+}
 async function abrirDetalheCinelistPlus(v){
   if(!v.tmdb){
-    if(v.linkExterno) window.open(v.linkExterno,"_blank","noopener");
+    if(v.linkExterno) abrirLinkExterno(v.linkExterno);
     else abrirPlayerTelaCheia(v);
     return;
   }
@@ -2016,10 +2042,10 @@ async function abrirDetalheCinelistPlus(v){
   atualizarVisibilidadeAssistir();
 }
 async function pesquisarCinelistPlus(){
-  const termo=$("#cp-busca").value.trim();
-  const el=$("#cp-resultados");
-  if(!termo){
-    if(cpCarregado) renderizarCinelistPlusCarrosseis(); else el.innerHTML="";
+  const termo=$("#cpm-busca").value.trim();
+  const el=$("#cpm-resultados");
+  if(termo.length<2){
+    el.innerHTML="";
     return;
   }
   if(!CP_CATALOGO.length){
@@ -2028,9 +2054,12 @@ async function pesquisarCinelistPlus(){
   }
   el.innerHTML=`<div class="carregando">Buscando "${esc(termo)}"...</div>`;
   const q=termo.toLowerCase();
-  const todos=CP_CATALOGO.filter(v=>v.titulo.toLowerCase().includes(q)).slice(0,60);
+  const pool=[...(CP_DADOS["Indicações do Cinelist+"]||[])];
+  const vistos=new Set(pool.map(v=>v.id));
+  CP_CATALOGO.forEach(v=>{ if(!vistos.has(v.id)){ vistos.add(v.id); pool.push(v); } });
+  const todos=pool.filter(v=>v.titulo.toLowerCase().includes(q)).slice(0,60);
   await enriquecerComTMDB(todos);
-  if($("#cp-busca").value.trim()!==termo) return;
+  if($("#cpm-busca").value.trim()!==termo) return;
   const resultados=todos.filter(passaFiltroCP);
   const lista=resultados.length?resultados:todos;
   if(!lista.length){
@@ -2039,7 +2068,18 @@ async function pesquisarCinelistPlus(){
   }
   el.innerHTML=`<div class="secao"><h3>Resultados para "${esc(termo)}"</h3>
     <div class="cp-grid">${lista.map(htmlCartaoVideo).join("")}</div></div>`;
-  pintarCliquesCinelistPlus();
+  pintarCliquesCinelistPlus("cpm-resultados");
+}
+function abrirBuscaCinelistPlus(){
+  cpOrigemAtual=null; cpOrigemExterna=null;
+  $("#cpm-busca").value="";
+  $("#cpm-resultados").innerHTML="";
+  $("#cpm-filtros").innerHTML=htmlFiltrosCinelistPlus();
+  ligarFiltrosCinelistPlus($("#cpm-filtros"));
+  $("#modal").classList.remove("hidden");
+  mostrarPasso("cp-busca");
+  if(!cpCarregado) carregarCinelistPlus();
+  setTimeout(()=>$("#cpm-busca").focus(),100);
 }
 
 function htmlDescobrir(){
@@ -2108,6 +2148,7 @@ function htmlPosterFoco(t,sel){
   const ehCinema=t.streaming==="cinema";
   const selo=ehCinema?`<span class="selo-cinema">CINEMA</span>`:"";
   const nota=t.nota?`<span class="selo-nota">⭐ ${t.nota.toFixed(1)}</span>`:`<span class="selo-nota hidden" id="nota-${t.id}"></span>`;
+  const ano=t.ano?`<span class="selo-ano">${t.ano}</span>`:`<span class="selo-ano hidden" id="ano-${t.id}"></span>`;
   let flag="";
   if(!ehCinema){
     const s=STREAMINGS[t.streaming]||{nome:t.streaming,cor:"#666"};
@@ -2117,6 +2158,7 @@ function htmlPosterFoco(t,sel){
     <div class="cap-wrap">
       ${selo}
       ${nota}
+      ${ano}
       ${t.capa?`<img class="pcapa" src="${esc(t.capa)}" alt="" loading="lazy">`:`<div class="pcapa"></div>`}
       ${flag}
     </div>
@@ -2125,15 +2167,25 @@ function htmlPosterFoco(t,sel){
   </button>`;
 }
 async function carregarNotasFaltantes(itens){
-  const faltando=itens.filter(t=>!t.nota&&t.tmdb_id);
+  const faltando=itens.filter(t=>(!t.nota||!t.ano)&&t.tmdb_id);
   for(const t of faltando){
     try{
       const j=await tmdbGet(`/${t.tipo}/${t.tmdb_id}?language=pt-BR`);
-      if(!j.vote_average) continue;
-      t.nota=j.vote_average;
-      const el=document.getElementById("nota-"+t.id);
-      if(el){ el.textContent=`⭐ ${j.vote_average.toFixed(1)}`; el.classList.remove("hidden"); }
-      updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",t.id),{nota:j.vote_average}).catch(()=>{});
+      const patch={};
+      if(!t.nota&&j.vote_average){
+        t.nota=j.vote_average;
+        const el=document.getElementById("nota-"+t.id);
+        if(el){ el.textContent=`⭐ ${j.vote_average.toFixed(1)}`; el.classList.remove("hidden"); }
+        patch.nota=j.vote_average;
+      }
+      const anoTmdb=(j.release_date||j.first_air_date||"").slice(0,4);
+      if(!t.ano&&anoTmdb){
+        t.ano=parseInt(anoTmdb);
+        const elAno=document.getElementById("ano-"+t.id);
+        if(elAno){ elAno.textContent=anoTmdb; elAno.classList.remove("hidden"); }
+        patch.ano=t.ano;
+      }
+      if(Object.keys(patch).length) updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",t.id),patch).catch(()=>{});
     }catch(e){}
   }
 }
@@ -2303,7 +2355,7 @@ function abrirNoStreaming(k,titulo){
 function abrirStreaming(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
   if(t.cinelistYoutubeId){ abrirPlayerTelaCheia({id:t.cinelistYoutubeId,titulo:t.nome}); return; }
-  if(t.linkExterno){ window.open(t.linkExterno,"_blank","noopener"); return; }
+  if(t.linkExterno){ abrirLinkExterno(t.linkExterno); return; }
   abrirNoStreaming(t.streaming,t.nome);
 }
 async function ajustar(id,campo,delta){
@@ -2344,9 +2396,9 @@ async function excluir(id){
 async function editar(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
   cpOrigemAtual=null; cpOrigemExterna=null;
-  editandoId=id; gradeOrigem="form";
+  editandoId=id; statusEditando=t.status; gradeOrigem="form";
   streamingEscolhido=t.streaming; capaEscolhida=t.capa||null;
-  tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv"; notaEscolhida=t.nota||null;
+  tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv"; notaEscolhida=t.nota||null; anoEscolhido=t.ano||null;
   estruturaEscolhida=estruturaDe(t);
   atualizarSeletor(); atualizarPreviewCapa(t.nome);
   $("#modal-titulo").textContent="Editar título";
@@ -2370,6 +2422,7 @@ async function editar(id){
 function mostrarPasso(qual){
   $("#passo-busca").classList.toggle("hidden",qual!=="busca");
   $("#passo-streaming").classList.toggle("hidden",qual!=="grade");
+  $("#passo-cp-busca").classList.toggle("hidden",qual!=="cp-busca");
   $("#passo-form").classList.toggle("hidden",qual!=="form");
   if(qual==="form") $("#txt-tipo-compartilhar").textContent=tipoEscolhido==="movie"?"Filme":"Série";
 }
@@ -2405,6 +2458,10 @@ function atualizarPreviewCapa(nome){
 }
 
 $("#btn-add").onclick=()=>{
+  if(abaAtual==="cinelistplus"){
+    abrirBuscaCinelistPlus();
+    return;
+  }
   editandoId=null; gradeOrigem="busca";
   capaEscolhida=null; tmdbId=null; tipoEscolhido="tv"; estruturaEscolhida=null;
   resultadosBusca=[];
@@ -2423,8 +2480,19 @@ $("#btn-add").onclick=()=>{
 $("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="form"; mostrarPasso("grade"); };
 $("#btn-fechar-grade").onclick=()=>{ mostrarPasso(gradeOrigem==="form"?"form":"busca"); };
 $("#btn-fechar-busca").onclick=()=>{ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; };
-$("#btn-cancelar").onclick=()=>{ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; };
-$("#modal").onclick=e=>{ if(e.target.id==="modal"){ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; } };
+$("#btn-fechar-busca-cp").onclick=()=>{ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; };
+$("#cpm-busca").addEventListener("input",()=>{
+  clearTimeout(timerBuscaCP);
+  if(!$("#cpm-busca").value.trim()){ pesquisarCinelistPlus(); return; }
+  timerBuscaCP=setTimeout(()=>pesquisarCinelistPlus(),450);
+});
+function fecharModalTitulo(){
+  if(editandoId){ salvarTitulo(statusEditando); return; }
+  $("#modal").classList.add("hidden");
+  cpOrigemAtual=null; cpOrigemExterna=null;
+}
+$("#btn-cancelar").onclick=()=>fecharModalTitulo();
+$("#modal").onclick=e=>{ if(e.target.id==="modal") fecharModalTitulo(); };
 
 /* ---------- busca livre ---------- */
 function montarFiltrosBusca(){
@@ -2534,6 +2602,7 @@ async function escolherResultado(i,ehCinema){
   tmdbId=x.id; tipoEscolhido=x.media_type;
   capaEscolhida=x.poster_path?IMG+"w342"+x.poster_path:null;
   notaEscolhida=x.vote_average||null;
+  anoEscolhido=(x.release_date||x.first_air_date)?parseInt((x.release_date||x.first_air_date).slice(0,4)):null;
   $("#f-nome").value=nome;
   atualizarPreviewCapa(nome);
 
@@ -2571,8 +2640,8 @@ async function escolherResultado(i,ehCinema){
   atualizarVisibilidadeAssistir();
 }
 function atualizarVisibilidadeAssistir(){
-  const mostrar=!!editandoId||!!cpOrigemAtual||!!cpOrigemExterna;
-  $("#btn-assistir").classList.toggle("hidden",!mostrar);
+  $("#grupo-status").classList.toggle("hidden",!!editandoId);
+  $("#btn-assistir").classList.toggle("hidden",!(cpOrigemAtual||cpOrigemExterna));
 }
 
 /* ficha do título (sinopse, gênero, duração, elenco) */
@@ -2662,7 +2731,7 @@ function encontrarDuplicata(nome,tipo,tid){
     return t.nome.trim().toLowerCase()===nome.trim().toLowerCase();
   });
 }
-async function salvarTitulo(status,perguntarAbrir){
+async function salvarTitulo(status){
   const nome=$("#f-nome").value.trim();
   if(!nome){ avisarApp("Digite o nome do filme ou série."); return; }
   if(!editandoId){
@@ -2692,14 +2761,12 @@ async function salvarTitulo(status,perguntarAbrir){
     tmdb_id:tmdbId||null,
     tipo:tipoEscolhido,
     nota:notaEscolhida||null,
+    ano:anoEscolhido||null,
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
     cinelistYoutubeId:cpOrigemAtual?cpOrigemAtual.id:(cpOrigemExterna?null:(tExistente?.cinelistYoutubeId||null)),
     linkExterno:cpOrigemExterna?cpOrigemExterna.url:(cpOrigemAtual?null:(tExistente?.linkExterno||null)),
     origemExterna:cpOrigemExterna?cpOrigemExterna.plataforma:(cpOrigemAtual?null:(tExistente?.origemExterna||null)),
   };
-  if(perguntarAbrir&&streamingEscolhido!=="cinema"&&await confirmarApp(`Deseja abrir "${nome}" no ${STREAMINGS[streamingEscolhido].nome} agora?`)){
-    abrirNoStreaming(streamingEscolhido,nome);
-  }
   try{
     if(editandoId){
       await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",editandoId),registro);
@@ -2711,21 +2778,21 @@ async function salvarTitulo(status,perguntarAbrir){
   $("#modal").classList.add("hidden");
   await carregar();
 }
-$("#btn-favoritar").onclick=()=>salvarTitulo("proximo",false);
+$("#btn-favoritar").onclick=()=>salvarTitulo("proximo");
 $("#btn-assistir").onclick=async ()=>{
   if(cpOrigemAtual){
     const v={id:cpOrigemAtual.id,titulo:cpOrigemAtual.titulo};
-    await salvarTitulo("assistindo",false);
+    await salvarTitulo("assistindo");
     abrirPlayerTelaCheia(v);
     return;
   }
   if(cpOrigemExterna){
     const url=cpOrigemExterna.url;
-    await salvarTitulo("assistindo",false);
-    window.open(url,"_blank","noopener");
+    await salvarTitulo("assistindo");
+    abrirLinkExterno(url);
     return;
   }
-  salvarTitulo("assistindo",true);
+  salvarTitulo("assistindo");
 };
 </script>
 </body>
