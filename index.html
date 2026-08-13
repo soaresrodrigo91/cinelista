@@ -188,7 +188,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 
 /* ---------- menu lateral ---------- */
 #menu{position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);z-index:20;display:flex}
-.gaveta{width:280px;max-width:82vw;background:var(--bg-soft);height:100%;padding:24px 16px calc(24px + env(safe-area-inset-bottom));
+.gaveta{width:280px;max-width:82vw;background:var(--bg-soft);height:100%;padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
   display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line)}
 .gaveta .logo{margin-bottom:14px}
 .item-menu{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;font-weight:600;font-size:15px;text-align:left}
@@ -229,6 +229,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 #tela-player-cp{position:fixed;inset:0;background:#000;z-index:60;display:flex;flex-direction:column;
   padding-top:env(safe-area-inset-top)}
 #tela-player-cp header{background:var(--bg);border-bottom:1px solid var(--line)}
+#player-cp-titulo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tela-player-cp main{flex:1;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
 #tela-player-cp iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
 .selo-cplus{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:9px;font-weight:800;letter-spacing:.3px;
@@ -367,7 +368,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.05"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.07"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -420,7 +421,7 @@ window.APP_VERSION = "01.05"; // bump a cada correção/alteração publicada: 0
     <button class="item-menu" data-painel="atualizacao"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span>Atualização</button>
     <button class="item-menu" data-painel="sobre"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>Sobre</button>
     <button class="item-menu" data-painel="ajuda"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4"/><line x1="12" y1="17.5" x2="12" y2="17.51"/></svg></span>Ajuda</button>
-    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.05</div>
+    <div id="versao-label" style="margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;color:var(--muted);font-size:12px;font-weight:600"><span class="ic" style="visibility:hidden">•</span>v01.07</div>
     <button class="item-menu perigo" id="btn-sair"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Sair</button>
   </div>
 </div>
@@ -506,7 +507,7 @@ window.APP_VERSION = "01.05"; // bump a cada correção/alteração publicada: 0
     </div>
 
     <div id="painel-atualizacao" class="hidden">
-      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.05</b></div>
+      <div class="aviso" style="margin:0 0 14px">Versão instalada: <b id="versao-atual-txt">01.07</b></div>
       <button class="btn" id="btn-verificar-atualizacao">🔄 Verificar atualização</button>
       <div id="msg-atualizacao" class="aviso hidden"></div>
     </div>
@@ -700,14 +701,25 @@ const CANAIS_CINELIST_PLUS=[
   {handle:"netmovies"},
   {handle:"BoxOfficeBRAZIL"},
   {handle:"europafilmes"},
+  {handle:"filmplusbr"},
+  {handle:"space_filmes"},
 ];
 const GENEROS_CINELIST_PLUS=[
-  {label:"Ação",termo:"Ação"},{label:"Comédia",termo:"Comédia"},{label:"Drama",termo:"Drama"},
-  {label:"Terror",termo:"Terror"},{label:"Suspense",termo:"Suspense"},{label:"Romance",termo:"Romance"},
-  {label:"Filmes Brasileiros",termo:"cinema nacional brasileiro"},
+  {label:"Ficção Científica"},{label:"Ação"},{label:"Comédia"},{label:"Drama"},{label:"Terror"},
+  {label:"Suspense"},{label:"Romance"},{label:"Animação"},{label:"Filmes Brasileiros"},
+];
+/* indicações escolhidas manualmente — adicionadas sob pedido, aparecem sempre primeiro */
+const CP_INDICACOES=[
+  {id:"6EhJtEl228c",titulo:"O Nevoeiro"},
+  {id:"_DFrrUwt5eU",titulo:"Sem Saída",tmdbId:59965},
+  {titulo:"Homem-Aranha: De Volta ao Lar",tmdbId:315635,linkExterno:"https://play.mercadolivre.com.br/assistir/homemaranha-de-volta-ao-lar/db88d60522434eac8e948fe4062baa83/player?origin=mplay_home",plataforma:"Mercado Play"},
+  {titulo:"Pânico na Neve",tmdbId:44363,linkExterno:"https://play.mercadolivre.com.br/assistir/panico-na-neve/5b8765e7c6514dd28b9cf886e657ccb4?origin=mplay_home",plataforma:"Mercado Play"},
+  {titulo:"Um Olhar do Paraíso",tmdbId:7980,linkExterno:"https://play.mercadolivre.com.br/assistir/um-olhar-do-paraiso/18834f7ade594de49c6b6e00953a1a69/player?origin=mplay_home",plataforma:"Mercado Play"},
+  {titulo:"Déjà Vu",tmdbId:7551,linkExterno:"https://play.mercadolivre.com.br/assistir/deja-vu/fd3f30e9ef4a4f65bec2bd8cf57c8269/player?origin=mplay_home",plataforma:"Mercado Play"},
+  {titulo:"Dungeons & Dragons: Honra Entre Rebeldes",tmdbId:493529,linkExterno:"https://play.mercadolivre.com.br/assistir/dungeons-e-dragons-honra-entre-rebeldes/2bc7af9e8bea4c329f46f0aace420314/player?origin=mplay_home",plataforma:"Mercado Play"},
 ];
 let CP_CANAL_IDS={}, CP_DADOS={}, CP_META_CACHE={}, cpCarregado=false, cpCarregando=false,
-    cpFiltroGenero=null, cpFiltroAnos=new Set(), cpFiltroNota=null, cpOrigemAtual=null;
+    cpFiltroGenero=null, cpFiltroAnos=new Set(), cpFiltroNota=null, cpOrigemAtual=null, cpOrigemExterna=null;
 
 const ICONE_F_STREAMING='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>';
 const ICONE_F_GENERO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M12.59 2.59 20 10a2 2 0 0 1 0 2.83l-6.17 6.17a2 2 0 0 1-2.83 0L3.59 11.59A2 2 0 0 1 3 10.17V4a1 1 0 0 1 1-1h6.17a2 2 0 0 1 1.42.59Z"/><circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/></svg>';
@@ -880,8 +892,8 @@ function montarFiltros(){
       }).join("");
     el.querySelectorAll("[data-f]").forEach(c=>c.onclick=()=>{
       const k=c.dataset.f;
-      if(k==="__todos__") filtroStreamings.clear();
-      else if(filtroStreamings.has(k)) filtroStreamings.delete(k); else filtroStreamings.add(k);
+      filtroStreamings.clear();
+      if(k!=="__todos__") filtroStreamings.add(k);
       el.querySelectorAll("[data-f]").forEach(x=>{
         x.classList.toggle("ativo",x.dataset.f==="__todos__"?filtroStreamings.size===0:filtroStreamings.has(x.dataset.f));
       });
@@ -928,7 +940,7 @@ function abrirFiltro(tipo){
   $("#filtros-titulo").textContent=titulos_map[tipo];
   if(tipo==="cpgenero"){
     filtroSnapshot=[cpFiltroGenero];
-    const opcoes=["Lançamentos",...GENEROS_CINELIST_PLUS.map(g=>g.label)];
+    const opcoes=["Indicações do Cinelist+",...GENEROS_CINELIST_PLUS.map(g=>g.label)];
     $("#filtros-chips").innerHTML=
       `<button class="chip ${!cpFiltroGenero?"ativo":""}" data-v="__todos__">Todos</button>`+
       opcoes.map(g=>`<button class="chip ${cpFiltroGenero===g?"ativo":""}" data-v="${esc(g)}">${esc(g)}</button>`).join("");
@@ -1312,7 +1324,9 @@ $("#btn-verificar-atualizacao").onclick=async ()=>{
     if(!m) throw new Error("versão não encontrada");
     const remota=m[1];
     if(compararVersao(remota,window.APP_VERSION)>0){
-      mostrarMsg("#msg-atualizacao",`Nova versão disponível: ${remota}! Recarregue a página para atualizar.`,"ok");
+      mostrarMsg("#msg-atualizacao",`Nova versão encontrada (${remota})! Atualizando...`,"ok");
+      setTimeout(()=>location.reload(),1200);
+      return;
     }else{
       mostrarMsg("#msg-atualizacao",`Você já está com a versão mais atualizada (${window.APP_VERSION}).`,"ok");
     }
@@ -1736,13 +1750,14 @@ function desenharCinelistPlus(){
   lista.innerHTML=`
     <div class="secao" style="margin-top:4px">
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="cp-busca" placeholder="Buscar filmes..." style="flex:1;padding:13px 16px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--line);color:var(--text);font-size:15px">
+        <input id="cp-busca" placeholder="Buscar no Cinelist+" style="flex:1;padding:13px 16px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--line);color:var(--text);font-size:15px">
         <button id="cp-busca-btn" aria-label="Pesquisar" style="width:46px;height:46px;border-radius:14px;background:var(--amber);color:var(--amber-ink);display:grid;place-items:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
       </div>
     </div>
     <div id="cp-resultados"></div>`;
   $("#cp-busca-btn").onclick=()=>pesquisarCinelistPlus();
   $("#cp-busca").addEventListener("keydown",e=>{ if(e.key==="Enter") pesquisarCinelistPlus(); });
+  $("#cp-busca").addEventListener("input",()=>{ if(!$("#cp-busca").value.trim()) pesquisarCinelistPlus(); });
   if(cpCarregado){ renderizarCinelistPlusCarrosseis(); return; }
   $("#cp-resultados").innerHTML=`<div class="carregando">Carregando filmes...</div>`;
   carregarCinelistPlus();
@@ -1767,7 +1782,7 @@ function duracaoParaSegundos(iso){
   if(!m) return 0;
   return (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+parseInt(m[3]||0);
 }
-const TMDB_GENERO_ID_CP={28:"Ação",12:"Ação",35:"Comédia",18:"Drama",27:"Terror",53:"Suspense",10749:"Romance"};
+const TMDB_GENERO_ID_CP={28:"Ação",12:"Ação",35:"Comédia",18:"Drama",27:"Terror",53:"Suspense",10749:"Romance",878:"Ficção Científica",16:"Animação"};
 function generosDoVideoCP(v){
   const gs=new Set();
   (v.generoIds||[]).forEach(id=>{ if(TMDB_GENERO_ID_CP[id]) gs.add(TMDB_GENERO_ID_CP[id]); });
@@ -1788,13 +1803,13 @@ async function buscarUploadsCanal(channelId,limite){
     }
     if(!itens.length) return [];
     const ids=itens.map(it=>it.snippet.resourceId.videoId);
+    const lotesIds=[]; for(let i=0;i<ids.length;i+=50) lotesIds.push(ids.slice(i,i+50));
     const durMap={};
-    for(let i=0;i<ids.length;i+=50){
-      const lote=ids.slice(i,i+50);
+    await Promise.all(lotesIds.map(async lote=>{
       const rd=await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${lote.join(",")}&key=${window.YOUTUBE_KEY}`);
       const jd=await rd.json();
       (jd.items||[]).forEach(vd=>{ durMap[vd.id]=duracaoParaSegundos(vd.contentDetails.duration); });
-    }
+    }));
     return itens.filter(it=>(durMap[it.snippet.resourceId.videoId]||0)>=1200).map(it=>{
       const tituloBruto=it.snippet.title.replace(/&amp;/g,"&").replace(/&#39;/g,"'");
       return{
@@ -1812,8 +1827,9 @@ function ordenarPorRecencia(videos){
 async function buscarMetaTMDB(titulo){
   const chave=titulo.toLowerCase();
   if(chave in CP_META_CACHE) return CP_META_CACHE[chave];
+  const consulta=titulo.replace(/\s*\((?:19|20)\d{2}\)\s*$/,"").trim()||titulo;
   try{
-    const r=await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${window.TMDB_KEY}&language=pt-BR&query=${encodeURIComponent(titulo)}`);
+    const r=await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${window.TMDB_KEY}&language=pt-BR&query=${encodeURIComponent(consulta)}`);
     const j=await r.json();
     const m=j.results&&j.results[0];
     const meta=m?{
@@ -1827,6 +1843,20 @@ async function buscarMetaTMDB(titulo){
     return meta;
   }catch(e){ CP_META_CACHE[chave]=null; return null; }
 }
+async function buscarMetaTMDBPorId(id){
+  try{
+    const r=await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${window.TMDB_KEY}&language=pt-BR`);
+    const m=await r.json();
+    if(!m||!m.id) return null;
+    return{
+      nota:m.vote_average||null,
+      ano:m.release_date?parseInt(m.release_date.slice(0,4)):null,
+      generoIds:(m.genres||[]).map(g=>g.id),
+      idioma:m.original_language||null,
+      tmdb:{...m,media_type:"movie"}
+    };
+  }catch(e){ return null; }
+}
 async function enriquecerComTMDB(videos){
   await Promise.all(videos.map(async v=>{
     const meta=await buscarMetaTMDB(v.titulo);
@@ -1838,32 +1868,83 @@ function passaFiltroCP(v){
   if(cpFiltroNota&&!(v.nota&&v.nota>=cpFiltroNota.min&&v.nota<=cpFiltroNota.max)) return false;
   return true;
 }
-let CP_BRUTOS=[];
-const CP_CACHE_KEY="cp_cache_v5";
+let CP_BRUTOS=[], CP_CATALOGO=[];
+const CP_CACHE_KEY="cp_cache_v9";
+const CP_CATALOGO_CACHE_KEY="cp_catalogo_v2";
+async function carregarCatalogoCinelistPlus(){
+  const hoje=new Date().toDateString();
+  try{
+    const cache=JSON.parse(localStorage.getItem(CP_CATALOGO_CACHE_KEY)||"null");
+    if(cache&&cache.dia===hoje&&cache.videos&&cache.videos.length) return cache.videos;
+  }catch(e){}
+  const ids=(await Promise.all(CANAIS_CINELIST_PLUS.map(c=>resolverCanalId(c.handle)))).filter(Boolean);
+  const lotes=await Promise.all(ids.map(id=>buscarUploadsCanal(id,10000)));
+  const vistos=new Set(); const catalogo=[];
+  lotes.flat().forEach(v=>{ if(!vistos.has(v.id)){ vistos.add(v.id); catalogo.push(v); } });
+  ordenarPorRecencia(catalogo);
+  try{ localStorage.setItem(CP_CATALOGO_CACHE_KEY,JSON.stringify({dia:hoje,videos:catalogo})); }catch(e){}
+  return catalogo;
+}
 async function carregarCinelistPlus(){
   if(cpCarregando) return;
   cpCarregando=true;
   const hoje=new Date().toDateString();
+  const catalogo=await carregarCatalogoCinelistPlus();
   let brutos=null;
   try{
     const cache=JSON.parse(localStorage.getItem(CP_CACHE_KEY)||"null");
-    if(cache&&cache.dia===hoje&&cache.videos&&cache.videos.length) brutos=cache.videos;
+    if(cache&&cache.dia===hoje&&cache.videos&&cache.videos.length&&cache.videos.length===catalogo.length) brutos=cache.videos;
   }catch(e){}
   if(!brutos){
-    const ids=(await Promise.all(CANAIS_CINELIST_PLUS.map(c=>resolverCanalId(c.handle)))).filter(Boolean);
-    const lotes=await Promise.all(ids.map(id=>buscarUploadsCanal(id,100)));
-    const vistos=new Set(); brutos=[];
-    lotes.flat().forEach(v=>{ if(!vistos.has(v.id)){ vistos.add(v.id); brutos.push(v); } });
-    ordenarPorRecencia(brutos);
+    brutos=catalogo;
     await enriquecerComTMDB(brutos);
     try{ localStorage.setItem(CP_CACHE_KEY,JSON.stringify({dia:hoje,videos:brutos})); }catch(e){}
   }
   CP_BRUTOS=brutos;
+  CP_CATALOGO=brutos;
+  let paraCarrosseis=brutos.filter(v=>v.ano&&v.ano>=2018);
+  if(paraCarrosseis.length<40) paraCarrosseis=brutos.filter(v=>v.ano);
+  const dadosPorLabel={};
+  const usadosEmGenero=new Set();
+  const chaveUso=v=>v.tmdb?.id?"tmdb:"+v.tmdb.id:v.id;
+  const marcarUsado=v=>usadosEmGenero.add(chaveUso(v));
+  const jaUsado=v=>usadosEmGenero.has(chaveUso(v));
+  if(CP_INDICACOES.length){
+    const indicados=[];
+    for(const ind of CP_INDICACOES){
+      const idBusca=ind.id||"ext:"+ind.linkExterno;
+      let v=brutos.find(x=>x.id===idBusca);
+      if(!v) v={id:idBusca,thumb:ind.id?`https://i.ytimg.com/vi/${ind.id}/mqdefault.jpg`:null,publicadoEm:new Date().toISOString()};
+      if(ind.tmdbId&&v.tmdb?.id!==ind.tmdbId){
+        const meta=await buscarMetaTMDBPorId(ind.tmdbId);
+        if(meta){ v={...v,nota:meta.nota,ano:meta.ano,generoIds:meta.generoIds,idioma:meta.idioma,tmdb:meta.tmdb}; }
+      }else if(!v.tmdb){
+        const meta=await buscarMetaTMDB(ind.titulo);
+        if(meta){ v={...v,nota:meta.nota,ano:meta.ano,generoIds:meta.generoIds,idioma:meta.idioma,tmdb:meta.tmdb}; }
+      }
+      if(!v.thumb&&v.tmdb?.poster_path) v.thumb=IMG+"w342"+v.tmdb.poster_path;
+      v={...v,titulo:ind.titulo,linkExterno:ind.linkExterno||null,plataforma:ind.plataforma||null};
+      if(jaUsado(v)) continue;
+      indicados.push(v);
+      marcarUsado(v);
+    }
+    dadosPorLabel["Indicações do Cinelist+"]=indicados;
+  }
+  const candidatosPorGenero=GENEROS_CINELIST_PLUS.map(g=>({
+    g, candidatos:paraCarrosseis.filter(v=>generosDoVideoCP(v).includes(g.label)).sort((a,b)=>b.ano-a.ano)
+  })).sort((a,b)=>a.candidatos.length-b.candidatos.length);
+  candidatosPorGenero.forEach(({g,candidatos})=>{
+    const lista=[];
+    for(const v of candidatos){
+      if(lista.length>=30) break;
+      if(jaUsado(v)) continue;
+      lista.push(v); marcarUsado(v);
+    }
+    if(lista.length) dadosPorLabel[g.label]=lista;
+  });
   CP_DADOS={};
-  if(brutos.length) CP_DADOS["Lançamentos"]=brutos.slice(0,18);
-  GENEROS_CINELIST_PLUS.forEach(g=>{
-    const lista=brutos.filter(v=>generosDoVideoCP(v).includes(g.label)).slice(0,16);
-    if(lista.length) CP_DADOS[g.label]=lista;
+  ["Indicações do Cinelist+",...GENEROS_CINELIST_PLUS.map(g=>g.label)].forEach(label=>{
+    if(dadosPorLabel[label]) CP_DADOS[label]=dadosPorLabel[label];
   });
   cpCarregando=false;
   cpCarregado=true;
@@ -1904,7 +1985,10 @@ function renderizarCinelistPlusCarrosseis(){
 function pintarCliquesCinelistPlus(){
   $("#cp-resultados").querySelectorAll(".cp-card").forEach(c=>{
     c.onclick=()=>{
-      const v=CP_BRUTOS.find(x=>x.id===c.dataset.id)||{id:c.dataset.id,titulo:c.dataset.titulo};
+      let v=null;
+      for(const lista of Object.values(CP_DADOS)){ v=lista.find(x=>x.id===c.dataset.id); if(v) break; }
+      if(!v) v=CP_CATALOGO.find(x=>x.id===c.dataset.id)||CP_BRUTOS.find(x=>x.id===c.dataset.id);
+      v=v?{...v,titulo:c.dataset.titulo}:{id:c.dataset.id,titulo:c.dataset.titulo};
       abrirDetalheCinelistPlus(v);
     };
   });
@@ -1920,21 +2004,16 @@ $("#btn-fechar-player-cp").onclick=()=>{
   $("#player-cp-main").innerHTML="";
 };
 async function abrirDetalheCinelistPlus(v){
-  if(!v.tmdb){ abrirPlayerTelaCheia(v); return; }
+  if(!v.tmdb){
+    if(v.linkExterno) window.open(v.linkExterno,"_blank","noopener");
+    else abrirPlayerTelaCheia(v);
+    return;
+  }
   descIndex.set("movie-"+v.tmdb.id,v.tmdb);
   await abrirDescoberta(v.tmdb.id,"movie",false);
-  const detalhes=$("#detalhes");
-  const btn=document.createElement("button");
-  btn.className="btn-secundario";
-  btn.style.cssText="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px";
-  btn.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Assistir filme completo`;
-  btn.onclick=async ()=>{
-    cpOrigemAtual={id:v.id,titulo:v.titulo};
-    await salvarTitulo("assistindo",false);
-    cpOrigemAtual=null;
-    abrirPlayerTelaCheia(v);
-  };
-  detalhes.appendChild(btn);
+  if(v.linkExterno) cpOrigemExterna={url:v.linkExterno,plataforma:v.plataforma};
+  else cpOrigemAtual={id:v.id,titulo:v.titulo};
+  atualizarVisibilidadeAssistir();
 }
 async function pesquisarCinelistPlus(){
   const termo=$("#cp-busca").value.trim();
@@ -1943,12 +2022,15 @@ async function pesquisarCinelistPlus(){
     if(cpCarregado) renderizarCinelistPlusCarrosseis(); else el.innerHTML="";
     return;
   }
-  if(!CP_BRUTOS.length){
+  if(!CP_CATALOGO.length){
     el.innerHTML=`<div class="aviso" style="margin-top:14px">Aguarde o carregamento dos filmes e tente novamente.</div>`;
     return;
   }
+  el.innerHTML=`<div class="carregando">Buscando "${esc(termo)}"...</div>`;
   const q=termo.toLowerCase();
-  const todos=CP_BRUTOS.filter(v=>v.titulo.toLowerCase().includes(q));
+  const todos=CP_CATALOGO.filter(v=>v.titulo.toLowerCase().includes(q)).slice(0,60);
+  await enriquecerComTMDB(todos);
+  if($("#cp-busca").value.trim()!==termo) return;
   const resultados=todos.filter(passaFiltroCP);
   const lista=resultados.length?resultados:todos;
   if(!lista.length){
@@ -2038,7 +2120,7 @@ function htmlPosterFoco(t,sel){
       ${t.capa?`<img class="pcapa" src="${esc(t.capa)}" alt="" loading="lazy">`:`<div class="pcapa"></div>`}
       ${flag}
     </div>
-    ${t.cinelistYoutubeId?`<span class="selo-cplus">Cinelist+</span>`:""}
+    ${(t.cinelistYoutubeId||t.linkExterno)?`<span class="selo-cplus">Cinelist+</span>`:""}
     <div class="nome-p">${esc(t.nome)}</div>
   </button>`;
 }
@@ -2082,7 +2164,7 @@ function htmlDetalheFoco(t){
     :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
   const abrir=t.streaming==="cinema"
     ?`<button class="acao principal" disabled style="opacity:.65;cursor:default">🎬 Nos cinemas</button>`
-    :`<button class="acao principal" data-abrir="${t.id}">▶ ${t.cinelistYoutubeId?"Continuar no Cinelist+":"Abrir"}</button>`;
+    :`<button class="acao principal" data-abrir="${t.id}">▶ ${(t.cinelistYoutubeId||t.linkExterno)?"Continuar no Cinelist+":"Abrir"}</button>`;
   return `
     ${contador}
     <div class="card-acoes">
@@ -2221,6 +2303,7 @@ function abrirNoStreaming(k,titulo){
 function abrirStreaming(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
   if(t.cinelistYoutubeId){ abrirPlayerTelaCheia({id:t.cinelistYoutubeId,titulo:t.nome}); return; }
+  if(t.linkExterno){ window.open(t.linkExterno,"_blank","noopener"); return; }
   abrirNoStreaming(t.streaming,t.nome);
 }
 async function ajustar(id,campo,delta){
@@ -2260,6 +2343,7 @@ async function excluir(id){
 }
 async function editar(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
+  cpOrigemAtual=null; cpOrigemExterna=null;
   editandoId=id; gradeOrigem="form";
   streamingEscolhido=t.streaming; capaEscolhida=t.capa||null;
   tmdbId=t.tmdb_id||null; tipoEscolhido=t.tipo||"tv"; notaEscolhida=t.nota||null;
@@ -2272,6 +2356,7 @@ async function editar(id){
   $("#detalhes").classList.add("hidden");
   atualizarInfoTE();
   mostrarPasso("form");
+  atualizarVisibilidadeAssistir();
   $("#modal").classList.remove("hidden");
   if(t.tmdb_id){
     try{
@@ -2337,9 +2422,9 @@ $("#btn-add").onclick=()=>{
 };
 $("#btn-trocar-streaming").onclick=()=>{ gradeOrigem="form"; mostrarPasso("grade"); };
 $("#btn-fechar-grade").onclick=()=>{ mostrarPasso(gradeOrigem==="form"?"form":"busca"); };
-$("#btn-fechar-busca").onclick=()=>$("#modal").classList.add("hidden");
-$("#btn-cancelar").onclick=()=>$("#modal").classList.add("hidden");
-$("#modal").onclick=e=>{ if(e.target.id==="modal") $("#modal").classList.add("hidden"); };
+$("#btn-fechar-busca").onclick=()=>{ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; };
+$("#btn-cancelar").onclick=()=>{ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; };
+$("#modal").onclick=e=>{ if(e.target.id==="modal"){ $("#modal").classList.add("hidden"); cpOrigemAtual=null; cpOrigemExterna=null; } };
 
 /* ---------- busca livre ---------- */
 function montarFiltrosBusca(){
@@ -2483,6 +2568,11 @@ async function escolherResultado(i,ehCinema){
   $("#f-temporada").value=1; $("#f-episodio").value=1;
   atualizarInfoTE();
   mostrarPasso("form");
+  atualizarVisibilidadeAssistir();
+}
+function atualizarVisibilidadeAssistir(){
+  const mostrar=!!editandoId||!!cpOrigemAtual||!!cpOrigemExterna;
+  $("#btn-assistir").classList.toggle("hidden",!mostrar);
 }
 
 /* ficha do título (sinopse, gênero, duração, elenco) */
@@ -2521,7 +2611,7 @@ function mostrarDetalhes(j,tipo){
     ${generos?`<div class="generos">${esc(generos)}</div>`:""}
     ${sinopseHTML}
     ${elenco?`<div class="elenco"><b>Elenco:</b> ${esc(elenco)}</div>`:""}
-    ${trailer?`<button class="btn-secundario" id="btn-trailer" style="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Assistir trailer</button>
+    ${trailer?`<button class="btn-secundario" id="btn-trailer" style="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Trailer</button>
       <div id="trailer-embed" class="hidden" style="margin-top:10px"></div>`:""}`;
   const bsp=$("#btn-sinopse-premium"); if(bsp) bsp.onclick=()=>abrirPaywall("sinopse");
   const btnTrailer=$("#btn-trailer");
@@ -2552,6 +2642,7 @@ function atualizarInfoTE(){
 $("#f-temporada").addEventListener("input",atualizarInfoTE);
 $("#f-episodio").addEventListener("input",atualizarInfoTE);
 async function abrirDescoberta(id,tipo,ehCinema){
+  cpOrigemAtual=null; cpOrigemExterna=null;
   const fonte=descIndex.get(tipo+"-"+id);
   if(!fonte) return;
   editandoId=null; gradeOrigem="busca";
@@ -2577,8 +2668,11 @@ async function salvarTitulo(status,perguntarAbrir){
   if(!editandoId){
     const dup=encontrarDuplicata(nome,tipoEscolhido,tmdbId);
     if(dup){
-      if(cpOrigemAtual){
-        try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",dup.id),{status:"assistindo",cinelistYoutubeId:cpOrigemAtual.id}); }catch(e){}
+      if(cpOrigemAtual||cpOrigemExterna){
+        const patch={status};
+        if(cpOrigemAtual){ patch.cinelistYoutubeId=cpOrigemAtual.id; patch.linkExterno=null; patch.origemExterna=null; }
+        else{ patch.linkExterno=cpOrigemExterna.url; patch.origemExterna=cpOrigemExterna.plataforma; patch.cinelistYoutubeId=null; }
+        try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",dup.id),patch); }catch(e){}
         await carregar();
         return;
       }
@@ -2587,6 +2681,7 @@ async function salvarTitulo(status,perguntarAbrir){
       return;
     }
   }
+  const tExistente=editandoId?titulos.find(t=>t.id===editandoId):null;
   const registro={
     nome,
     streaming:streamingEscolhido,
@@ -2598,7 +2693,9 @@ async function salvarTitulo(status,perguntarAbrir){
     tipo:tipoEscolhido,
     nota:notaEscolhida||null,
     estrutura:estruturaEscolhida?JSON.stringify(estruturaEscolhida):null,
-    cinelistYoutubeId:cpOrigemAtual?cpOrigemAtual.id:(editandoId?(titulos.find(t=>t.id===editandoId)?.cinelistYoutubeId||null):null),
+    cinelistYoutubeId:cpOrigemAtual?cpOrigemAtual.id:(cpOrigemExterna?null:(tExistente?.cinelistYoutubeId||null)),
+    linkExterno:cpOrigemExterna?cpOrigemExterna.url:(cpOrigemAtual?null:(tExistente?.linkExterno||null)),
+    origemExterna:cpOrigemExterna?cpOrigemExterna.plataforma:(cpOrigemAtual?null:(tExistente?.origemExterna||null)),
   };
   if(perguntarAbrir&&streamingEscolhido!=="cinema"&&await confirmarApp(`Deseja abrir "${nome}" no ${STREAMINGS[streamingEscolhido].nome} agora?`)){
     abrirNoStreaming(streamingEscolhido,nome);
@@ -2615,7 +2712,21 @@ async function salvarTitulo(status,perguntarAbrir){
   await carregar();
 }
 $("#btn-favoritar").onclick=()=>salvarTitulo("proximo",false);
-$("#btn-assistir").onclick=()=>salvarTitulo("assistindo",true);
+$("#btn-assistir").onclick=async ()=>{
+  if(cpOrigemAtual){
+    const v={id:cpOrigemAtual.id,titulo:cpOrigemAtual.titulo};
+    await salvarTitulo("assistindo",false);
+    abrirPlayerTelaCheia(v);
+    return;
+  }
+  if(cpOrigemExterna){
+    const url=cpOrigemExterna.url;
+    await salvarTitulo("assistindo",false);
+    window.open(url,"_blank","noopener");
+    return;
+  }
+  salvarTitulo("assistindo",true);
+};
 </script>
 </body>
 </html>
