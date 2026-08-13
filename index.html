@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>CineList</title>
 
+<script>
+(function(){
+  var qs=new URLSearchParams(location.search);
+  if(qs.has("tv")) localStorage.setItem("cinelista_tv_mode",qs.get("tv")==="1"?"1":"0");
+  var isTv=(typeof window.tizen!=="undefined")||qs.get("tv")==="1"||localStorage.getItem("cinelista_tv_mode")==="1";
+  window.CINELIST_IS_TV=isTv;
+  if(isTv) document.documentElement.classList.add("tv-mode");
+})();
+</script>
+
 <!-- PWA / iOS -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -353,6 +363,48 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .capa-preview{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .capa-preview img{width:54px;height:80px;object-fit:cover;border-radius:10px}
 .capa-preview .titulo-escolhido{font-family:'Sora';font-weight:700;font-size:15px;line-height:1.3}
+
+/* ===== TV MODE (Samsung Tizen / navegação por controle remoto) ===== */
+html.tv-mode body{
+  font-size:20px;
+  padding-top:max(env(safe-area-inset-top),24px);
+  padding-bottom:max(env(safe-area-inset-bottom),24px);
+  padding-left:24px;padding-right:24px;
+}
+html.tv-mode #banner-atalho{display:none!important}
+.tv-only{display:none}
+html.tv-mode .tv-only{display:block}
+/* telinhas tipo "folha" (adicionar/editar, filtros) abrem coladas embaixo no celular —
+   na TV ficam centralizadas na tela, como um diálogo normal */
+html.tv-mode #modal,
+html.tv-mode #modal-filtros{
+  align-items:center!important;
+  justify-content:center;
+}
+html.tv-mode .folha{
+  width:min(640px,90vw);
+  max-height:80vh;
+  border-radius:24px;
+}
+html.tv-mode :focus{outline:none}
+html.tv-mode button:focus,
+html.tv-mode input:focus,
+html.tv-mode textarea:focus,
+html.tv-mode select:focus,
+html.tv-mode [tabindex]:focus{
+  outline:3px solid var(--amber);
+  outline-offset:2px;
+  box-shadow:0 0 0 6px rgba(245,184,65,.28);
+  transform:scale(1.03);
+  position:relative;
+  z-index:2;
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+html.tv-mode .poster,html.tv-mode .poster .pcapa{width:150px}
+html.tv-mode .poster .pcapa{height:225px}
+html.tv-mode .poster-foco{width:190px}
+html.tv-mode .cp-card,html.tv-mode .cp-card .cp-thumb{width:150px}
+html.tv-mode .seta{width:44px;height:44px}
 </style>
 </head>
 <body>
@@ -369,7 +421,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.08"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.09"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -656,6 +708,7 @@ window.APP_VERSION = "01.08"; // bump a cada correção/alteração publicada: 0
         <button class="btn" id="btn-favoritar" style="flex:1">☆ Favoritar</button>
         <button class="btn-secundario" id="btn-assistir" style="flex:1">▶ Assistir</button>
       </div>
+      <button class="btn-secundario tv-only" id="btn-abrir-streaming-tv">📺 Abrir no Streaming</button>
       <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.13 0 4.13.83 5.64 2.34a7.93 7.93 0 0 1 2.33 5.65c0 4.4-3.58 7.98-7.98 7.98a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-2.99.78.8-2.91-.19-.3a7.9 7.9 0 0 1-1.21-4.22c0-4.4 3.58-7.98 7.99-7.98zm-4.38 4.55c-.15 0-.4.06-.61.29-.21.23-.8.78-.8 1.9s.82 2.2.94 2.35c.11.15 1.62 2.47 3.93 3.46 1.94.83 2.34.66 2.76.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.99.13-1.09-.06-.1-.21-.15-.44-.27-.23-.11-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.11-.96-.35-1.83-1.12-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.11-.13.15-.23.23-.38.08-.15.04-.29-.02-.4-.06-.11-.51-1.28-.72-1.75-.19-.46-.38-.4-.51-.4z"/></svg>Compartilhar <span id="txt-tipo-compartilhar">Filme</span></button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
@@ -672,14 +725,19 @@ import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, d
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ---------- streamings ---------- */
+/* tizenAppId: id do app na Samsung TV (usado só no modo TV, pra abrir o app do streaming
+   de verdade em vez do navegador). NÃO CONFIRMADO em TV real — vem de relatos públicos de
+   desenvolvedores Tizen, pode estar errado/desatualizado pro seu modelo/firmware. Se o app
+   não abrir, corrija o id aqui (Tools > Device Manager no Tizen Studio lista os apps
+   instalados na TV com seus ids) — sem id ou se a chamada falhar, cai pro site normal. */
 const STREAMINGS = {
-  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t,        app:t=>"nflx://www.netflix.com/search?q="+t },
-  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t, app:()=>"primevideo://" },
-  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t,          app:()=>"hbomax://" },
-  paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],    busca:()=>"https://www.paramountplus.com/search/" },
-  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t,     app:()=>"globoplay://" },
-  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t,      app:()=>"disneyplus://" },
-  appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t },
+  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t,        app:t=>"nflx://www.netflix.com/search?q="+t,        tizenAppId:"3201907018807" },
+  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t, app:()=>"primevideo://",                            tizenAppId:"3201910019365" },
+  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t,          app:()=>"hbomax://",                                tizenAppId:null },
+  paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],    busca:()=>"https://www.paramountplus.com/search/",                                                            tizenAppId:null },
+  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t,     app:()=>"globoplay://",                             tizenAppId:null },
+  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t,      app:()=>"disneyplus://",                            tizenAppId:null },
+  appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t,                                                                tizenAppId:null },
 };
 const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.themoviedb.org/3";
 const TODAS=Object.keys(STREAMINGS);
@@ -1271,6 +1329,7 @@ async function ativarPremium(){
 /* ---------- atalho na tela de início ---------- */
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e; });
 function talvezOferecerAtalho(){
+  if(window.CINELIST_IS_TV) return;
   const instalado=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
   if(instalado||CONFIG.atalhoOferecido) return;
   const ehIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -2337,6 +2396,19 @@ $("#lista-generos").addEventListener("click",e=>{
 function abrirNoStreaming(k,titulo){
   const s=STREAMINGS[k]; if(!s) return;
   const web=s.busca(encodeURIComponent(titulo));
+  if(window.CINELIST_IS_TV){
+    if(s.tizenAppId && window.tizen && window.tizen.application){
+      try{
+        tizen.application.launch(s.tizenAppId,
+          ()=>{},
+          ()=>{ window.open(web,"_blank"); } /* app não instalado ou id desatualizado: cai pro site */
+        );
+      }catch(e){ window.open(web,"_blank"); }
+    }else{
+      window.open(web,"_blank");
+    }
+    return;
+  }
   const ehIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
   if(ehIOS&&s.app){
     // tenta abrir o aplicativo; se não abrir (não instalado), cai no site
@@ -2779,6 +2851,12 @@ async function salvarTitulo(status){
   await carregar();
 }
 $("#btn-favoritar").onclick=()=>salvarTitulo("proximo");
+$("#btn-abrir-streaming-tv").onclick=async ()=>{
+  const nome=$("#f-nome").value.trim();
+  if(!nome){ avisarApp("Digite o nome do filme ou série."); return; }
+  await salvarTitulo("assistindo");
+  abrirNoStreaming(streamingEscolhido,nome);
+};
 $("#btn-assistir").onclick=async ()=>{
   if(cpOrigemAtual){
     const v={id:cpOrigemAtual.id,titulo:cpOrigemAtual.titulo};
@@ -2794,6 +2872,182 @@ $("#btn-assistir").onclick=async ()=>{
   }
   salvarTitulo("assistindo");
 };
+</script>
+
+<!-- ===== TV MODE: navegação espacial por controle remoto (Samsung Tizen) ===== -->
+<script>
+if(window.CINELIST_IS_TV){
+(function(){
+
+  var FOCUSABLE_SELECTOR='button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), '+
+    'textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function isElementVisible(el){
+    if(el.hidden) return false;
+    var rects=el.getClientRects();
+    if(!rects.length) return false;
+    var r=rects[0];
+    return r.width>0 && r.height>0;
+  }
+  function getFocusables(root){
+    return Array.prototype.filter.call(root.querySelectorAll(FOCUSABLE_SELECTOR),isElementVisible);
+  }
+
+  /* ordem de prioridade = mesma ordem visual do z-index já usado no CSS */
+  var TV_LAYER_STACK=[
+    {id:"tela-player-cp",close:function(){var b=document.getElementById("btn-fechar-player-cp"); if(b) b.click();}},
+    {id:"toast",close:function(){var t=document.getElementById("toast"); if(t) t.classList.add("hidden");}},
+    {id:"confirma-simples",close:function(){var b=document.getElementById("cs-cancelar"); if(b) b.click();}},
+    {id:"escolha-plano",close:function(){}}, /* escolha obrigatória no primeiro acesso: sem ação de voltar */
+    {id:"paywall",close:function(){var b=document.getElementById("paywall-nao"); if(b) b.click();}},
+    {id:"confirma",close:function(){var b=document.getElementById("conf-cancelar"); if(b) b.click();}},
+    {id:"modal-filtros",close:function(){var b=document.getElementById("btn-sair-filtros"); if(b) b.click();}},
+    {id:"modal",close:function(){closeModalStep();}},
+    {id:"tela-generos",close:function(){var b=document.getElementById("btn-voltar-generos"); if(b) b.click();}},
+    {id:"painel",close:function(){var b=document.getElementById("btn-voltar-painel"); if(b) b.click();}},
+    {id:"menu",close:function(){var m=document.getElementById("menu"); if(m) m.click();}},
+    {id:"tela-app",close:function(){handleRootBack();}},
+    {id:"tela-login",close:function(){handleRootBack();}},
+    {id:"tela-config",close:function(){handleRootBack();}}
+  ];
+
+  function closeModalStep(){
+    function vis(id){ var el=document.getElementById(id); return el && !el.classList.contains("hidden"); }
+    function click(id){ var b=document.getElementById(id); if(b) b.click(); }
+    if(vis("passo-form")){ click("btn-cancelar"); return; }
+    if(vis("passo-streaming")){ click("btn-fechar-grade"); return; }
+    if(vis("passo-cp-busca")){ click("btn-fechar-busca-cp"); return; }
+    click("btn-fechar-busca");
+  }
+
+  function handleRootBack(){
+    if(window.tizen && window.tizen.application){
+      try{ window.tizen.application.getCurrentApplication().exit(); }catch(e){}
+    }
+  }
+
+  function getActiveLayer(){
+    for(var i=0;i<TV_LAYER_STACK.length;i++){
+      var el=document.getElementById(TV_LAYER_STACK[i].id);
+      if(el && !el.classList.contains("hidden")) return el;
+    }
+    return document.body;
+  }
+
+  function handleBack(){
+    for(var i=0;i<TV_LAYER_STACK.length;i++){
+      var el=document.getElementById(TV_LAYER_STACK[i].id);
+      if(el && !el.classList.contains("hidden")){ TV_LAYER_STACK[i].close(); return; }
+    }
+  }
+
+  function rectCenter(r){ return {x:r.left+r.width/2,y:r.top+r.height/2}; }
+
+  function bestCandidate(dir){
+    var container=getActiveLayer();
+    var active=document.activeElement;
+    var all=getFocusables(container);
+    var candidates=all.filter(function(el){ return el!==active; });
+    if(!candidates.length) return null;
+
+    var originValid=active && active!==document.body && container.contains(active) && isElementVisible(active);
+    if(!originValid) return candidates[0];
+
+    var aRect=active.getBoundingClientRect();
+    var o=rectCenter(aRect);
+    var horizontal=(dir==="ArrowRight"||dir==="ArrowLeft");
+    var bestOverlap=null,bestScoreOverlap=Infinity; /* mesma fileira/coluna visual */
+    var bestAny=null,bestScoreAny=Infinity;          /* qualquer candidato à frente, sem exigir alinhamento */
+
+    for(var i=0;i<candidates.length;i++){
+      var el=candidates[i];
+      var r=el.getBoundingClientRect();
+      var c=rectCenter(r);
+      var dx=c.x-o.x, dy=c.y-o.y;
+      var primary,cross,overlap;
+      if(dir==="ArrowRight"){ if(dx<=0) continue; primary=dx; cross=dy; }
+      else if(dir==="ArrowLeft"){ if(dx>=0) continue; primary=-dx; cross=dy; }
+      else if(dir==="ArrowDown"){ if(dy<=0) continue; primary=dy; cross=dx; }
+      else{ if(dy>=0) continue; primary=-dy; cross=dx; }
+      overlap=horizontal
+        ? Math.min(aRect.bottom,r.bottom)-Math.max(aRect.top,r.top)
+        : Math.min(aRect.right,r.right)-Math.max(aRect.left,r.left);
+      var score=primary+Math.abs(cross)*2;
+      if(score<bestScoreAny){ bestScoreAny=score; bestAny=el; }
+      if(overlap>0 && score<bestScoreOverlap){ bestScoreOverlap=score; bestOverlap=el; }
+    }
+    /* alinhado (mesma fileira/coluna) sempre vence; setas horizontais numa borda sem
+       nada alinhado ficam paradas — só as verticais usam o "qualquer candidato à frente"
+       pra poder trocar de seção/coluna ao descer ou subir */
+    return bestOverlap||(horizontal?null:bestAny);
+  }
+
+  function moveFocus(dir){
+    var target=bestCandidate(dir);
+    if(!target) return;
+    target.focus({preventScroll:true});
+    if(target.scrollIntoView) target.scrollIntoView({block:"nearest",inline:"nearest"});
+  }
+
+  var tvFocusRaf=null;
+  function scheduleAutoFocus(){
+    if(tvFocusRaf) return;
+    tvFocusRaf=requestAnimationFrame(function(){
+      tvFocusRaf=null;
+      var layer=getActiveLayer();
+      if(document.activeElement && layer.contains(document.activeElement) && isElementVisible(document.activeElement)) return;
+      var first=getFocusables(layer)[0];
+      if(first) first.focus({preventScroll:true});
+    });
+  }
+  new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++){ if(muts[i].type==="attributes"){ scheduleAutoFocus(); return; } }
+  }).observe(document.body,{attributes:true,attributeFilter:["class"],subtree:true});
+
+  function makeCpCardsFocusable(root){
+    var cards=root.querySelectorAll ? root.querySelectorAll(".cp-card:not([tabindex])") : [];
+    for(var i=0;i<cards.length;i++) cards[i].tabIndex=0;
+  }
+  new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++){
+      var added=muts[i].addedNodes;
+      for(var j=0;j<added.length;j++){
+        var n=added[j];
+        if(n.nodeType!==1) continue;
+        if(n.matches && n.matches(".cp-card") && !n.hasAttribute("tabindex")) n.tabIndex=0;
+        makeCpCardsFocusable(n);
+      }
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+  makeCpCardsFocusable(document.body);
+
+  document.addEventListener("tizenhwkey",function(e){ if(e.keyName==="back") handleBack(); });
+
+  var lastNavAt=0;
+  document.addEventListener("keydown",function(e){
+    if(e.key==="ArrowUp"||e.key==="ArrowDown"||e.key==="ArrowLeft"||e.key==="ArrowRight"){
+      e.preventDefault();
+      var now=Date.now();
+      if(now-lastNavAt<120) return; /* evita saltos ao segurar a tecla/controle pressionado */
+      lastNavAt=now;
+      moveFocus(e.key); return;
+    }
+    if(e.key==="Enter"){
+      if(document.activeElement && document.activeElement!==document.body) document.activeElement.click();
+      return;
+    }
+    if(e.key==="Escape"){ e.preventDefault(); handleBack(); return; }
+    if(e.key==="Backspace"){
+      var a=document.activeElement;
+      var isTyping=a && (a.tagName==="INPUT"||a.tagName==="TEXTAREA") && a.type!=="checkbox" && !a.disabled && !a.readOnly;
+      if(isTyping) return;
+      e.preventDefault(); handleBack();
+    }
+  },true);
+
+  scheduleAutoFocus();
+})();
+}
 </script>
 </body>
 </html>
