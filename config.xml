@@ -4,11 +4,14 @@
         id="http://cinelista.app/CineList"
         version="1.0.0"
         viewmodes="maximized">
-  <tizen:application id="CineList0001.CineList" package="CineList0001" required_version="5.5"/>
+  <tizen:application id="CineList01.CineList" package="CineList01" required_version="5.5"/>
   <content src="index.html?tv=1"/>
   <feature name="http://tizen.org/feature/screen.size.all"/>
   <icon src="icon-192.png"/>
   <name>CineList</name>
   <tizen:privilege name="http://tizen.org/privilege/internet"/>
   <tizen:profile name="tv-samsung"/>
+  <access origin="*" subdomains="true"/>
+  <tizen:content-security-policy>default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; frame-src *; child-src *;</tizen:content-security-policy>
+  <tizen:allow-navigation>*</tizen:allow-navigation>
 </widget>

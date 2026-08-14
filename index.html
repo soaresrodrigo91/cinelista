@@ -382,8 +382,8 @@ html.tv-mode #modal-filtros{
   justify-content:center;
 }
 html.tv-mode .folha{
-  width:min(640px,90vw);
-  max-height:80vh;
+  width:min(1100px,80vw);
+  max-height:82vh;
   border-radius:24px;
 }
 html.tv-mode :focus{outline:none}
@@ -400,11 +400,50 @@ html.tv-mode [tabindex]:focus{
   z-index:2;
   transition:transform .12s ease,box-shadow .12s ease;
 }
-html.tv-mode .poster,html.tv-mode .poster .pcapa{width:150px}
-html.tv-mode .poster .pcapa{height:225px}
-html.tv-mode .poster-foco{width:190px}
-html.tv-mode .cp-card,html.tv-mode .cp-card .cp-thumb{width:150px}
-html.tv-mode .seta{width:44px;height:44px}
+/* TV: usa a largura toda da tela (o layout "desktop" limitava em 1100px) */
+html.tv-mode #tela-app{max-width:none!important}
+html.tv-mode main{padding:8px 48px 60px}
+/* TV: espaço extra pro anel de foco (que "cresce" um pouco) não ser cortado —
+   overflow-x:auto sozinho faz o navegador cortar também na vertical, por isso
+   o overflow-y:visible explícito aqui */
+html.tv-mode .carrossel,html.tv-mode .carrossel-foco{
+  padding:20px 28px;margin:-20px -28px;overflow-y:visible;
+}
+/* TV: cabeçalho/abas/filtros deixam de ficar "grudados" no topo ao rolar —
+   estilo Netflix, fica no fluxo normal, sem cobrir o primeiro carrossel */
+html.tv-mode .topo-fixo{position:static}
+/* TV: menu estilo Netflix — centralizado no topo, só texto, letras grandes,
+   sem fundo/borda nas abas (o JS do modo TV troca o ícone de "Início" por
+   texto e põe a lupa antes das abas) */
+html.tv-mode .abas{padding:10px 0 22px;gap:36px;justify-content:center}
+html.tv-mode .aba{flex:none;background:none;border:none;padding:8px 4px;font-size:26px;font-weight:600;color:var(--muted);border-radius:0}
+html.tv-mode .aba.ativa{background:none;border:none;color:var(--text);box-shadow:inset 0 -3px 0 var(--amber)}
+html.tv-mode .aba-icone{flex:none;width:auto;padding:8px 4px}
+/* foco (navegação pelo controle) nas abas e na lupa: só destaca a fonte,
+   sem o anel amarelo padrão usado no resto do app */
+html.tv-mode .aba:focus,html.tv-mode #btn-add:focus{
+  outline:none!important;box-shadow:none!important;transform:scale(1.08)!important;color:#fff!important;
+}
+html.tv-mode #btn-add{position:static;width:34px;height:34px;border-radius:50%;
+  background:none;border:none;box-shadow:none;color:var(--text);flex:none}
+html.tv-mode .poster,html.tv-mode .poster .pcapa{width:210px}
+html.tv-mode .poster .pcapa{height:315px}
+html.tv-mode .poster .rank{font-size:52px;top:-14px}
+html.tv-mode .poster .nome-p{font-size:15px}
+html.tv-mode .poster-foco,html.tv-mode .poster-foco .pcapa{width:230px}
+html.tv-mode .cp-card,html.tv-mode .cp-card .cp-thumb{width:210px}
+html.tv-mode .cp-card .nome-p{font-size:15px}
+html.tv-mode .seta{width:52px;height:52px}
+html.tv-mode .carrossel,html.tv-mode .carrossel-foco{gap:16px}
+/* TV: títulos das seções (carrosséis) e texto da sinopse maiores, mais fáceis
+   de ler à distância */
+html.tv-mode .secao h3{font-size:24px;margin-bottom:16px}
+html.tv-mode .detalhes{font-size:17px;line-height:1.7;padding:18px}
+html.tv-mode .detalhes .meta{font-size:17px}
+html.tv-mode #titulo-escolhido{font-size:20px}
+html.tv-mode #modal-titulo,html.tv-mode .folha h3{font-size:24px}
+/* TV: sem sentido compartilhar por WhatsApp numa TV */
+html.tv-mode #btn-compartilhar-titulo{display:none!important}
 </style>
 </head>
 <body>
@@ -421,7 +460,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.09"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -953,6 +992,11 @@ function montarFiltros(){
   const el=$("#filtros");
   el.classList.remove("compacta");
   if(abaAtual==="cinelistplus"){
+    el.classList.add("hidden");
+    el.innerHTML="";
+    return;
+  }
+  if(window.CINELIST_IS_TV && abaAtual==="inicio"){
     el.classList.add("hidden");
     el.innerHTML="";
     return;
@@ -2397,15 +2441,13 @@ function abrirNoStreaming(k,titulo){
   const s=STREAMINGS[k]; if(!s) return;
   const web=s.busca(encodeURIComponent(titulo));
   if(window.CINELIST_IS_TV){
+    const avisoManual=()=>avisarApp(`Abra o app da ${s.nome} na TV pra assistir "${titulo}" — a TV não consegue abrir esse app sozinha ainda.`,"ok");
     if(s.tizenAppId && window.tizen && window.tizen.application){
-      try{
-        tizen.application.launch(s.tizenAppId,
-          ()=>{},
-          ()=>{ window.open(web,"_blank"); } /* app não instalado ou id desatualizado: cai pro site */
-        );
-      }catch(e){ window.open(web,"_blank"); }
+      window.__cinelistTvSaiuPraStreaming=true;
+      try{ tizen.application.launch(s.tizenAppId,()=>{},avisoManual); }
+      catch(e){ avisoManual(); }
     }else{
-      window.open(web,"_blank");
+      avisoManual();
     }
     return;
   }
@@ -2854,7 +2896,15 @@ $("#btn-favoritar").onclick=()=>salvarTitulo("proximo");
 $("#btn-abrir-streaming-tv").onclick=async ()=>{
   const nome=$("#f-nome").value.trim();
   if(!nome){ avisarApp("Digite o nome do filme ou série."); return; }
-  await salvarTitulo("assistindo");
+  const dup=!editandoId?encontrarDuplicata(nome,tipoEscolhido,tmdbId):null;
+  if(dup){
+    if(dup.status!=="assistindo"){
+      try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",dup.id),{status:"assistindo"}); await carregar(); }catch(e){}
+    }
+    $("#modal").classList.add("hidden");
+  }else{
+    await salvarTitulo("assistindo");
+  }
   abrirNoStreaming(streamingEscolhido,nome);
 };
 $("#btn-assistir").onclick=async ()=>{
@@ -3046,6 +3096,31 @@ if(window.CINELIST_IS_TV){
   },true);
 
   scheduleAutoFocus();
+
+  /* menu estilo Netflix: lupa antes das abas, "Início" escrito por extenso
+     em vez do ícone de casinha */
+  var btnAdd=document.getElementById("btn-add");
+  var abas=document.querySelector(".abas");
+  if(btnAdd && abas && abas.firstElementChild!==btnAdd){
+    abas.insertBefore(btnAdd,abas.firstElementChild);
+  }
+  var abaInicio=document.querySelector('.aba[data-aba="inicio"]');
+  if(abaInicio && abaInicio.classList.contains("aba-icone")){
+    abaInicio.textContent="Início";
+    abaInicio.classList.remove("aba-icone");
+  }
+
+  /* ao voltar de um app de streaming aberto por "Abrir no Streaming", retorna
+     pra tela de início em vez de ficar onde a navegação tinha parado */
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden && window.__cinelistTvSaiuPraStreaming){
+      window.__cinelistTvSaiuPraStreaming=false;
+      var modal=document.getElementById("modal");
+      if(modal) modal.classList.add("hidden");
+      var abaInicio=document.querySelector('.aba[data-aba="inicio"]');
+      if(abaInicio) abaInicio.click();
+    }
+  });
 })();
 }
 </script>
