@@ -140,6 +140,11 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
   color:#fff;z-index:1;line-height:1.4;box-shadow:0 1px 4px rgba(0,0,0,.5)}
 .fonte{font-size:10px;color:var(--muted);margin-top:8px}
 .carregando{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;width:100%}
+/* título/seta de voltar e os chips de "Ordenar por" ficam na mesma linha,
+   um de cada lado; em telas estreitas o "Ordenar por" quebra pra linha de
+   baixo naturalmente (flex-wrap) */
+.cabecalho-generos{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;margin-bottom:14px}
+.cabecalho-generos .titulo-genero{width:auto;justify-content:flex-start;gap:8px;margin-bottom:0}
 .titulo-genero{display:flex;align-items:center;justify-content:space-between;width:100%;
   text-align:left;padding:0;margin-bottom:10px}
 .titulo-genero h3{margin:0}
@@ -151,7 +156,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .grade-generos .poster{width:100%;height:auto}
 .grade-generos .poster .pcapa{width:100%;height:auto;aspect-ratio:2/3}
 .grade-generos .poster .nome-p{height:auto;max-height:2.6em}
-.ordenar-generos{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.ordenar-generos{display:flex;align-items:center;gap:8px;margin-bottom:0;flex-wrap:wrap}
 .ordenar-generos span{font-size:12px;color:var(--muted);font-weight:600}
 
 /* ---------- Cinelist+ ---------- */
@@ -208,7 +213,7 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 
 /* ---------- caixa de confirmação ---------- */
 #confirma{position:fixed;inset:0;background:rgba(8,10,20,.75);backdrop-filter:blur(4px);
-  z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+  z-index:75;display:flex;align-items:center;justify-content:center;padding:24px}
 .caixa-confirma{background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;
   padding:22px;width:100%;max-width:340px}
 .caixa-confirma p{font-size:14px;line-height:1.6;margin-bottom:10px}
@@ -222,12 +227,87 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .caixa-confirma .cancelar{background:var(--bg);border:1px solid var(--line);color:var(--text)}
 .item-menu.perigo{color:var(--danger)}
 
-/* ---------- aviso flutuante (toast) e confirmação genérica, no lugar de alert()/confirm() nativos ---------- */
+/* ---------- aviso flutuante (toast) e confirmação genérica, no lugar de alert()/confirm() nativos ----------
+   avisos/confirmações de sistema ficam acima de QUALQUER tela de conteúdo
+   (menu, painéis, modal, tv-titulo-detalhe, player etc.) — senão uma
+   confirmação disparada de dentro de uma tela com z-index maior fica
+   escondida atrás dela (ex.: "Excluir" dentro do overlay de detalhe da TV) */
 #toast{position:fixed;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom));
-  z-index:50;display:flex;justify-content:center;pointer-events:none}
+  z-index:90;display:flex;justify-content:center;pointer-events:none}
 #toast .aviso{pointer-events:auto;max-width:420px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.5);margin:0}
 #confirma-simples{position:fixed;inset:0;background:rgba(8,10,20,.75);backdrop-filter:blur(4px);
-  z-index:48;display:flex;align-items:center;justify-content:center;padding:24px}
+  z-index:78;display:flex;align-items:center;justify-content:center;padding:24px}
+
+/* ---------- TV: tela de seleção de perfil (uma "conta" CineList por
+   perfil) — é a primeira tela ao abrir o app quando já existe pelo menos
+   um perfil salvo neste aparelho; escolher um perfil pede e-mail/senha
+   daquela conta como de costume */
+#tela-perfil-tv{position:fixed;inset:0;background:var(--bg);z-index:95;
+  display:flex;align-items:flex-start;justify-content:center;padding:40px;padding-top:13vh;overflow:hidden}
+/* pôsteres em colunas de alturas crescentes (escada), encostadas no canto
+   inferior direito — cada coluna é uma pilha de pôsteres INTEIROS (sem
+   cortar nenhum no meio como um clip-path faria), da mais baixa perto do
+   centro até a mais alta bem na quina da tela, preenchendo bem mais aquele
+   canto sem nunca chegar perto do círculo do perfil/"+" */
+.tv-perfil-fundo{position:absolute;right:0;bottom:0;z-index:0;
+  display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;
+  padding-right:8px;
+  opacity:0;transition:opacity 1.2s ease;filter:brightness(.85) saturate(1.15);}
+.tv-perfil-fundo.pronto{opacity:1}
+.tv-perfil-fundo-coluna{display:flex;flex-direction:column;gap:8px;width:145px;flex-shrink:0}
+.tv-perfil-fundo img{width:145px;height:217px;object-fit:cover;border-radius:8px;display:block}
+.tv-perfil-scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 700px 550px at 100% 100%,rgba(8,10,20,.1) 0%,rgba(8,10,20,.65) 75%,var(--bg) 100%)}
+/* marca d'água: o ícone de play da marca repetido em diagonal, bem sutil */
+.tv-perfil-agua{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg transform='rotate(-18 60 60)'%3E%3Cpath d='M48 38 L48 82 L82 60 Z' fill='%23F5B841'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:120px 120px}
+.tv-perfil-marca{position:fixed;top:28px;left:40px;z-index:2;display:flex;align-items:center;gap:10px}
+.tv-perfil-marca .logo-mark-mini{width:34px;height:34px;border-radius:10px;background:var(--amber);
+  color:var(--amber-ink);display:grid;place-items:center;font-size:16px;flex-shrink:0}
+.tv-perfil-marca .btn-menu-nome{font-family:'Sora';font-size:19px;font-weight:800;color:var(--text)}
+.tv-perfil-conteudo{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.tv-perfil-pergunta{font-family:'Sora';font-size:40px;font-weight:800;color:var(--amber);
+  margin-bottom:44px;text-align:center;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.tv-perfil-status{font-family:'Sora';font-size:17px;font-weight:600;color:var(--muted);
+  margin:-28px 0 24px;text-align:center}
+.tv-perfil-lista{display:flex;flex-wrap:wrap;justify-content:center;gap:40px;max-width:1100px}
+.tv-perfil-cartao{background:none;border:none;display:flex;flex-direction:column;align-items:center;
+  gap:22px;padding:16px;border-radius:20px;cursor:pointer}
+.tv-perfil-foto{width:180px;height:180px;border-radius:50%;background:var(--bg-soft);
+  border:4px solid transparent;display:grid;place-items:center;overflow:hidden;
+  font-size:64px;font-weight:800;color:var(--text);box-shadow:0 10px 40px rgba(0,0,0,.4);
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.tv-perfil-foto img{width:100%;height:100%;object-fit:cover}
+.tv-perfil-foto-add{background:var(--bg-soft);border:4px dashed var(--line);
+  font-size:64px;font-weight:300;color:var(--muted);box-shadow:none;line-height:1}
+.tv-perfil-nome{font-family:'Sora';font-size:24px;font-weight:700;color:var(--muted);transition:color .15s ease}
+/* o anel de foco genérico da TV (outline + box-shadow + scale no botão
+   inteiro) fica duplicado com o próprio destaque redondo da foto — aqui só
+   a foto brilha/cresce, como no seletor de perfil da Netflix */
+html.tv-mode .tv-perfil-cartao:focus{outline:none!important;box-shadow:none!important;transform:none!important}
+.tv-perfil-cartao:focus .tv-perfil-foto{border-color:var(--amber);transform:scale(1.08);
+  box-shadow:0 10px 40px rgba(0,0,0,.4),0 0 0 8px rgba(245,184,65,.15)}
+.tv-perfil-cartao:focus .tv-perfil-foto-add{border-color:var(--amber);border-style:solid;color:var(--amber)}
+.tv-perfil-cartao:focus .tv-perfil-nome{color:var(--text)}
+
+/* ---------- TV: aviso em tela cheia (app do streaming não abriu sozinho) ---------- */
+#tv-app-indisponivel{position:fixed;inset:0;background:rgba(8,10,20,.96);
+  z-index:85;display:flex;align-items:center;justify-content:center;padding:40px;text-align:center}
+.caixa-tv-aviso{max-width:640px}
+.caixa-tv-aviso .icone{font-size:64px;margin-bottom:20px}
+.caixa-tv-aviso h2{font-size:32px;line-height:1.35;margin-bottom:16px}
+.caixa-tv-aviso h2 span{color:var(--amber)}
+.caixa-tv-aviso p{font-size:19px;color:var(--muted);line-height:1.6;margin-bottom:30px}
+.caixa-tv-aviso .btn{min-width:220px;margin:0}
+
+/* ---------- TV: tela de detalhe em tela cheia (favoritos/assistindo) ---------- */
+#tv-titulo-detalhe{position:fixed;inset:0;background:rgba(8,10,20,.92);
+  z-index:55;display:flex;align-items:center;justify-content:center;padding:40px}
+.tv-td-caixa{background:var(--bg);border:1px solid var(--line);border-radius:24px;
+  padding:32px;width:100%;max-width:min(1300px,90vw);max-height:86vh;overflow-y:auto}
+.tv-td-caixa #btn-tv-td-fechar{margin-top:22px;width:auto;min-width:180px}
+.tv-detalhe-nome{font-family:'Sora';font-size:30px;font-weight:800;margin-bottom:16px;line-height:1.25}
 
 /* ---------- painel (telas do menu) ---------- */
 #painel{position:fixed;inset:0;background:var(--bg);z-index:25;display:flex;flex-direction:column;
@@ -248,6 +328,15 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .linha-streaming{display:flex;align-items:center;gap:12px;padding:13px 6px;border-bottom:1px solid var(--line);font-weight:600;font-size:15px}
 .linha-streaming input{width:22px;height:22px;accent-color:var(--amber);margin-left:auto;flex-shrink:0}
 .texto-sobre{font-size:14px;line-height:1.8;color:var(--text)}
+/* o painel do menu (perfil/sobre/etc) tem uma media query (min-width:768px)
+   que trava a coluna em 680px — na TV isso sufoca o texto num canto em vez
+   de centralizar de verdade na tela larga */
+html.tv-mode #painel .conteudo{max-width:none!important}
+html.tv-mode .texto-sobre{font-size:19px;line-height:1.85;max-width:800px;margin:0 auto}
+/* .btn-ghost (ex.: "Pesquisar por gênero") não tinha border-radius, então o
+   anel de foco do TV mode saía quadrado em vez de arredondado igual aos
+   outros botões */
+html.tv-mode .btn-ghost{border-radius:14px;padding:8px 12px}
 .texto-sobre p{margin-bottom:14px}
 .texto-sobre b{color:var(--amber)}
 
@@ -358,6 +447,12 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 .tile:active{transform:scale(.97);border-color:var(--amber)}
 .seletor-streaming{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;
   border-radius:14px;background:var(--bg);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:15px}
+/* TV: streaming + trailer lado a lado, mesma altura/largura — em vez de
+   duas linhas cheias empilhadas (o trailer sozinho ocupando a tela toda) */
+.linha-trailer-streaming{display:flex;gap:10px;margin-bottom:14px}
+.linha-trailer-streaming .seletor-streaming{width:auto;flex:1;margin-bottom:0}
+.linha-trailer-streaming .btn-secundario{width:auto;flex:1;margin-top:0!important}
+.linha-trailer-streaming:empty{display:none}
 .seletor-streaming .trocar{margin-left:auto;color:var(--amber);font-size:13px;font-weight:600}
 .disponivel{font-size:12px;color:var(--muted);margin:-6px 0 14px;line-height:1.8;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .capa-preview{display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -367,10 +462,15 @@ main{flex:1;padding:4px 16px 110px;display:flex;flex-direction:column;gap:6px}
 /* ===== TV MODE (Samsung Tizen / navegação por controle remoto) ===== */
 html.tv-mode body{
   font-size:20px;
-  padding-top:max(env(safe-area-inset-top),24px);
+  padding-top:max(env(safe-area-inset-top),8px);
   padding-bottom:max(env(safe-area-inset-bottom),24px);
   padding-left:24px;padding-right:24px;
 }
+/* o cabeçalho (nome+abas+filtros) é sticky e fica por cima do conteúdo —
+   sem isso, scrollIntoView() (usado ao navegar com o controle) considera um
+   pôster "visível" mesmo semi-escondido atrás do cabeçalho fixo, e para de
+   rolar cedo demais */
+html.tv-mode{scroll-padding-top:108px}
 html.tv-mode #banner-atalho{display:none!important}
 .tv-only{display:none}
 html.tv-mode .tv-only{display:block}
@@ -382,10 +482,37 @@ html.tv-mode #modal-filtros{
   justify-content:center;
 }
 html.tv-mode .folha{
-  width:min(1100px,80vw);
+  width:min(1300px,88vw);
+  /* sem isso, a media query @media(min-width:768px){.folha{max-width:560px}}
+     (feita pro layout desktop normal) continuava limitando a largura mesmo
+     no modo TV, deixando a caixa estreita e alta apesar do width acima */
+  max-width:min(1300px,88vw)!important;
   max-height:82vh;
   border-radius:24px;
+  /* .folha tem overflow-y:auto pra rolar o formulário inteiro — como CSS
+     não permite overflow-y:auto sem cortar também no eixo horizontal (a
+     menos que overflow-x seja dito explicitamente), o anel de foco dos
+     botões/campos perto da borda lateral ficava cortado */
+  overflow-x:visible;
+  padding-left:32px;padding-right:32px;
 }
+/* TV: formulário de adicionar/editar (aberto ao clicar num filme no início)
+   continua em coluna única, mas com capa/textos/campos maiores — usa melhor
+   a largura da folha e reduz quanto precisa rolar pra ver tudo */
+html.tv-mode .capa-preview{gap:20px;margin-bottom:18px}
+html.tv-mode .capa-preview img{width:110px;height:160px;border-radius:14px}
+html.tv-mode .capa-preview .titulo-escolhido{font-size:22px}
+html.tv-mode .field label{font-size:15px}
+html.tv-mode .field input,html.tv-mode .field select,html.tv-mode .field textarea{
+  font-size:17px;padding:16px 18px}
+html.tv-mode .seletor-streaming{padding:16px 18px;font-size:16px}
+/* mesma altura/padding em todos os botões das telas de sinopse (streaming,
+   trailer, abrir/favoritar/comecei a ver) — cada um tinha um padding/
+   font-size próprio (herdado do mobile), ficando com alturas bem diferentes
+   entre as fileiras */
+html.tv-mode .acao{padding:16px 12px;font-size:15px}
+html.tv-mode .btn-secundario{padding:16px 18px;font-size:16px}
+html.tv-mode .contador{margin-bottom:14px}
 html.tv-mode :focus{outline:none}
 html.tv-mode button:focus,
 html.tv-mode input:focus,
@@ -400,38 +527,141 @@ html.tv-mode [tabindex]:focus{
   z-index:2;
   transition:transform .12s ease,box-shadow .12s ease;
 }
+/* TV: o anel/glow de foco (6px de box-shadow + 3px de outline) precisa de mais
+   respiro entre o label e o campo, senão cobre o texto "E-mail"/"Senha" etc
+   quando o campo é focado pelo controle */
+html.tv-mode .field{margin-bottom:26px}
+html.tv-mode .field label{margin-bottom:16px}
 /* TV: usa a largura toda da tela (o layout "desktop" limitava em 1100px) */
 html.tv-mode #tela-app{max-width:none!important}
-html.tv-mode main{padding:8px 48px 60px}
+/* respiro extra embaixo: no último carrossel, se o nome do filme/série quebra
+   em 2 linhas o card fica mais alto, e sem essa folga o anel de foco do
+   último pôster fica cortado na borda inferior da tela */
+html.tv-mode main{padding:8px 48px 110px}
 /* TV: espaço extra pro anel de foco (que "cresce" um pouco) não ser cortado —
    overflow-x:auto sozinho faz o navegador cortar também na vertical, por isso
-   o overflow-y:visible explícito aqui */
+   o overflow-y:visible explícito aqui. Bottom bem maior que o resto: quando
+   o nome do filme/série quebra em 2 linhas, o card fica mais alto e só
+   20px não bastam pra não cortar o anel de foco embaixo */
 html.tv-mode .carrossel,html.tv-mode .carrossel-foco{
-  padding:20px 28px;margin:-20px -28px;overflow-y:visible;
+  padding:20px 28px 50px;margin:-20px -28px -50px;overflow-y:visible;
 }
-/* TV: cabeçalho/abas/filtros deixam de ficar "grudados" no topo ao rolar —
-   estilo Netflix, fica no fluxo normal, sem cobrir o primeiro carrossel */
-html.tv-mode .topo-fixo{position:static}
+/* TV: mesmo problema nos chips de streaming (favoritos/assistindo) — o anel
+   de foco ficava cortado em cima/embaixo por causa do overflow-x:auto */
+html.tv-mode .filtros{
+  padding-top:22px;padding-bottom:22px;margin-top:-20px;margin-bottom:-20px;overflow-y:visible;
+}
+/* TV: mesmo problema nos chips de streaming da busca (lupa no início) */
+html.tv-mode .filtros-busca{
+  padding-top:22px;padding-bottom:22px;margin-top:-22px;margin-bottom:-10px;overflow-y:visible;
+}
+/* TV: cabeçalho/abas/filtros ficam fixos no topo ao rolar — nome, abas,
+   sino e avatar sempre visíveis, estilo Netflix */
+html.tv-mode .topo-fixo{position:sticky;top:0;display:grid}
+/* TV: cabeçalho e abas ficam sobrepostos na MESMA linha (mesma célula do
+   grid) — assim a lupa/abas ficam no mesmo alinhamento horizontal do avatar,
+   sino e menu-hambúrguer, em vez de duas linhas separadas. O título "CineList"
+   some (redundante com o ícone de menu) e a área vazia das abas deixa os
+   cliques passarem para os botões do cabeçalho por baixo. */
+html.tv-mode .topo-fixo>header{grid-area:1/1;z-index:1}
+html.tv-mode .topo-fixo>.abas{grid-area:1/1;z-index:2;pointer-events:none;align-items:center}
+html.tv-mode .topo-fixo>.abas>*{pointer-events:auto}
+html.tv-mode header h2{display:none}
+html.tv-mode #btn-sino{margin-left:auto}
+/* TV: botão do menu mostra símbolo + "CineList" em vez do ícone de 3 traços */
+html.tv-mode #btn-menu{width:auto;height:auto;background:none;border:none;
+  display:flex;align-items:center;gap:10px;padding:6px 10px 6px 4px}
+html.tv-mode #btn-menu .logo-mark-mini{width:34px;height:34px;border-radius:10px;background:var(--amber);
+  color:var(--amber-ink);display:grid;place-items:center;font-size:16px;flex-shrink:0;box-shadow:none}
+html.tv-mode #btn-menu .btn-menu-nome{width:auto;height:auto;background:none;box-shadow:none;
+  font-family:'Sora';font-size:19px;font-weight:800;color:var(--text)}
+/* já aparece no botão do menu (topo), fica redundante repetir dentro da gaveta */
+html.tv-mode .gaveta>.logo{display:none}
 /* TV: menu estilo Netflix — centralizado no topo, só texto, letras grandes,
    sem fundo/borda nas abas (o JS do modo TV troca o ícone de "Início" por
    texto e põe a lupa antes das abas) */
-html.tv-mode .abas{padding:10px 0 22px;gap:36px;justify-content:center}
-html.tv-mode .aba{flex:none;background:none;border:none;padding:8px 4px;font-size:26px;font-weight:600;color:var(--muted);border-radius:0}
-html.tv-mode .aba.ativa{background:none;border:none;color:var(--text);box-shadow:inset 0 -3px 0 var(--amber)}
+/* header e abas ficam sobrepostos na mesma linha do grid (ver acima) — como
+   cada um centraliza seu próprio conteúdo dentro do padding, um padding
+   vertical assimétrico diferente entre os dois desalinha visualmente
+   CineList/sino/avatar em relação às abas. Usar o mesmo padding simétrico
+   nos dois garante que os centros coincidam. */
+html.tv-mode header{padding-top:10px;padding-bottom:16px}
+html.tv-mode .abas{padding:10px 0 16px;gap:36px;justify-content:center}
+/* altura fixa (não só padding) pra aba ativa (fonte 26px) e as demais
+   (20px) ocuparem sempre o mesmo espaço vertical — senão a linha toda do
+   cabeçalho (onde o nome CineList/sino/avatar também ficam, sobrepostos)
+   muda de altura dependendo de qual aba está selecionada, fazendo esses
+   elementos "pularem" de posição ao trocar de seção */
+/* align-items:baseline (em vez de center) pra alinhar as PALAVRAS na mesma
+   linha — os ícones (svg de 17px, svg de 15px, caracteres ☆/▶ com métrica de
+   fonte diferente) têm alturas visuais diferentes entre si, então centralizar
+   o bloco ícone+texto como unidade deixava o texto em alturas ligeiramente
+   diferentes entre as abas */
+html.tv-mode .aba{flex:none;background:none;border:none;padding:10px 4px 0;height:44px;
+  display:flex;align-items:baseline;justify-content:center;
+  font-size:20px;font-weight:600;color:var(--muted);border-radius:0;transition:transform .15s ease,color .15s ease}
+/* espaço entre o ícone (svg ou emoji/caractere) e a palavra — igual pra
+   todas as abas, já que "Início" usa um svg (sem respiro nativo como os
+   caracteres ☆/▶ usados nas outras) */
+/* align-self:flex-start tira o ícone do cálculo de baseline do ".aba" (que
+   usa align-items:baseline pra alinhar as palavras entre si) — um SVG não
+   tem baseline própria, então sua borda inferior "puxava" o texto do
+   Início pra baixo, deixando a palavra maior/desalinhada em relação às
+   outras abas. Com o ícone fora desse cálculo, ele precisa de um ajuste
+   manual (margin-top) pra ficar centralizado ao lado do texto, já que o
+   texto (por causa do baseline) fica coladinho no topo da caixa da aba. */
+html.tv-mode .aba svg{margin-right:6px;align-self:flex-start;margin-top:3px}
+/* aba ativa tem fonte maior (26px em vez de 20px) — o texto ocupa mais
+   espaço verticalmente, então o ícone precisa de um deslocamento próprio
+   pra continuar centralizado ao lado da palavra */
+html.tv-mode .aba.ativa svg{margin-top:8px}
+/* "☆ Favoritos" é um nó de texto só (sem svg separado) — o glyph da estrela
+   tem métrica de fonte diferente das letras, então mesmo com
+   align-items:baseline a palavra saía ~3px mais baixa que as outras */
+html.tv-mode .aba[data-aba="proximo"]{position:relative;top:-3px}
+/* selecionada: fica com a fonte maior e branca permanentemente (não só ao
+   focar com o controle), igual às outras abas — do início ao favoritos */
+html.tv-mode .aba.ativa{background:none;border:none;color:#fff;font-size:26px;font-weight:700;box-shadow:inset 0 -3px 0 var(--amber);transform:scale(1.05);margin-top:-6px}
 html.tv-mode .aba-icone{flex:none;width:auto;padding:8px 4px}
 /* foco (navegação pelo controle) nas abas e na lupa: só destaca a fonte,
-   sem o anel amarelo padrão usado no resto do app */
+   sem o anel amarelo padrão usado no resto do app — uma aba só focada (ainda
+   não selecionada) não tem .ativa, então cairia no anel amarelo padrão do
+   resto do app se não bloquearmos aqui */
 html.tv-mode .aba:focus,html.tv-mode #btn-add:focus{
   outline:none!important;box-shadow:none!important;transform:scale(1.08)!important;color:#fff!important;
 }
+/* a lupa não ativa sozinha ao passar o foco (diferente das abas) — precisa
+   de OK pra realmente abrir a busca. Fica amarela pra indicar que está
+   selecionada, mas sem disparar nada até confirmar. */
+html.tv-mode #btn-add:focus{color:var(--amber)!important}
+/* a aba selecionada mantém a listra amarela mesmo com o foco em cima dela —
+   mais específico que a regra acima, então some sem transição/"vazamento"
+   do anel amarelo padrão pros lados/cima */
+html.tv-mode .aba.ativa:focus{
+  box-shadow:inset 0 -3px 0 var(--amber)!important;
+}
+/* enquanto o foco está na lupa, a aba ativa "empresta" o destaque pra ela —
+   volta a aparecer igual às abas não selecionadas até o foco sair da lupa */
+html.tv-mode .abas:has(#btn-add:focus) .aba.ativa{
+  font-size:20px!important;font-weight:600!important;color:var(--muted)!important;
+  box-shadow:none!important;transform:none!important;margin-top:0!important;
+}
+html.tv-mode .abas:has(#btn-add:focus) .aba.ativa svg{margin-top:3px!important}
+/* o container ".abas" centraliza a lupa como bloco (34px), mas o texto das
+   abas ao lado ficou alinhado pela baseline (ver .aba acima) — sem esse
+   ajuste a lupa fica uns 10px mais baixa que a linha das palavras */
 html.tv-mode #btn-add{position:static;width:34px;height:34px;border-radius:50%;
-  background:none;border:none;box-shadow:none;color:var(--text);flex:none}
+  background:none;border:none;box-shadow:none;color:var(--text);flex:none;
+  align-self:center;margin-top:-3px}
 html.tv-mode .poster,html.tv-mode .poster .pcapa{width:210px}
 html.tv-mode .poster .pcapa{height:315px}
 html.tv-mode .poster .rank{font-size:52px;top:-14px}
 html.tv-mode .poster .nome-p{font-size:15px}
 html.tv-mode .poster-foco,html.tv-mode .poster-foco .pcapa{width:230px}
 html.tv-mode .cp-card,html.tv-mode .cp-card .cp-thumb{width:210px}
+/* sem isso a capa fica esticada: a altura ficava travada nos 156px do modo
+   celular, então a imagem virava um formato diferente do carrossel do início */
+html.tv-mode .cp-card .cp-thumb{height:315px}
 html.tv-mode .cp-card .nome-p{font-size:15px}
 html.tv-mode .seta{width:52px;height:52px}
 html.tv-mode .carrossel,html.tv-mode .carrossel-foco{gap:16px}
@@ -444,6 +674,53 @@ html.tv-mode #titulo-escolhido{font-size:20px}
 html.tv-mode #modal-titulo,html.tv-mode .folha h3{font-size:24px}
 /* TV: sem sentido compartilhar por WhatsApp numa TV */
 html.tv-mode #btn-compartilhar-titulo{display:none!important}
+/* TV: sem "Cancelar" — o botão voltar do controle já fecha essa tela */
+html.tv-mode #btn-cancelar{display:none!important}
+/* TV: mesma coisa na busca (lupa, início e Cinelist+) — o botão voltar do
+   controle já fecha */
+html.tv-mode #btn-fechar-busca,
+html.tv-mode #btn-fechar-busca-cp{display:none!important}
+/* TV: o botão "Abrir" não fica amarelo fixo — só o botão que estiver
+   selecionado (com foco do controle) no momento fica amarelo, igual aos
+   outros (Favoritar/Editar/Excluir) */
+html.tv-mode .acao.principal{background:var(--bg-soft);border-color:var(--line);color:var(--text);font-weight:600}
+html.tv-mode .acao:focus{background:var(--amber)!important;color:var(--amber-ink)!important;border-color:var(--amber)!important}
+/* mesma ideia no modal de adicionar/editar (início e Cinelist+): "Favoritar"
+   não fica amarelo fixo, só o botão selecionado no momento */
+html.tv-mode #btn-favoritar{background:var(--bg-soft);color:var(--text);border:1px solid var(--line)}
+html.tv-mode #btn-favoritar:focus,
+html.tv-mode #btn-assistir:focus,
+html.tv-mode #btn-abrir-streaming-tv:focus{
+  background:var(--amber)!important;color:var(--amber-ink)!important;border-color:var(--amber)!important;
+}
+/* botão "Trailer" (início, Cinelist+ e o overlay de favoritos/assistindo,
+   id dinâmico "btn-trailer-foco-<id>") também fica amarelo só quando
+   selecionado, igual aos outros */
+html.tv-mode [id^="btn-trailer"]:focus{
+  background:var(--amber)!important;color:var(--amber-ink)!important;border-color:var(--amber)!important;
+}
+/* chips de filtro (streaming, gênero, ano, ordenar por, etc.): o chip
+   selecionado (filtro aplicado) fica amarelo marcado até trocar de tela ou
+   escolher outro filtro; o chip com foco do controle no momento também fica
+   amarelo (mesma cor, já que quando o selecionado está com foco visualmente
+   é a mesma coisa) */
+html.tv-mode .chip.ativo{
+  background:var(--amber)!important;color:var(--amber-ink)!important;border-color:var(--amber)!important;
+}
+html.tv-mode .chip:focus{
+  background:var(--amber)!important;color:var(--amber-ink)!important;border-color:var(--amber)!important;
+}
+/* TV: sinopse do título selecionado (favoritos/assistindo) ocupa toda a
+   largura disponível da TV — capa grande e vertical ao lado do texto, em vez
+   da coluna estreita de celular (340px) centralizada no meio da tela. Texto
+   mais largo = menos linhas = menos altura total = sem precisar rolar */
+html.tv-mode #detalhe-foco-filmes,html.tv-mode #detalhe-foco-series{max-width:none}
+html.tv-mode .tv-detalhe-grid{display:flex;gap:28px;align-items:flex-start}
+html.tv-mode .tv-detalhe-capa{width:230px;height:345px;object-fit:cover;border-radius:16px;
+  background:var(--card);border:1px solid var(--line);flex-shrink:0}
+html.tv-mode .tv-detalhe-corpo{flex:1;min-width:0}
+html.tv-mode .tv-detalhe-corpo .detalhes{margin-bottom:0}
+html.tv-mode .tv-detalhe-acoes{margin-top:16px}
 </style>
 </head>
 <body>
@@ -460,7 +737,7 @@ window.FIREBASE_CONFIG = {
 };
 window.TMDB_KEY = "830e0161122eb245bf3ade43e11be2a1";
 window.YOUTUBE_KEY = "AIzaSyAwYfTReERXnKCEW3gqlPM0_iTxhW4ug9A";
-window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
+window.APP_VERSION = "01.47"; // bump a cada correção/alteração publicada: 01.01 -> 01.02 -> ... -> 01.100 -> 02.01
 </script>
 <!-- ======================== -->
 
@@ -492,9 +769,9 @@ window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 0
     </header>
     <div class="abas">
       <button class="aba aba-icone ativa" data-aba="inicio" aria-label="Início"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
-      <button class="aba" data-aba="cinelistplus">Cinelist+</button>
-      <button class="aba" data-aba="assistindo"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M8 5v14l11-7z"/></svg>Assistindo</button>
       <button class="aba" data-aba="proximo">☆ Favoritos</button>
+      <button class="aba" data-aba="assistindo"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M8 5v14l11-7z"/></svg>Assistindo</button>
+      <button class="aba" data-aba="cinelistplus">Cinelist+</button>
     </div>
     <div class="filtros" id="filtros"></div>
   </div>
@@ -636,7 +913,7 @@ window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 0
 </div>
 
 <!-- PAYWALL (recurso Premium) -->
-<div id="paywall" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.78);backdrop-filter:blur(4px);z-index:45;display:flex;align-items:center;justify-content:center;padding:24px">
+<div id="paywall" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.78);backdrop-filter:blur(4px);z-index:76;display:flex;align-items:center;justify-content:center;padding:24px">
   <div class="caixa-confirma" style="text-align:center">
     <div style="font-size:32px;margin-bottom:6px">⭐</div>
     <p style="font-family:'Sora';font-weight:700;font-size:16px">Recurso Premium</p>
@@ -649,7 +926,7 @@ window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 0
 </div>
 
 <!-- ESCOLHA DE PLANO (novo cadastro) -->
-<div id="escolha-plano" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.85);backdrop-filter:blur(6px);z-index:46;display:flex;align-items:center;justify-content:center;padding:24px">
+<div id="escolha-plano" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.85);backdrop-filter:blur(6px);z-index:77;display:flex;align-items:center;justify-content:center;padding:24px">
   <div class="caixa-confirma" style="text-align:center">
     <div style="font-size:30px;margin-bottom:6px">🎬</div>
     <p style="font-family:'Sora';font-weight:700;font-size:16px">Bem-vindo ao CineList!</p>
@@ -686,8 +963,41 @@ window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 0
   </div>
 </div>
 
+<!-- TV: tela de seleção de perfil (uma conta CineList por perfil) — é a
+     primeira tela do app quando já existe pelo menos um perfil salvo -->
+<div id="tela-perfil-tv" class="hidden">
+  <div class="tv-perfil-fundo" id="tv-perfil-fundo"></div>
+  <div class="tv-perfil-agua"></div>
+  <div class="tv-perfil-scrim"></div>
+  <div class="tv-perfil-marca"><span class="logo-mark-mini">▶</span><span class="btn-menu-nome">CineList</span></div>
+  <div class="tv-perfil-conteudo">
+    <h2 class="tv-perfil-pergunta">O que vamos assistir hoje?</h2>
+    <p class="tv-perfil-status hidden" id="tv-perfil-status">Entrando...</p>
+    <div class="tv-perfil-lista" id="tv-perfil-lista"></div>
+  </div>
+</div>
+
+<!-- TV: app do streaming não pôde ser aberto sozinho -->
+<div id="tv-app-indisponivel" class="hidden">
+  <div class="caixa-tv-aviso">
+    <div class="icone">📺</div>
+    <h2>Não deu pra abrir <span id="tv-ai-nome"></span> sozinho</h2>
+    <p>Você vai ser encaminhado pra tela inicial da TV — escolha o app <span id="tv-ai-nome2"></span> por lá pra assistir.</p>
+    <button class="btn" id="btn-tv-ai-ok">Entendi</button>
+  </div>
+</div>
+
+<!-- TV: tela de detalhe em tela cheia (favoritos/assistindo) — sinopse,
+     trailer e as ações de gerenciar o título, abre ao clicar na capa -->
+<div id="tv-titulo-detalhe" class="hidden">
+  <div class="tv-td-caixa">
+    <div id="tv-td-conteudo"></div>
+    <button class="btn-ghost" id="btn-tv-td-fechar">Voltar</button>
+  </div>
+</div>
+
 <!-- FILTROS AVANÇADOS (gênero / ano) -->
-<div id="modal-filtros" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);display:flex;align-items:flex-end;z-index:30">
+<div id="modal-filtros" class="hidden" style="position:fixed;inset:0;background:rgba(8,10,20,.7);backdrop-filter:blur(4px);display:flex;align-items:flex-end;z-index:35">
   <div class="folha">
     <h3 id="filtros-titulo">Gênero</h3>
     <div id="filtros-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px"></div>
@@ -744,10 +1054,10 @@ window.APP_VERSION = "01.10"; // bump a cada correção/alteração publicada: 0
       </div>
       <div class="info-te hidden" id="info-te"></div>
       <div class="linha-dupla" id="grupo-status">
+        <button class="btn-secundario tv-only" id="btn-abrir-streaming-tv" style="flex:1">📺 Abrir no Streaming</button>
         <button class="btn" id="btn-favoritar" style="flex:1">☆ Favoritar</button>
         <button class="btn-secundario" id="btn-assistir" style="flex:1">▶ Assistir</button>
       </div>
-      <button class="btn-secundario tv-only" id="btn-abrir-streaming-tv">📺 Abrir no Streaming</button>
       <button class="btn-secundario" id="btn-compartilhar-titulo" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.13 0 4.13.83 5.64 2.34a7.93 7.93 0 0 1 2.33 5.65c0 4.4-3.58 7.98-7.98 7.98a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-2.99.78.8-2.91-.19-.3a7.9 7.9 0 0 1-1.21-4.22c0-4.4 3.58-7.98 7.99-7.98zm-4.38 4.55c-.15 0-.4.06-.61.29-.21.23-.8.78-.8 1.9s.82 2.2.94 2.35c.11.15 1.62 2.47 3.93 3.46 1.94.83 2.34.66 2.76.62.42-.04 1.36-.55 1.55-1.09.19-.53.19-.99.13-1.09-.06-.1-.21-.15-.44-.27-.23-.11-1.36-.67-1.57-.75-.21-.08-.36-.11-.51.11-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.11-.96-.35-1.83-1.12-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.11-.13.15-.23.23-.38.08-.15.04-.29-.02-.4-.06-.11-.51-1.28-.72-1.75-.19-.46-.38-.4-.51-.4z"/></svg>Compartilhar <span id="txt-tipo-compartilhar">Filme</span></button>
       <button class="btn-ghost" id="btn-cancelar">Cancelar</button>
     </div>
@@ -769,14 +1079,19 @@ import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, d
    desenvolvedores Tizen, pode estar errado/desatualizado pro seu modelo/firmware. Se o app
    não abrir, corrija o id aqui (Tools > Device Manager no Tizen Studio lista os apps
    instalados na TV com seus ids) — sem id ou se a chamada falhar, cai pro site normal. */
+/* os esquemas de URL customizados (app:) abaixo, quando incluem a busca
+   (?q=/?phrase=/etc.), são um "melhor esforço" pra abrir o app já com o
+   nome do título pesquisado — assim como o tizenAppId logo abaixo, isso não
+   é documentado oficialmente por nenhum desses streamings, então pode não
+   funcionar em todas as versões do app; se não funcionar, cai pro site */
 const STREAMINGS = {
-  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t,        app:t=>"nflx://www.netflix.com/search?q="+t,        tizenAppId:"3201907018807" },
-  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t, app:()=>"primevideo://",                            tizenAppId:"3201910019365" },
-  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t,          app:()=>"hbomax://",                                tizenAppId:null },
-  paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],    busca:()=>"https://www.paramountplus.com/search/",                                                            tizenAppId:null },
-  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t,     app:()=>"globoplay://",                             tizenAppId:null },
-  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t,      app:()=>"disneyplus://",                            tizenAppId:null },
-  appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t,                                                                tizenAppId:null },
+  netflix:   { nome:"Netflix",     cor:"#E50914", sigla:"N",   apelidos:["netflix"],      busca:t=>"https://www.netflix.com/search?q="+t,        app:t=>"nflx://www.netflix.com/search?q="+t,          tizenAppId:"3201907018807" },
+  prime:     { nome:"Prime Video", cor:"#00A8E1", sigla:"PV",  apelidos:["amazon prime"], busca:t=>"https://www.primevideo.com/search?phrase="+t, app:t=>"primevideo://search/?phrase="+t,              tizenAppId:"3201910019365" },
+  hbomax:    { nome:"HBO Max",     cor:"#7B2BF9", sigla:"MAX", apelidos:["hbo max","max"],busca:t=>"https://play.hbomax.com/search?q="+t,          app:t=>"hbomax://search?q="+t,                        tizenAppId:null },
+  paramount: { nome:"Paramount+",  cor:"#0064FF", sigla:"P+",  apelidos:["paramount"],    busca:()=>"https://www.paramountplus.com/search/",                                                              tizenAppId:null },
+  globoplay: { nome:"Globoplay",   cor:"#FB0D54", sigla:"GP",  apelidos:["globo"],        busca:t=>"https://globoplay.globo.com/busca/?q="+t,     app:t=>"globoplay://busca/?q="+t,                     tizenAppId:null },
+  disney:    { nome:"Disney+",     cor:"#113CCF", sigla:"D+",  apelidos:["disney"],       busca:t=>"https://www.disneyplus.com/search?q="+t,      app:t=>"disneyplus://search/"+t,                      tizenAppId:null },
+  appletv:   { nome:"Apple TV",    cor:"#555A66", sigla:"TV",  apelidos:["apple tv"],     busca:t=>"https://tv.apple.com/search?term="+t,                                                                  tizenAppId:null },
 };
 const TMDB=window.TMDB_KEY, IMG="https://image.tmdb.org/t/p/", API="https://api.themoviedb.org/3";
 const TODAS=Object.keys(STREAMINGS);
@@ -867,14 +1182,136 @@ window.addEventListener("DOMContentLoaded", ()=>{
   if(window.FIREBASE_CONFIG.apiKey==="COLE_AQUI"){
     $("#tela-config").classList.remove("hidden"); return;
   }
-  const app=initializeApp(window.FIREBASE_CONFIG);
-  auth=getAuth(app); bd=getFirestore(app);
-  onAuthStateChanged(auth,u=>{
-    if(u){ usuario=u; abrirApp(); }
-    else if(usuario){ location.reload(); }
-    else{ $("#tela-login").classList.remove("hidden"); }
-  });
+  if(window.CINELIST_IS_TV && perfisSalvosTv().length){
+    mostrarSeletorPerfisTv();
+  }else{
+    loginChaveAtual="";
+    const {auth:a,bd:b}=appParaPerfil("");
+    auth=a; bd=b;
+    onAuthStateChanged(auth,u=>{
+      if(u){ usuario=u; abrirApp(); }
+      else if(usuario){ location.reload(); }
+      else{ $("#tela-login").classList.remove("hidden"); }
+    });
+  }
 });
+
+/* ---------- perfis (contas) salvos neste aparelho de TV ----------
+   Cada perfil é uma conta CineList (login/senha) diferente. Pra entrar de
+   novo num perfil já salvo SEM pedir senha outra vez, cada perfil usa sua
+   própria instância nomeada do Firebase (app+auth+firestore) — assim cada
+   conta mantém sua sessão persistida de forma independente, e trocar de
+   perfil é só apontar auth/bd pra instância certa, sem nunca precisar
+   deslogar uma conta pra logar outra (o que antes causava um bug de "loga,
+   mostra a tela inicial e volta pro seletor sozinho" por causa da corrida
+   entre o signOut de uma conta e o signIn da outra na MESMA instância). */
+let tvPerfilEscolhido=false, loginChaveAtual="";
+window.__tvVeioDoSeletorPerfil=false;
+const appsPorPerfil={};
+function appParaPerfil(chave){
+  const nome=chave||"[DEFAULT]";
+  if(appsPorPerfil[nome]) return appsPorPerfil[nome];
+  const app=chave?initializeApp(window.FIREBASE_CONFIG,chave):initializeApp(window.FIREBASE_CONFIG);
+  appsPorPerfil[nome]={auth:getAuth(app),bd:getFirestore(app)};
+  return appsPorPerfil[nome];
+}
+function perfisSalvosTv(){
+  try{ return JSON.parse(localStorage.getItem("cinelist_perfis_tv")||"[]"); }catch(e){ return []; }
+}
+function salvarPerfilTv(p){
+  try{
+    const lista=perfisSalvosTv();
+    const i=lista.findIndex(x=>x.email===p.email);
+    if(i>=0) lista[i]=p; else lista.push(p);
+    localStorage.setItem("cinelist_perfis_tv",JSON.stringify(lista));
+  }catch(e){}
+}
+function iniciaisPerfil(p){ return ((p.nome||p.email||"?")[0]||"?").toUpperCase(); }
+function garantirModoEntrarTv(){
+  if(!modoCadastro) return;
+  modoCadastro=false;
+  $("#login-modo").textContent="Entrar na sua conta"; $("#login-modo").style.color="var(--text)";
+  $("#btn-entrar").textContent="Entrar"; $("#btn-entrar").classList.remove("criar");
+  $("#senha").placeholder="••••••••"; $("#senha").setAttribute("autocomplete","current-password");
+  $("#alternar-modo").innerHTML="Não tem conta? <b>Criar conta</b>";
+}
+function renderSeletorPerfisTv(){
+  const lista=perfisSalvosTv();
+  $("#tv-perfil-lista").innerHTML=lista.map(p=>{
+    const nomeCompleto=((p.nome||"")+" "+(p.sobrenome||"")).trim()||p.email;
+    const foto=p.foto?`<img src="${p.foto}" alt="">`:`<span>${iniciaisPerfil(p)}</span>`;
+    return `<button class="tv-perfil-cartao" data-email="${p.email}">
+      <span class="tv-perfil-foto">${foto}</span>
+      <span class="tv-perfil-nome">${nomeCompleto}</span>
+    </button>`;
+  }).join("")+
+  `<button class="tv-perfil-cartao tv-perfil-add" id="btn-perfil-tv-add">
+    <span class="tv-perfil-foto tv-perfil-foto-add">+</span>
+    <span class="tv-perfil-nome">Adicionar perfil</span>
+  </button>`;
+  $("#tv-perfil-lista").querySelectorAll(".tv-perfil-cartao[data-email]").forEach(b=>{
+    b.onclick=()=>{
+      const perfil=lista.find(x=>x.email===b.dataset.email);
+      if(perfil) entrarComPerfilSalvo(perfil);
+    };
+  });
+  $("#btn-perfil-tv-add").onclick=()=>abrirLoginParaPerfil("",undefined);
+}
+function mostrarSeletorPerfisTv(){
+  renderSeletorPerfisTv();
+  $("#tela-perfil-tv").classList.remove("hidden");
+  $("#tv-perfil-status").classList.add("hidden");
+  carregarFundoPerfilTv();
+}
+/* clicou num perfil já salvo: usa a sessão persistida daquela conta sem
+   pedir senha; só cai pro formulário de login se, por algum motivo, a
+   sessão salva não existir mais neste aparelho (ex.: cache limpo) */
+function entrarComPerfilSalvo(perfil){
+  loginChaveAtual=perfil.chave||"";
+  const {auth:a,bd:b}=appParaPerfil(loginChaveAtual);
+  auth=a; bd=b;
+  if(a.currentUser){
+    usuario=a.currentUser; tvPerfilEscolhido=true;
+    $("#tela-perfil-tv").classList.add("hidden");
+    abrirApp();
+    return;
+  }
+  $("#tv-perfil-status").textContent="Entrando...";
+  $("#tv-perfil-status").classList.remove("hidden");
+  const tempoEsgotado=setTimeout(()=>{
+    unsub();
+    $("#tv-perfil-status").classList.add("hidden");
+    abrirLoginParaPerfil(perfil.email,loginChaveAtual);
+  },4000);
+  const unsub=onAuthStateChanged(a,u=>{
+    if(!u) return;
+    clearTimeout(tempoEsgotado); unsub();
+    $("#tv-perfil-status").classList.add("hidden");
+    usuario=u; tvPerfilEscolhido=true;
+    $("#tela-perfil-tv").classList.add("hidden");
+    abrirApp();
+  });
+}
+function abrirLoginParaPerfil(email,chave){
+  tvPerfilEscolhido=false;
+  window.__tvVeioDoSeletorPerfil=true;
+  loginChaveAtual=(chave!==undefined&&chave!==null)?chave:("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+  const {auth:a,bd:b}=appParaPerfil(loginChaveAtual);
+  auth=a; bd=b;
+  garantirModoEntrarTv();
+  $("#email").value=email||"";
+  $("#senha").value="";
+  mostrarMsg("#msg-login","");
+  $("#tv-perfil-status").classList.add("hidden");
+  $("#tela-perfil-tv").classList.add("hidden");
+  $("#tela-login").classList.remove("hidden");
+  requestAnimationFrame(()=>{ (email?$("#senha"):$("#email")).focus({preventScroll:true}); });
+}
+window.tvVoltarParaSeletorPerfil=function(){
+  window.__tvVeioDoSeletorPerfil=false;
+  $("#tela-login").classList.add("hidden");
+  mostrarSeletorPerfisTv();
+};
 
 /* ---------- login ---------- */
 $("#alternar-modo").onclick=()=>{
@@ -892,9 +1329,17 @@ $("#btn-entrar").onclick=async ()=>{
   const email=$("#email").value.trim(), senha=$("#senha").value;
   if(!email||!senha){ mostrarMsg("#msg-login","Preencha e-mail e senha.","erro"); return; }
   $("#btn-entrar").textContent="Aguarde...";
+  /* veio da tela de seleção de perfis da TV: essa instância de auth (ver
+     abrirLoginParaPerfil) não tem um onAuthStateChanged próprio escutando,
+     então o login bem-sucedido precisa chamar abrirApp() diretamente aqui
+     em vez de depender do listener (que só existe pro fluxo raiz/sem TV) */
+  const viaSeletorPerfilTv=window.CINELIST_IS_TV && window.__tvVeioDoSeletorPerfil;
+  tvPerfilEscolhido=true;
   try{
-    if(modoCadastro){ novoCadastro=true; await createUserWithEmailAndPassword(auth,email,senha); }
-    else await signInWithEmailAndPassword(auth,email,senha);
+    let cred;
+    if(modoCadastro){ novoCadastro=true; cred=await createUserWithEmailAndPassword(auth,email,senha); }
+    else cred=await signInWithEmailAndPassword(auth,email,senha);
+    if(viaSeletorPerfilTv){ usuario=cred.user; abrirApp(); }
   }catch(e){
     novoCadastro=false;
     const mapa={"auth/invalid-credential":"E-mail não cadastrado ou senha incorreta. Se ainda não tem conta, toque em Criar conta.","auth/user-not-found":"Este e-mail não está cadastrado. Toque em Criar conta.","auth/wrong-password":"Senha incorreta.","auth/email-already-in-use":"Este e-mail já tem conta. Toque em Entrar.","auth/weak-password":"A senha precisa de ao menos 6 caracteres.","auth/invalid-email":"E-mail inválido.","auth/admin-restricted-operation":"O cadastro está bloqueado nas configurações do Firebase."};
@@ -928,13 +1373,26 @@ function confirmarApp(msg){
   });
 }
 
-$("#btn-sair").onclick=()=>signOut(auth);
+$("#btn-sair").onclick=async ()=>{
+  await signOut(auth);
+  if(window.CINELIST_IS_TV && perfisSalvosTv().length){
+    /* sai só desse perfil (as outras contas salvas continuam logadas) e
+       volta pro seletor em vez de ficar numa tela sem saída */
+    $("#tela-app").classList.add("hidden");
+    tvPerfilEscolhido=false;
+    mostrarSeletorPerfisTv();
+  }
+};
 
 /* ---------- app ---------- */
 async function abrirApp(){
   $("#tela-login").classList.add("hidden");
   $("#tela-app").classList.remove("hidden");
   await carregarConfig();
+  if(window.CINELIST_IS_TV){
+    tvPerfilEscolhido=true;
+    salvarPerfilTv({email:usuario.email,nome:CONFIG.nome||"",sobrenome:CONFIG.sobrenome||"",foto:CONFIG.foto||"",chave:loginChaveAtual});
+  }
   montarFiltros(); montarGrade();
   await carregar();
   carregarDescobertas();
@@ -968,11 +1426,24 @@ async function carregar(){
 }
 
 document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
+  /* na TV, mover o foco de volta pra aba ativa (ex.: subir a partir dos
+     filtros) também dispara este clique — se for a MESMA aba que já estava
+     ativa, não é troca de tela, então não deve resetar nada (senão o filtro
+     de streaming se perdia só de voltar o cursor pro nome do menu) */
+  if(abaAtual===b.dataset.aba) return;
   abaAtual=b.dataset.aba;
   if(abaAtual==="cinelistplus"){ cpFiltroGenero=null; cpFiltroAnos.clear(); cpFiltroNota=null; }
+  /* filtro de streaming (Início/Assistindo/Favoritos compartilham a mesma
+     variável) só vale dentro da própria tela — trocar de aba sempre volta
+     pra "Todos" em vez de carregar o filtro que ficou de uma aba anterior */
+  filtroStreamings.clear();
   document.querySelectorAll(".aba").forEach(x=>x.classList.toggle("ativa",x===b));
   montarFiltros();
   if(abaAtual==="inicio") carregarDescobertas(); else desenhar();
+  /* sem isso, trocar de aba mantinha o scroll de onde a tela anterior tinha
+     parado — então "Favoritos" podia aparecer mais pra baixo que
+     "Assistindo" só porque a rolagem não voltava ao topo */
+  window.scrollTo(0,0);
 });
 
 function htmlFiltrosCinelistPlus(){
@@ -996,13 +1467,12 @@ function montarFiltros(){
     el.innerHTML="";
     return;
   }
-  if(window.CINELIST_IS_TV && abaAtual==="inicio"){
-    el.classList.add("hidden");
-    el.innerHTML="";
-    return;
-  }
   el.classList.remove("hidden");
-  if(abaAtual!=="inicio"){
+  /* na TV, o início também usa o filtro simples de streaming (chips
+     Todos/Netflix/Prime/etc, igual assistindo/favoritos) em vez do sistema
+     de filtro avançado (Gênero/Ano/Nota) do celular, que abre um painel
+     ainda não adaptado pro controle remoto */
+  if(abaAtual!=="inicio" || window.CINELIST_IS_TV){
     el.innerHTML=`<button class="chip ${!filtroStreamings.size?"ativo":""}" data-f="__todos__">Todos</button>`+
       ativos().map(k=>{ const s=STREAMINGS[k];
         return `<button class="chip ${filtroStreamings.has(k)?"ativo":""}" data-f="${k}">${iconeStreaming(k)}${s.nome}</button>`;
@@ -1014,7 +1484,10 @@ function montarFiltros(){
       el.querySelectorAll("[data-f]").forEach(x=>{
         x.classList.toggle("ativo",x.dataset.f==="__todos__"?filtroStreamings.size===0:filtroStreamings.has(x.dataset.f));
       });
-      desenhar();
+      /* início tem sua própria função de redesenho (busca de novo na TMDB
+         considerando o filtro), diferente de assistindo/favoritos que só
+         refiltram os títulos já carregados */
+      if(abaAtual==="inicio") carregarDescobertas(); else desenhar();
     });
     return;
   }
@@ -1183,6 +1656,33 @@ $("#btn-voltar-painel").onclick=()=>{
 /* ---------- perfil / avatar ---------- */
 function isPremium(){ return CONFIG.plano==="premium"; }
 function letraInicial(){ return ((CONFIG.nome||usuario?.email||"?")[0]||"?").toUpperCase(); }
+let fundoPerfilTvCarregado=false;
+async function carregarFundoPerfilTv(){
+  if(fundoPerfilTvCarregado) return;
+  fundoPerfilTvCarregado=true;
+  try{
+    const [p1,p2] = await Promise.all([
+      tmdbGet(`/trending/all/week?language=pt-BR`),
+      tmdbGet(`/trending/all/week?language=pt-BR&page=2`),
+    ]);
+    const itens=[...(p1.results||[]),...(p2.results||[])].filter(x=>x.poster_path).slice(0,44);
+    if(!itens.length) return;
+    /* colunas com quantidades crescentes de pôsteres (da mais baixa, perto
+       do centro, até a mais alta, encostada na quina) — cada pôster inteiro,
+       sem cortar nenhum no meio (diferente de um clip-path por cima do
+       mosaico), formando uma silhueta em escada natural. Mais colunas (e
+       mais altas) que antes, pra ocupar bem mais a lateral direita da tela. */
+    const alturas=[3,4,5,6,7,8,9];
+    let cursor=0;
+    const colunasHtml=alturas.map(qtd=>{
+      const fatia=itens.slice(cursor,cursor+qtd); cursor+=qtd;
+      const imgs=fatia.map(x=>`<img src="${IMG}w342${x.poster_path}" alt="">`).join("");
+      return `<div class="tv-perfil-fundo-coluna">${imgs}</div>`;
+    }).join("");
+    $("#tv-perfil-fundo").innerHTML=colunasHtml;
+    requestAnimationFrame(()=>$("#tv-perfil-fundo").classList.add("pronto"));
+  }catch(e){}
+}
 function atualizarAvatar(){
   const temFoto=!!CONFIG.foto;
   $("#avatar-img").classList.toggle("hidden",!temFoto);
@@ -1641,19 +2141,21 @@ async function buscarSugestoes(){
 async function carregarExtras(){
   if(EXTRAS&&!EXTRAS.carregando) return;
   EXTRAS={carregando:true};
-  const selecionados=filtroStreamings.size?[...filtroStreamings]:null;
   try{
-    const [up,tr,sug]=await Promise.all([
-      tmdbGet(`/movie/upcoming?language=pt-BR&region=BR`),
+    const [popM,popS,tr,sug]=await Promise.all([
+      tmdbGet(`/movie/popular?language=pt-BR&region=BR`),
+      tmdbGet(`/tv/popular?language=pt-BR`),
       tmdbGet(`/trending/all/day?language=pt-BR`),
       buscarSugestoes(),
     ]);
-    const embreveBruto=(up.results||[]).map(x=>({...x,media_type:"movie"})).filter(passaFiltro).slice(0,10);
-    const embreve=await filtrarCinemaPorStreaming(embreveBruto,selecionados);
+    const populares=[
+      ...(popM.results||[]).map(x=>({...x,media_type:"movie"})),
+      ...(popS.results||[]).map(x=>({...x,media_type:"tv"})),
+    ].filter(passaFiltro).sort((a,b)=>(b.popularity||0)-(a.popularity||0)).slice(0,10);
     const destaque=(tr.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv").filter(passaFiltro).slice(0,10);
     const sugestoes=sug.filter(passaFiltro).slice(0,10);
-    EXTRAS={embreve,destaque,sugestoes};
-  }catch(e){ EXTRAS={embreve:[],destaque:[],sugestoes:[]}; }
+    EXTRAS={populares,destaque,sugestoes};
+  }catch(e){ EXTRAS={populares:[],destaque:[],sugestoes:[]}; }
 }
 async function carregarDescobertas(){
   const selecionados=filtroStreamings.size?[...filtroStreamings]:null;
@@ -1705,7 +2207,7 @@ async function carregarDescobertas(){
   DESC[chave]={filmes,series,lanc,cinema};
   [...filmes,...series,...lanc,...cinema].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
   await carregarExtras();
-  [...EXTRAS.embreve,...EXTRAS.destaque,...EXTRAS.sugestoes].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
+  [...EXTRAS.populares,...EXTRAS.destaque,...EXTRAS.sugestoes].forEach(x=>descIndex.set(x.media_type+"-"+x.id,x));
   desenhar();
   pintarFlagsPosters();
 }
@@ -1781,8 +2283,7 @@ function ordenarItensGeneros(itens){
 }
 function ehFilmeDeCinema(id){
   const c=(DESC.todos&&DESC.todos.cinema)||[];
-  const e=(EXTRAS&&EXTRAS.embreve)||[];
-  return c.some(x=>x.id===id)||e.some(x=>x.id===id);
+  return c.some(x=>x.id===id);
 }
 async function pintarFlagsGeneros(){
   const els=[...document.querySelectorAll("#lista-generos [data-pp]")];
@@ -1812,8 +2313,8 @@ function renderizarGradeGeneros(nomes,titulo,podeVoltar){
   const ordenarHtml=`<div class="ordenar-generos"><span>Ordenar por</span>${ORDENS.map(o=>
     `<button class="chip ${generoOrdenacao===o.v?"ativo":""}" data-ord="${o.v}">${o.l}</button>`
   ).join("")}</div>`;
-  lista.innerHTML=`<div class="secao">${tituloHtml}
-    ${ordenarHtml}
+  lista.innerHTML=`<div class="secao">
+    <div class="cabecalho-generos">${tituloHtml}${ordenarHtml}</div>
     <div class="grade-generos">${itens.map(x=>htmlPoster(x,null,ehFilmeDeCinema(x.id))).join("")}</div>
     ${carregandoMais?`<div class="carregando">Carregando mais filmes...</div>`:""}
     ${!itens.length?`<div class="vazio" style="margin-top:20px"><span class="icone">🎬</span>Nenhum filme encontrado com esses filtros.</div>`:""}
@@ -2107,7 +2608,7 @@ function pintarCliquesCinelistPlus(containerId){
       for(const lista of Object.values(CP_DADOS)){ v=lista.find(x=>x.id===c.dataset.id); if(v) break; }
       if(!v) v=CP_CATALOGO.find(x=>x.id===c.dataset.id)||CP_BRUTOS.find(x=>x.id===c.dataset.id);
       v=v?{...v,titulo:c.dataset.titulo}:{id:c.dataset.id,titulo:c.dataset.titulo};
-      abrirDetalheCinelistPlus(v);
+      abrirDetalheCinelistPlus(v,c);
     };
   });
 }
@@ -2132,14 +2633,14 @@ function abrirLinkExterno(url){
     window.open(url,"_blank","noopener");
   }
 }
-async function abrirDetalheCinelistPlus(v){
+async function abrirDetalheCinelistPlus(v,elOrigem){
   if(!v.tmdb){
     if(v.linkExterno) abrirLinkExterno(v.linkExterno);
     else abrirPlayerTelaCheia(v);
     return;
   }
   descIndex.set("movie-"+v.tmdb.id,v.tmdb);
-  await abrirDescoberta(v.tmdb.id,"movie",false);
+  await abrirDescoberta(v.tmdb.id,"movie",false,elOrigem);
   if(v.linkExterno) cpOrigemExterna={url:v.linkExterno,plataforma:v.plataforma};
   else cpOrigemAtual={id:v.id,titulo:v.titulo};
   atualizarVisibilidadeAssistir();
@@ -2190,7 +2691,7 @@ function htmlDescobrir(){
   const d=DESC[chave];
   const sub=filtroStreamings.size?[...filtroStreamings].map(k=>STREAMINGS[k].nome).join(", "):"todos os streamings";
   if(!d||d.carregando) return `<div class="carregando">Carregando sugestões...</div>`;
-  const ex=EXTRAS&&!EXTRAS.carregando?EXTRAS:{embreve:[],destaque:[],sugestoes:[]};
+  const ex=EXTRAS&&!EXTRAS.carregando?EXTRAS:{populares:[],destaque:[],sugestoes:[]};
   let h="";
   if(d.filmes.length) h+=`<div class="secao"><h3>🔥 Top 10 Filmes da semana</h3>
     <div class="carrossel">${d.filmes.map((x,i)=>htmlPoster(x,i+1)).join("")}</div></div>`;
@@ -2202,8 +2703,8 @@ function htmlDescobrir(){
     <div class="carrossel">${ex.destaque.map(x=>htmlPoster(x)).join("")}</div></div>`;
   if(d.cinema&&d.cinema.length) h+=`<div class="secao"><h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" style="flex-shrink:0"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg> Nos cinemas <span class="sub">· em cartaz no Brasil</span></h3>
     <div class="carrossel">${d.cinema.map(x=>htmlPoster(x,null,true)).join("")}</div></div>`;
-  if(ex.embreve.length) h+=`<div class="secao"><h3>🍿 Em breve nos cinemas</h3>
-    <div class="carrossel">${ex.embreve.map(x=>htmlPoster(x,null,true)).join("")}</div></div>`;
+  if(ex.populares.length) h+=`<div class="secao"><h3>🍿 Os mais populares</h3>
+    <div class="carrossel">${ex.populares.map(x=>htmlPoster(x)).join("")}</div></div>`;
   if(ex.sugestoes.length) h+=`<div class="secao"><h3>✨ Sugestões para você</h3>
     <div class="carrossel">${ex.sugestoes.map(x=>htmlPoster(x)).join("")}</div></div>`;
   return h;
@@ -2215,12 +2716,28 @@ async function pintarFlagsPosters(){
   const selecionados=filtroStreamings.size?[...filtroStreamings]:null;
   const chave=selecionados?selecionados.slice().sort().join(","):"todos";
   const d=DESC[chave]; if(!d||d.carregando) return;
-  const ex=EXTRAS&&!EXTRAS.carregando?EXTRAS:{destaque:[],sugestoes:[]};
-  const itens=[...(d.filmes||[]),...(d.series||[]),...(d.lanc||[]),...(ex.destaque||[]),...(ex.sugestoes||[])];
-  for(const x of itens){
+  const ex=EXTRAS&&!EXTRAS.carregando?EXTRAS:{populares:[],destaque:[],sugestoes:[]};
+  /* Filmes/Séries/Lançamentos vêm de uma busca na TMDB que já filtra por
+     with_watch_providers quando há um streaming selecionado — a flag do
+     filtro já é garantidamente correta ali, sem precisar confirmar de novo.
+     Em destaque/Populares/Sugestões são listas gerais (não passam por esse
+     filtro na busca), então pintar a flag do filtro selecionado direto,
+     sem checar de verdade, mostrava o streaming errado em títulos que nem
+     estão lá — esses sempre confirmam via carregarProvedores (dados reais
+     de disponibilidade), com ou sem filtro selecionado. */
+  const itensFiltradosNaBusca=[...(d.filmes||[]),...(d.series||[]),...(d.lanc||[])];
+  const itensGerais=[...(ex.destaque||[]),...(ex.populares||[]),...(ex.sugestoes||[])];
+  for(const x of itensFiltradosNaBusca){
     if(selecionados){
       pintarFlag(x,selecionados);
     }else if(x._provedores){
+      pintarFlag(x,x._provedores);
+    }else{
+      carregarProvedores(x,null).then(()=>pintarFlag(x,x._provedores||[]));
+    }
+  }
+  for(const x of itensGerais){
+    if(x._provedores){
       pintarFlag(x,x._provedores);
     }else{
       carregarProvedores(x,null).then(()=>pintarFlag(x,x._provedores||[]));
@@ -2293,7 +2810,17 @@ async function carregarNotasFaltantes(itens){
   }
 }
 
-function htmlDetalheFoco(t){
+/* TV: linha "Streaming · trocar" — mostrada junto do botão Trailer (ver
+   htmlDetalheTituloTv/mostrarDetalhes), permite trocar o streaming sem sair
+   da tela de sinopse/formulário */
+function htmlStreamingRow(t){
+  if(!window.CINELIST_IS_TV||t.streaming==="cinema"||t.cinelistYoutubeId||t.linkExterno) return "";
+  const nomeStreaming=STREAMINGS[t.streaming]?STREAMINGS[t.streaming].nome:"Streaming";
+  return `<button class="seletor-streaming" data-trocar-streaming-tv="${t.id}">
+      <span>${iconeStreaming(t.streaming,"m")}</span><span>${esc(nomeStreaming)}</span><span class="trocar">trocar</span>
+    </button>`;
+}
+function htmlAcoesTitulo(t){
   const est=estruturaDe(t);
   const maxT=est?est.length:null;
   const maxE=est?est[Math.min(t.temporada??1,maxT)-1]:null;
@@ -2317,19 +2844,114 @@ function htmlDetalheFoco(t){
   const mover=t.status==="assistindo"
     ?`<button class="acao" data-mover="${t.id}|proximo">☆ Favoritar</button>`
     :`<button class="acao" data-mover="${t.id}|assistindo">▶ Comecei a ver</button>`;
+  const nomeStreaming=STREAMINGS[t.streaming]?STREAMINGS[t.streaming].nome:"Streaming";
   const abrir=t.streaming==="cinema"
     ?`<button class="acao principal" disabled style="opacity:.65;cursor:default">🎬 Nos cinemas</button>`
-    :`<button class="acao principal" data-abrir="${t.id}">▶ ${(t.cinelistYoutubeId||t.linkExterno)?"Continuar no Cinelist+":"Abrir"}</button>`;
+    :`<button class="acao principal" data-abrir="${t.id}">▶ ${(t.cinelistYoutubeId||t.linkExterno)?"Continuar no Cinelist+":"Abrir no "+esc(nomeStreaming)}</button>`;
+  /* TV: a tela de sinopse já mostra tudo que o "Editar" mostrava (streaming,
+     temporada/episódio) direto ali — o botão Editar (que abria o formulário
+     completo separado) fica redundante e some; "trocar" o streaming agora é
+     uma ação rápida embutida na própria sinopse, sem sair dela (a linha do
+     streaming em si é montada por htmlStreamingRow, ao lado do Trailer) */
+  const ehTv=!!window.CINELIST_IS_TV;
+  const botoesGerencia=ehTv
+    ?`<div class="card-acoes" style="margin-top:12px;justify-content:flex-end">
+        <button class="acao" style="color:var(--danger);flex:none;min-width:150px" data-excluir="${t.id}">Excluir</button>
+      </div>`
+    :`<div class="card-acoes">
+        <button class="acao" data-editar="${t.id}">Editar</button>
+        <button class="acao" style="color:var(--danger)" data-excluir="${t.id}">Excluir</button>
+      </div>`;
   return `
     ${contador}
     <div class="card-acoes">
       ${abrir}
       ${mover}
     </div>
-    <div class="card-acoes">
-      <button class="acao" data-editar="${t.id}">Editar</button>
-      <button class="acao" style="color:var(--danger)" data-excluir="${t.id}">Excluir</button>
+    ${botoesGerencia}`;
+}
+function htmlDetalheFoco(t){
+  return htmlAcoesTitulo(t);
+}
+/* TV: monta o conteúdo do overlay em tela cheia (capa grande + sinopse/trailer
+   + contador de temporada/episódio + ações), aberto ao clicar num pôster de
+   favoritos/assistindo — ver abrirDetalheTv() */
+function htmlDetalheTituloTv(t){
+  const capa=t.capa?`<img class="tv-detalhe-capa" src="${esc(t.capa)}" alt="">`:`<div class="tv-detalhe-capa"></div>`;
+  const sinopsePlaceholder=t.tmdb_id?`<div id="sinopse-foco-${t.id}"><div class="carregando">Carregando sinopse...</div></div>`:"";
+  return `
+    <div class="tv-detalhe-grid">
+      ${capa}
+      <div class="tv-detalhe-corpo">
+        <h2 class="tv-detalhe-nome">${esc(t.nome)}</h2>
+        <div class="detalhes">
+          ${sinopsePlaceholder}
+          <div class="linha-trailer-streaming" id="linha-ts-${t.id}">
+            ${htmlStreamingRow(t)}
+            <span id="slot-trailer-${t.id}"></span>
+          </div>
+          <div class="tv-detalhe-acoes">${htmlAcoesTitulo(t)}</div>
+        </div>
+      </div>
     </div>`;
+}
+/* TV: preenche a sinopse/trailer do título selecionado no carrossel de
+   favoritos/assistindo — mesmo cartão das ações que já aparece ao clicar na
+   capa, só que com o texto vindo de uma busca assíncrona na TMDB */
+async function carregarSinopseFoco(t){
+  const el=document.getElementById("sinopse-foco-"+t.id);
+  if(!el||!t.tmdb_id) return;
+  let j;
+  try{ j=await tmdbGet(`/${t.tipo}/${t.tmdb_id}?language=pt-BR&append_to_response=videos`); }
+  catch(e){ el.innerHTML=""; return; }
+  const elAtual=document.getElementById("sinopse-foco-"+t.id);
+  if(!elAtual) return; /* usuário já trocou de seleção enquanto carregava */
+  preencherSinopseFoco(elAtual,j,t.tipo,t.id,t.nome);
+}
+function preencherSinopseFoco(el,j,tipo,idTitulo,nomeTitulo){
+  const partes=[];
+  if(j.vote_average) partes.push(`⭐ ${j.vote_average.toFixed(1)}`);
+  if(tipo==="movie"&&j.runtime){
+    const h=Math.floor(j.runtime/60), m=j.runtime%60;
+    partes.push(`⏱ ${h?h+"h ":""}${m}min`);
+  }
+  if(tipo==="tv"&&j.number_of_seasons){
+    partes.push(`📺 ${j.number_of_seasons} temporada${j.number_of_seasons>1?"s":""} · ${j.number_of_episodes||"?"} episódios`);
+  }
+  const generos=(j.genres||[]).map(g=>g.name).join(" · ");
+  const sinopse=j.overview||"Sinopse não disponível em português.";
+  const btnPremiumId="btn-sinopse-premium-foco-"+idTitulo;
+  let sinopseHTML;
+  if(isPremium()){
+    sinopseHTML=`<div class="sinopse" style="-webkit-line-clamp:unset">${esc(sinopse)}</div>`;
+  }else{
+    const resumo=sinopse.length>90?sinopse.slice(0,90).trim()+"…":sinopse;
+    sinopseHTML=`<div class="sinopse">${esc(resumo)}</div><button class="link-premium" id="${btnPremiumId}">⭐ Ver sinopse completa com o Premium</button>`;
+  }
+  const videos=(j.videos&&j.videos.results)||[];
+  const trailer=videos.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.iso_639_1==="pt")
+    ||videos.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.official)
+    ||videos.find(v=>v.site==="YouTube"&&v.type==="Trailer")
+    ||videos.find(v=>v.site==="YouTube"&&v.type==="Teaser");
+  const btnTrailerId="btn-trailer-foco-"+idTitulo;
+  el.innerHTML=`
+    <div class="meta">${partes.join(" &nbsp;·&nbsp; ")}</div>
+    ${generos?`<div class="generos">${esc(generos)}</div>`:""}
+    ${sinopseHTML}`;
+  const bsp=document.getElementById(btnPremiumId);
+  if(bsp) bsp.onclick=()=>abrirPaywall("sinopse");
+  /* o Trailer entra ao lado do streaming (mesma linha, mesmo tamanho) em vez
+     de ficar sozinho ocupando a largura toda — ver .linha-trailer-streaming
+     em htmlDetalheTituloTv, que já reserva o slot mesmo antes do trailer
+     carregar (a busca na TMDB é assíncrona) */
+  const slotTrailer=document.getElementById("slot-trailer-"+idTitulo);
+  if(slotTrailer && trailer){
+    slotTrailer.outerHTML=`<button class="btn-secundario" id="${btnTrailerId}" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Trailer</button>`;
+    /* abre em tela cheia por cima (mesmo player do Cinelist+), em vez de
+       incorporar o vídeo ali mesmo — assim mantém a proporção 16:9 correta
+       em vez de espremer o player na coluna estreita da sinopse */
+    document.getElementById(btnTrailerId).onclick=()=>abrirPlayerTelaCheia({id:trailer.key,titulo:(nomeTitulo?nomeTitulo+" — ":"")+"Trailer"});
+  }
 }
 
 function renderDetalheFoco(t){
@@ -2342,14 +2964,60 @@ function renderDetalheFoco(t){
   if(alvo) alvo.innerHTML=htmlDetalheFoco(t);
 }
 
-/* tocar num pôster de qualquer carrossel de foco o seleciona: destaca a capa/nome e atualiza o card de ações abaixo */
+/* TV: abre o título selecionado (favoritos/assistindo) num overlay em tela
+   cheia — igual à tela de sinopse do início, mas com as ações de gerenciar
+   (abrir, favoritar/comecei a ver, editar, excluir, T/EP). Voltar no
+   controle fecha e retorna pra lista (ver TV_LAYER_STACK) */
+function abrirDetalheTv(t,elOrigem){
+  /* guarda a capa que foi clicada pra voltar o foco exatamente nela ao
+     fechar (em vez de só ir pra aba) */
+  window.__tvElementoOrigemDetalhe=elOrigem||null;
+  $("#tv-td-conteudo").innerHTML=htmlDetalheTituloTv(t);
+  $("#tv-titulo-detalhe").classList.remove("hidden");
+  if(t.tmdb_id) carregarSinopseFoco(t);
+  /* "Abrir"/"Assistir" já vem selecionado — ação mais provável ao entrar no
+     título. Voltou a ser seguro focar aqui porque o handler de Enter agora
+     ignora key-repeat (e.repeat) — a causa real do bug de "clicar sozinho"
+     de antes, não o foco em si. */
+  const btnAbrir=document.querySelector("#tv-td-conteudo [data-abrir]");
+  if(btnAbrir) btnAbrir.focus({preventScroll:true});
+}
+function fecharDetalheTv(){
+  $("#tv-titulo-detalhe").classList.add("hidden");
+  $("#tv-td-conteudo").innerHTML="";
+  /* volta o foco pra capa que foi clicada (se ainda existir na tela); senão
+     cai na aba selecionada como antes. Clicar direto no botão "Voltar" na
+     tela (em vez da tecla voltar do controle) não passa pelo reforço de
+     foco que existe no handleBack(). Múltiplas tentativas porque existe uma
+     corrida real com o mecanismo genérico de auto-foco da TV
+     (scheduleAutoFocus, disparado pela mesma mudança de classe) — nem
+     sempre a primeira tentativa "gruda". */
+  function focarOrigem(){
+    const origem=window.__tvElementoOrigemDetalhe;
+    if(origem && document.body.contains(origem) && origem.getClientRects().length){
+      origem.focus({preventScroll:true});
+      return;
+    }
+    const abaAtiva=document.querySelector(".aba.ativa");
+    if(abaAtiva) abaAtiva.focus({preventScroll:true});
+  }
+  requestAnimationFrame(focarOrigem);
+  setTimeout(focarOrigem,60);
+  setTimeout(focarOrigem,200);
+}
+$("#btn-tv-td-fechar").onclick=fecharDetalheTv;
+
+/* tocar num pôster de qualquer carrossel de foco: no celular, seleciona e
+   mostra o card de ações logo abaixo; na TV, abre a tela de detalhe cheia */
 function instalarFoco(itens){
   const posters=document.querySelectorAll("#lista .poster-foco");
   posters.forEach(el=>{
     el.addEventListener("click",()=>{
-      posters.forEach(x=>x.classList.toggle("selecionado",x===el));
       const t=itens.find(x=>String(x.id)===el.dataset.foco);
-      if(t) renderDetalheFoco(t);
+      if(!t) return;
+      if(window.CINELIST_IS_TV){ abrirDetalheTv(t,el); return; }
+      posters.forEach(x=>x.classList.toggle("selecionado",x===el));
+      renderDetalheFoco(t);
     });
   });
 }
@@ -2422,18 +3090,30 @@ function instalarSetas(){
 
 
 /* delegação de eventos */
-$("#lista").addEventListener("click",e=>{
+function cliqueAcaoTitulo(e){
   const b=e.target.closest("button"); if(!b) return;
   if(b.dataset.aj){ const [id,c,d]=b.dataset.aj.split("|"); ajustar(id,c,parseInt(d)); }
-  else if(b.dataset.mover){ const [id,st]=b.dataset.mover.split("|"); mover(id,st); }
+  else if(b.dataset.mover){
+    const [id,st]=b.dataset.mover.split("|"); mover(id,st);
+    if(window.CINELIST_IS_TV) fecharDetalheTv(); /* muda de aba (favoritos/assistindo), some da lista atual */
+  }
   else if(b.dataset.abrir) abrirStreaming(b.dataset.abrir);
-  else if(b.dataset.editar) editar(b.dataset.editar);
-  else if(b.dataset.excluir) excluir(b.dataset.excluir);
-  else if(b.dataset.descId) abrirDescoberta(parseInt(b.dataset.descId),b.dataset.descTipo,!!b.dataset.cinema);
-});
+  else if(b.dataset.editar){
+    if(window.CINELIST_IS_TV) fecharDetalheTv(); /* evita empilhar o overlay de detalhe com o modal de editar */
+    editar(b.dataset.editar);
+  }
+  else if(b.dataset.excluir){
+    const id=b.dataset.excluir;
+    excluir(id).then(()=>{ if(window.CINELIST_IS_TV && !titulos.some(x=>x.id===id)) fecharDetalheTv(); });
+  }
+  else if(b.dataset.descId) abrirDescoberta(parseInt(b.dataset.descId),b.dataset.descTipo,!!b.dataset.cinema,b);
+  else if(b.dataset.trocarStreamingTv) mostrarTrocaStreamingTv(b.dataset.trocarStreamingTv);
+}
+$("#lista").addEventListener("click",cliqueAcaoTitulo);
+$("#tv-td-conteudo").addEventListener("click",cliqueAcaoTitulo);
 $("#lista-generos").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b||!b.dataset.descId) return;
-  abrirDescoberta(parseInt(b.dataset.descId),b.dataset.descTipo,!!b.dataset.cinema);
+  abrirDescoberta(parseInt(b.dataset.descId),b.dataset.descTipo,!!b.dataset.cinema,b);
 });
 
 /* ---------- ações ---------- */
@@ -2441,11 +3121,27 @@ function abrirNoStreaming(k,titulo){
   const s=STREAMINGS[k]; if(!s) return;
   const web=s.busca(encodeURIComponent(titulo));
   if(window.CINELIST_IS_TV){
-    const avisoManual=()=>avisarApp(`Abra o app da ${s.nome} na TV pra assistir "${titulo}" — a TV não consegue abrir esse app sozinha ainda.`,"ok");
+    const avisoManual=()=>mostrarTvAppIndisponivel(s.nome);
     if(s.tizenAppId && window.tizen && window.tizen.application){
       window.__cinelistTvSaiuPraStreaming=true;
-      try{ tizen.application.launch(s.tizenAppId,()=>{},avisoManual); }
-      catch(e){ avisoManual(); }
+      /* tenta abrir o app JÁ na busca pelo nome do título, via appControl
+         (operação VIEW com a url de busca do próprio streaming como URI) —
+         é o mesmo mecanismo por trás de "App Links"/"Universal Links";
+         funciona se o app do streaming tiver registrado essa URL como sua
+         (comum em apps de streaming, mas não confirmado em TV real pra
+         todos). Se falhar por qualquer motivo, cai pro launch() simples
+         (abre o app, só que na tela inicial dele em vez de já na busca). */
+      const abrirSimples=()=>{ try{ tizen.application.launch(s.tizenAppId,()=>{},avisoManual); }catch(e){ avisoManual(); } };
+      try{
+        if(tizen.application.launchAppControl){
+          const controle=new tizen.ApplicationControl(
+            "http://tizen.org/appcontrol/operation/VIEW", web, null, null, []
+          );
+          tizen.application.launchAppControl(controle,s.tizenAppId,()=>{},abrirSimples,null);
+        }else{
+          abrirSimples();
+        }
+      }catch(e){ abrirSimples(); }
     }else{
       avisoManual();
     }
@@ -2466,6 +3162,21 @@ function abrirNoStreaming(k,titulo){
     window.open(web,"_blank");
   }
 }
+/* TV: streaming sem app conhecido (ou que falhou ao abrir) — mostra aviso em
+   tela cheia e, na sequência, fecha o CineList pra cair na tela inicial da TV
+   (onde o usuário escolhe o app manualmente) */
+function fecharAppTv(){
+  if(window.tizen && window.tizen.application){
+    try{ window.tizen.application.getCurrentApplication().exit(); }catch(e){}
+  }
+}
+function mostrarTvAppIndisponivel(nome){
+  $("#tv-ai-nome").textContent=nome; $("#tv-ai-nome2").textContent=nome;
+  $("#tv-app-indisponivel").classList.remove("hidden");
+  clearTimeout(window.__tvAiTimer);
+  window.__tvAiTimer=setTimeout(fecharAppTv,4000);
+}
+$("#btn-tv-ai-ok").onclick=fecharAppTv;
 function abrirStreaming(id){
   const t=titulos.find(x=>x.id===id); if(!t) return;
   if(t.cinelistYoutubeId){ abrirPlayerTelaCheia({id:t.cinelistYoutubeId,titulo:t.nome}); return; }
@@ -2500,6 +3211,31 @@ async function mover(id,status){
   const t=titulos.find(x=>x.id===id); if(!t) return;
   t.status=status; desenhar();
   try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",id),{status}); }catch(e){}
+}
+/* TV: troca rápida de streaming direto na tela de sinopse (sem abrir o
+   formulário de edição completo) — grade de streamings embutida no próprio
+   overlay de detalhe; ver htmlAcoesTitulo/mostrarTrocaStreamingTv */
+async function trocarStreamingRapido(id,streaming){
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  t.streaming=streaming;
+  try{ await updateDoc(doc(bd,"usuarios",usuario.uid,"titulos",id),{streaming}); }catch(e){}
+}
+function mostrarTrocaStreamingTv(id){
+  const t=titulos.find(x=>x.id===id); if(!t) return;
+  const grade=ativos().map(k=>{ const s=STREAMINGS[k];
+    return `<button class="tile" data-trocar-tile="${k}">${iconeStreaming(k,"g")}${s.nome}</button>`;
+  }).join("");
+  $("#tv-td-conteudo").innerHTML=`
+    <h2 class="tv-detalhe-nome">Trocar streaming</h2>
+    <div class="grade-streamings">${grade}</div>
+    <button class="btn-ghost" id="btn-trocar-streaming-tv-cancelar">Cancelar</button>`;
+  $("#tv-td-conteudo").querySelectorAll("[data-trocar-tile]").forEach(b=>{
+    b.onclick=async ()=>{
+      await trocarStreamingRapido(id,b.dataset.trocarTile);
+      abrirDetalheTv(titulos.find(x=>x.id===id)||t,window.__tvElementoOrigemDetalhe);
+    };
+  });
+  $("#btn-trocar-streaming-tv-cancelar").onclick=()=>abrirDetalheTv(t,window.__tvElementoOrigemDetalhe);
 }
 async function excluir(id){
   const t=titulos.find(x=>x.id===id);
@@ -2557,6 +3293,10 @@ function atualizarSeletor(){
   const s=STREAMINGS[streamingEscolhido];
   $("#sel-icone").innerHTML=iconeStreaming(streamingEscolhido,"m");
   $("#sel-nome").textContent=s.nome;
+  /* "Abrir no Streaming" fica "Abrir no Netflix"/"Abrir no Prime Video"/etc,
+     com o nome do streaming configurado pra esse título */
+  const btnAbrirTv=$("#btn-abrir-streaming-tv");
+  if(btnAbrirTv) btnAbrirTv.textContent=`📺 Abrir no ${s.nome}`;
 }
 function atualizarPreviewCapa(nome){
   const box=$("#capa-preview");
@@ -2565,9 +3305,13 @@ function atualizarPreviewCapa(nome){
     $("#titulo-escolhido").textContent=nome||$("#f-nome").value;
     box.classList.remove("hidden");
     $("#grupo-nome").classList.add("hidden");
+    /* na TV, o nome já aparece ao lado da capa — "Adicionar/Editar título"
+       vira redundante e só ocupa espaço vertical à toa */
+    if(window.CINELIST_IS_TV) $("#modal-titulo").classList.add("hidden");
   }else{
     box.classList.add("hidden");
     $("#grupo-nome").classList.remove("hidden");
+    $("#modal-titulo").classList.remove("hidden");
   }
 }
 
@@ -2604,6 +3348,22 @@ function fecharModalTitulo(){
   if(editandoId){ salvarTitulo(statusEditando); return; }
   $("#modal").classList.add("hidden");
   cpOrigemAtual=null; cpOrigemExterna=null;
+  /* volta o foco pra capa que foi clicada (início/cinelist+), se ela ainda
+     existir na tela; senão cai na aba selecionada */
+  if(window.CINELIST_IS_TV){
+    function focarOrigem(){
+      const origem=window.__tvElementoOrigemModal;
+      if(origem && document.body.contains(origem) && origem.getClientRects().length){
+        origem.focus({preventScroll:true});
+        return;
+      }
+      const abaAtiva=document.querySelector(".aba.ativa");
+      if(abaAtiva) abaAtiva.focus({preventScroll:true});
+    }
+    requestAnimationFrame(focarOrigem);
+    setTimeout(focarOrigem,60);
+    setTimeout(focarOrigem,200);
+  }
 }
 $("#btn-cancelar").onclick=()=>fecharModalTitulo();
 $("#modal").onclick=e=>{ if(e.target.id==="modal") fecharModalTitulo(); };
@@ -2755,7 +3515,28 @@ async function escolherResultado(i,ehCinema){
 }
 function atualizarVisibilidadeAssistir(){
   $("#grupo-status").classList.toggle("hidden",!!editandoId);
-  $("#btn-assistir").classList.toggle("hidden",!(cpOrigemAtual||cpOrigemExterna));
+  const ehCinelistPlus=!!(cpOrigemAtual||cpOrigemExterna);
+  $("#btn-assistir").classList.toggle("hidden",!ehCinelistPlus);
+  /* título do Cinelist+ toca no player próprio (YouTube) — não faz sentido
+     oferecer "Abrir no Streaming" pra ele */
+  $("#btn-abrir-streaming-tv").classList.toggle("hidden",ehCinelistPlus);
+  /* ação principal (Abrir no streaming, ou Assistir pro Cinelist+) sempre
+     em primeiro, antes de Favoritar — via CSS order, já que os 3 botões
+     dividem a mesma linha e só um dos dois (Abrir/Assistir) fica visível
+     por vez */
+  $("#btn-abrir-streaming-tv").style.order=1;
+  $("#btn-assistir").style.order=ehCinelistPlus?1:3;
+  $("#btn-favoritar").style.order=2;
+  /* "Abrir no streaming" (ou "Assistir" pro Cinelist+) já vem selecionado —
+     ação mais provável ao entrar num título novo pela TV. Diferente do
+     overlay de favoritos/assistindo (que foca logo após um clique síncrono,
+     arriscando um "Enter" repetido cair no botão errado), essa função só
+     roda depois de um await na TMDB — o key-repeat do controle já não está
+     mais ativo nesse ponto, então é seguro focar direto. */
+  if(window.CINELIST_IS_TV && !editandoId){
+    const alvo=ehCinelistPlus?$("#btn-assistir"):$("#btn-abrir-streaming-tv");
+    if(alvo) alvo.focus({preventScroll:true});
+  }
 }
 
 /* ficha do título (sinopse, gênero, duração, elenco) */
@@ -2788,6 +3569,11 @@ function mostrarDetalhes(j,tipo){
     ||videos.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.official)
     ||videos.find(v=>v.site==="YouTube"&&v.type==="Trailer")
     ||videos.find(v=>v.site==="YouTube"&&v.type==="Teaser");
+  /* remove o botão de trailer de uma exibição anterior (TV pode ter
+     relocado ele pra dentro de #linha-ts-form, fora de #detalhes) antes de
+     montar de novo — senão sobra um "btn-trailer" duplicado/desatualizado */
+  const trailerAntigo=document.getElementById("btn-trailer");
+  if(trailerAntigo) trailerAntigo.remove();
   $("#detalhes").innerHTML=`
     <div class="meta">${partes.join(" &nbsp;·&nbsp; ")}</div>
     ${tituloOriginal&&tituloOriginal!==nomeExibido?`<div class="generos">Título original: ${esc(tituloOriginal)}</div>`:""}
@@ -2799,11 +3585,37 @@ function mostrarDetalhes(j,tipo){
   const bsp=$("#btn-sinopse-premium"); if(bsp) bsp.onclick=()=>abrirPaywall("sinopse");
   const btnTrailer=$("#btn-trailer");
   if(btnTrailer) btnTrailer.onclick=()=>{
+    /* TV: abre em tela cheia por cima (mesmo player do Cinelist+), em vez de
+       incorporar o vídeo espremido dentro do formulário de adicionar/editar */
+    if(window.CINELIST_IS_TV){
+      abrirPlayerTelaCheia({id:trailer.key,titulo:(nomeExibido?nomeExibido+" — ":"")+"Trailer"});
+      return;
+    }
     const wrap=$("#trailer-embed");
     if(!wrap.classList.contains("hidden")){ wrap.classList.add("hidden"); wrap.innerHTML=""; return; }
     wrap.innerHTML=`<iframe width="100%" height="200" src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0" title="Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:14px;aspect-ratio:16/9;height:auto;display:block"></iframe>`;
     wrap.classList.remove("hidden");
   };
+  /* TV: trailer ao lado do streaming (mesma linha, mesmo tamanho) em vez de
+     cada um numa linha cheia própria — move os dois elementos (que já
+     existem no HTML/já foram montados acima) pra dentro de uma linha
+     compartilhada, criada uma única vez */
+  if(window.CINELIST_IS_TV && btnTrailer){
+    const campoStreaming=document.getElementById("btn-trocar-streaming");
+    if(campoStreaming){
+      let linha=document.getElementById("linha-ts-form");
+      if(!linha){
+        const campoOriginal=campoStreaming.closest(".field");
+        linha=document.createElement("div");
+        linha.className="linha-trailer-streaming";
+        linha.id="linha-ts-form";
+        campoOriginal.parentNode.insertBefore(linha,campoOriginal);
+        campoOriginal.remove();
+      }
+      linha.appendChild(campoStreaming);
+      linha.appendChild(btnTrailer);
+    }
+  }
   $("#detalhes").classList.remove("hidden");
 }
 
@@ -2824,10 +3636,12 @@ function atualizarInfoTE(){
 }
 $("#f-temporada").addEventListener("input",atualizarInfoTE);
 $("#f-episodio").addEventListener("input",atualizarInfoTE);
-async function abrirDescoberta(id,tipo,ehCinema){
+async function abrirDescoberta(id,tipo,ehCinema,elOrigem){
   cpOrigemAtual=null; cpOrigemExterna=null;
   const fonte=descIndex.get(tipo+"-"+id);
   if(!fonte) return;
+  /* guarda a capa clicada pra voltar o foco nela ao fechar o modal, na TV */
+  if(window.CINELIST_IS_TV) window.__tvElementoOrigemModal=elOrigem||null;
   editandoId=null; gradeOrigem="busca";
   $("#modal-titulo").textContent="Adicionar título";
   resultadosBusca=[fonte];
@@ -2944,20 +3758,39 @@ if(window.CINELIST_IS_TV){
   }
 
   /* ordem de prioridade = mesma ordem visual do z-index já usado no CSS */
+  /* ordem de prioridade = mesma ordem do z-index real de cada camada no CSS
+     (maior primeiro) — getActiveLayer() pega a PRIMEIRA da lista que estiver
+     visível, então uma camada com z-index menor listada antes de uma com
+     z-index maior fazia getActiveLayer() escolher errado sempre que as duas
+     ficassem visíveis ao mesmo tempo (ex.: o diálogo "Excluir?" (78), aberto
+     por cima da tela de sinopse (55), ficava "atrás" pra fins de navegação —
+     setas dentro do diálogo iam parar em botões da tela de trás). */
   var TV_LAYER_STACK=[
-    {id:"tela-player-cp",close:function(){var b=document.getElementById("btn-fechar-player-cp"); if(b) b.click();}},
+    {id:"tela-perfil-tv",close:function(){handleRootBack();}}, /* tela raiz (antes do login): voltar sai do app */
     {id:"toast",close:function(){var t=document.getElementById("toast"); if(t) t.classList.add("hidden");}},
+    {id:"tv-app-indisponivel",close:function(){
+      if(window.tizen && window.tizen.application){
+        try{ window.tizen.application.getCurrentApplication().exit(); }catch(e){}
+      }
+    }},
     {id:"confirma-simples",close:function(){var b=document.getElementById("cs-cancelar"); if(b) b.click();}},
     {id:"escolha-plano",close:function(){}}, /* escolha obrigatória no primeiro acesso: sem ação de voltar */
     {id:"paywall",close:function(){var b=document.getElementById("paywall-nao"); if(b) b.click();}},
     {id:"confirma",close:function(){var b=document.getElementById("conf-cancelar"); if(b) b.click();}},
+    {id:"tela-player-cp",close:function(){var b=document.getElementById("btn-fechar-player-cp"); if(b) b.click();}},
+    {id:"tv-titulo-detalhe",close:function(){var b=document.getElementById("btn-tv-td-fechar"); if(b) b.click();}},
     {id:"modal-filtros",close:function(){var b=document.getElementById("btn-sair-filtros"); if(b) b.click();}},
     {id:"modal",close:function(){closeModalStep();}},
     {id:"tela-generos",close:function(){var b=document.getElementById("btn-voltar-generos"); if(b) b.click();}},
     {id:"painel",close:function(){var b=document.getElementById("btn-voltar-painel"); if(b) b.click();}},
     {id:"menu",close:function(){var m=document.getElementById("menu"); if(m) m.click();}},
     {id:"tela-app",close:function(){handleRootBack();}},
-    {id:"tela-login",close:function(){handleRootBack();}},
+    {id:"tela-login",close:function(){
+      /* se chegou aqui vindo da tela de seleção de perfis (TV), voltar deve
+         voltar pra lá em vez de sair do app */
+      if(window.__tvVeioDoSeletorPerfil && window.tvVoltarParaSeletorPerfil){ window.tvVoltarParaSeletorPerfil(); }
+      else{ handleRootBack(); }
+    }},
     {id:"tela-config",close:function(){handleRootBack();}}
   ];
 
@@ -2987,11 +3820,38 @@ if(window.CINELIST_IS_TV){
   function handleBack(){
     for(var i=0;i<TV_LAYER_STACK.length;i++){
       var el=document.getElementById(TV_LAYER_STACK[i].id);
-      if(el && !el.classList.contains("hidden")){ TV_LAYER_STACK[i].close(); return; }
+      if(el && !el.classList.contains("hidden")){
+        TV_LAYER_STACK[i].close();
+        /* ao fechar e voltar pra tela normal, o navegador às vezes joga o
+           foco pro primeiro elemento focável do documento (o menu-hambúrguer)
+           quando o elemento que estava focado dentro da camada fechada some.
+           Força de volta pra aba ativa em vez de confiar nessa herança do
+           navegador — sem isso, o foco "vaza" pro hambúrguer mesmo com
+           scheduleAutoFocus (que aceitaria o hambúrguer como válido por já
+           estar dentro do body e visível) */
+        requestAnimationFrame(function(){
+          if(getActiveLayer()!==document.body) return;
+          var abaAtiva=document.querySelector(".aba.ativa");
+          if(abaAtiva && isElementVisible(abaAtiva)) abaAtiva.focus({preventScroll:true});
+        });
+        return;
+      }
     }
   }
 
   function rectCenter(r){ return {x:r.left+r.width/2,y:r.top+r.height/2}; }
+  /* .topo-fixo é sticky: seu rect.top na viewport fica sempre ~0, então em
+     coordenadas de tela ele parece "grudado" perto de QUALQUER elemento,
+     por mais que a página tenha rolado. Sem isso, a seta pra cima pula
+     direto pro cabeçalho fixo em vez de passar pelas fileiras de carrossel
+     que ainda estão fora da tela (mas mais pertas no conteúdo real). Simula
+     a posição que ele teria se não fosse sticky, subtraindo o scroll —
+     assim ele fica "cada vez mais longe" conforme a página desce. */
+  function centroAncorado(el,r){
+    var c=rectCenter(r);
+    if(el.closest(".topo-fixo")) c.y-=window.scrollY;
+    return c;
+  }
 
   function bestCandidate(dir){
     var container=getActiveLayer();
@@ -3000,19 +3860,137 @@ if(window.CINELIST_IS_TV){
     var candidates=all.filter(function(el){ return el!==active; });
     if(!candidates.length) return null;
 
-    var originValid=active && active!==document.body && container.contains(active) && isElementVisible(active);
-    if(!originValid) return candidates[0];
+    var origemFallback=false;
+    /* enquanto o foco inicial genuíno ainda não foi estabelecido, o
+       CineList não conta como "origem válida" mesmo que tecnicamente esteja
+       focado — ele só chegou a ter foco por ser o primeiro elemento
+       focável do HTML (comportamento do navegador ao carregar a página),
+       não porque o usuário navegou até ele */
+    var origemInvalidaPorFocoDeCarregamento=!window.__cinelistFocoInicialOk && active && active.id==="btn-menu";
+    var originValid=active && active!==document.body && container.contains(active) && isElementVisible(active) && !origemInvalidaPorFocoDeCarregamento;
+    if(!originValid){
+      /* sem nada focado ainda (ex.: acabou de carregar a página) — prefere
+         a aba selecionada em vez do primeiro elemento focável do DOM (que
+         seria sempre o botão CineList, por vir primeiro no HTML). Em vez de
+         só focar ela e ignorar a tecla pressionada, usa ela como ORIGEM e
+         deixa o cálculo abaixo seguir na direção pedida — senão a primeira
+         seta pra direita "parece" ter ido pra esquerda (só estabeleceu o
+         foco em Início, que é a aba mais à esquerda, sem se mover). */
+      var abaAtivaFallback=container.querySelector(".aba.ativa");
+      active=(abaAtivaFallback && isElementVisible(abaAtivaFallback))?abaAtivaFallback:candidates[0];
+      candidates=all.filter(function(el){ return el!==active; });
+      if(!candidates.length) return active;
+      origemFallback=true;
+    }
+
+    /* dos chips de filtro de streaming, sobe direto pra aba selecionada,
+       sem depender do algoritmo de "candidato mais próximo" — que só
+       encontrava a aba quando o chip estava geometricamente alinhado bem
+       abaixo dela (mesma coluna), deixando ArrowUp sem efeito nos outros
+       chips. Aqui é sempre a mesma única ação esperada, então atalho direto. */
+    if(dir==="ArrowUp" && active.closest(".filtros")){
+      var abaAtivaAtalho=container.querySelector(".aba.ativa");
+      if(abaAtivaAtalho && isElementVisible(abaAtivaAtalho)) return abaAtivaAtalho;
+    }
+    /* o caminho inverso: descendo a partir da aba selecionada, vai direto
+       pro primeiro filtro de streaming, sem depender do placar geométrico
+       (que, sem essa checagem, às vezes "escorregava" pra uma aba vizinha
+       por causa de 1-2px de diferença de posição entre as abas) */
+    if(dir==="ArrowDown" && active.classList.contains("aba") && active.classList.contains("ativa")){
+      var primeiroFiltroDesc=container.querySelector(".filtros button, .filtros-busca button");
+      if(primeiroFiltroDesc && isElementVisible(primeiroFiltroDesc)) return primeiroFiltroDesc;
+    }
+    /* descendo de um campo de busca (ocupa a largura toda) pra fileira de
+       filtros/chips logo abaixo, vai pro PRIMEIRO filtro (leitura normal) —
+       sem isso, o candidato "mais alinhado" geometricamente costuma ser o
+       filtro do meio (ex.: "Ano"), já que o centro do campo largo bate mais
+       perto do meio da fileira do que do primeiro item */
+    var mapaBuscaParaFiltros={"f-busca":"#filtros-busca","cpm-busca":"#cpm-filtros"};
+    if(dir==="ArrowDown" && mapaBuscaParaFiltros[active.id]){
+      var primeiroFiltro=document.querySelector(mapaBuscaParaFiltros[active.id]+" button");
+      if(primeiroFiltro && isElementVisible(primeiroFiltro)) return primeiroFiltro;
+    }
+    /* descendo do campo "Streaming" (ocupa a largura toda) pra fileira de
+       botões logo abaixo (Abrir no streaming/Assistir + Favoritar), vai
+       sempre pro botão visualmente mais à esquerda (ordenado via CSS
+       "order", já que Abrir/Assistir vem sempre antes de Favoritar) — sem
+       isso, o centro do campo largo cai bem na divisa entre os dois
+       botões (cada um ocupa metade da linha), e o "candidato mais próximo"
+       geométrico às vezes escolhe Favoritar em vez do botão principal */
+    if(dir==="ArrowDown" && active.id==="btn-trocar-streaming"){
+      var grupoStatus=document.getElementById("grupo-status");
+      if(grupoStatus && !grupoStatus.classList.contains("hidden")){
+        var botoesGrupoStatus=[].slice.call(grupoStatus.querySelectorAll("button")).filter(function(b){ return isElementVisible(b); });
+        botoesGrupoStatus.sort(function(a,b){ return (parseInt(getComputedStyle(a).order,10)||0)-(parseInt(getComputedStyle(b).order,10)||0); });
+        if(botoesGrupoStatus[0]) return botoesGrupoStatus[0];
+      }
+    }
+    /* na sinopse de favoritos/assistindo (TV), descendo de "Abrir no
+       streaming"/"Favoritar"/"Comecei a ver" pro botão "Excluir" logo
+       abaixo — como um fica à esquerda/direita da fileira e "Excluir" é bem
+       menor e mais afastado (pra não ficar colado nos outros), o candidato
+       geométrico às vezes pulava direto pro "Voltar" do rodapé, bem mais
+       longe na vertical mas "mais alinhado" horizontalmente */
+    if(dir==="ArrowDown" && active.closest("#tv-td-conteudo") && (active.dataset.abrir!==undefined||active.dataset.mover!==undefined)){
+      var btnExcluirTv=document.querySelector("#tv-td-conteudo [data-excluir]");
+      if(btnExcluirTv && isElementVisible(btnExcluirTv)) return btnExcluirTv;
+    }
+    /* mesma ideia, pro contador de temporada/episódio (T/EP) da sinopse de
+       assistindo — ele fica bem mais estreito que a fileira de streaming/
+       trailer acima e a de abrir/favoritar abaixo, então o candidato
+       geométrico "mais alinhado" pulava ele por completo nos dois sentidos */
+    if(active.closest("#tv-td-conteudo")){
+      var contadorTv=document.querySelector("#tv-td-conteudo .contador");
+      if(contadorTv && isElementVisible(contadorTv)){
+        if(dir==="ArrowDown" && active.closest(".linha-trailer-streaming")){
+          var primeiroBotaoContador=contadorTv.querySelector("button");
+          if(primeiroBotaoContador) return primeiroBotaoContador;
+        }
+        if(dir==="ArrowUp" && (active.dataset.abrir!==undefined||active.dataset.mover!==undefined)){
+          var botoesContador=[].slice.call(contadorTv.querySelectorAll("button"));
+          if(botoesContador.length) return botoesContador[botoesContador.length-1];
+        }
+      }
+    }
 
     var aRect=active.getBoundingClientRect();
-    var o=rectCenter(aRect);
+    var o=centroAncorado(active,aRect);
     var horizontal=(dir==="ArrowRight"||dir==="ArrowLeft");
     var bestOverlap=null,bestScoreOverlap=Infinity; /* mesma fileira/coluna visual */
     var bestAny=null,bestScoreAny=Infinity;          /* qualquer candidato à frente, sem exigir alinhamento */
 
+    /* "vindo de fora do cabeçalho" cobre tanto o conteúdo (carrossel) quanto
+       os chips de filtro de streaming — os dois ficam fora de header/.abas,
+       mesmo os filtros estando dentro de .topo-fixo (que é sticky) */
+    var vindoDeForaDoCabecalho=!active.closest("header") && !active.closest(".abas");
+    /* existe uma fileira de filtros de streaming visível nesta tela? se
+       existir, ela é sempre a "próxima parada" ao subir do conteúdo — a aba
+       ativa só vira um destino direto quando NÃO há filtros pra subir antes.
+       Sem essa checagem, um cartão bem alto (ex.: o de sinopse) podia ficar
+       tão mais alinhado horizontalmente com a aba do que com os filtros que
+       o placar (que pesa 2x o desalinhamento horizontal) fazia a aba vencer
+       mesmo estando bem mais longe verticalmente que os filtros. */
+    var primeiroFiltroVisivel=container.querySelector(".filtros button, .filtros-busca button");
+    var filtrosVisiveis=primeiroFiltroVisivel && isElementVisible(primeiroFiltroVisivel);
     for(var i=0;i<candidates.length;i++){
       var el=candidates[i];
+      /* subindo a partir do conteúdo OU dos filtros, só a aba selecionada é
+         um destino válido no cabeçalho (nome, abas, lupa, sino, avatar) —
+         sem isso, o "candidato mais próximo" às vezes cai numa aba
+         diferente, na lupa, no CineList, no sino ou no avatar. Esses só
+         ficam alcançáveis depois, navegando pros lados já dentro do
+         cabeçalho. Os chips de filtro de streaming (.filtros) NÃO entram
+         nessa trava — eles ficam logo acima do carrossel e são um destino
+         válido e esperado. Quando existem filtros nesta tela, a aba ativa
+         também fica bloqueada aqui (força passar pelos filtros primeiro). */
+      if(dir==="ArrowUp" && vindoDeForaDoCabecalho && (el.closest("header")||el.closest(".abas")) && (!el.classList.contains("ativa")||filtrosVisiveis)) continue;
+      /* descendo a partir de dentro do cabeçalho (ex.: a aba selecionada),
+         nunca deve "escorregar" pra uma aba vizinha só por causa de 1-2px
+         de diferença de posição entre elas — o destino esperado é sempre o
+         que vem abaixo do cabeçalho (filtros ou conteúdo) */
+      if(dir==="ArrowDown" && !vindoDeForaDoCabecalho && (el.closest("header")||el.closest(".abas"))) continue;
       var r=el.getBoundingClientRect();
-      var c=rectCenter(r);
+      var c=centroAncorado(el,r);
       var dx=c.x-o.x, dy=c.y-o.y;
       var primary,cross,overlap;
       if(dir==="ArrowRight"){ if(dx<=0) continue; primary=dx; cross=dy; }
@@ -3029,7 +4007,12 @@ if(window.CINELIST_IS_TV){
     /* alinhado (mesma fileira/coluna) sempre vence; setas horizontais numa borda sem
        nada alinhado ficam paradas — só as verticais usam o "qualquer candidato à frente"
        pra poder trocar de seção/coluna ao descer ou subir */
-    return bestOverlap||(horizontal?null:bestAny);
+    var resultado=bestOverlap||(horizontal?null:bestAny);
+    /* se nem isso achou nada (ex.: primeira tecla foi ArrowLeft, e não há
+       nada à esquerda da aba ativa), ainda assim estabelece o foco nela em
+       vez de deixar a tecla sem nenhum efeito visível */
+    if(!resultado && origemFallback) resultado=active;
+    return resultado;
   }
 
   function moveFocus(dir){
@@ -3037,6 +4020,12 @@ if(window.CINELIST_IS_TV){
     if(!target) return;
     target.focus({preventScroll:true});
     if(target.scrollIntoView) target.scrollIntoView({block:"nearest",inline:"nearest"});
+    /* a partir daqui o usuário já navegou genuinamente pelo menos uma vez —
+       o CineList (se alcançado) passa a contar como origem válida normal */
+    window.__cinelistFocoInicialOk=true;
+    /* abas (Início/Cinelist+/Assistindo/Favoritos) trocam de seção só de
+       passar o foco por cima — não precisa apertar OK pra "entrar" */
+    if(target.classList.contains("aba")) target.click();
   }
 
   var tvFocusRaf=null;
@@ -3045,9 +4034,32 @@ if(window.CINELIST_IS_TV){
     tvFocusRaf=requestAnimationFrame(function(){
       tvFocusRaf=null;
       var layer=getActiveLayer();
-      if(document.activeElement && layer.contains(document.activeElement) && isElementVisible(document.activeElement)) return;
-      var first=getFocusables(layer)[0];
-      if(first) first.focus({preventScroll:true});
+      var atual=document.activeElement;
+      /* atual!==document.body é essencial aqui: sem isso, no carregamento
+         inicial da página (activeElement começa como <body>) a checagem
+         "já está focado corretamente" fica verdadeira (body contém a si
+         mesmo e tem dimensões), e a função nunca chega a focar a aba ativa —
+         o foco fica "solto" no body até algo mais empurrar ele pro
+         menu-hambúrguer */
+      /* mesmo problema aqui: se o navegador colocou o foco no CineList só
+         por ele ser o primeiro elemento focável do HTML (não por navegação
+         genuína do usuário), isso NÃO conta como "já está tudo certo" —
+         força a correção pra aba ativa mesmo assim */
+      var atualEhCineListSemGenuinidade=!window.__cinelistFocoInicialOk && atual && atual.id==="btn-menu";
+      if(atual && atual!==document.body && layer.contains(atual) && isElementVisible(atual) && !atualEhCineListSemGenuinidade) return;
+      var alvo;
+      /* voltando pra tela normal (sem modal/overlay aberto) — prefere a aba
+         ativa em vez do primeiro botão do DOM (o menu-hambúrguer), senão o
+         foco "pula" pro canto ao fechar um filme/série */
+      if(layer===document.body){
+        var abaAtiva=document.querySelector(".aba.ativa");
+        if(abaAtiva && isElementVisible(abaAtiva)) alvo=abaAtiva;
+      }
+      if(!alvo) alvo=getFocusables(layer)[0];
+      if(alvo){
+        alvo.focus({preventScroll:true});
+        if(alvo.classList.contains("aba")) window.__cinelistFocoInicialOk=true;
+      }
     });
   }
   new MutationObserver(function(muts){
@@ -3083,6 +4095,20 @@ if(window.CINELIST_IS_TV){
       moveFocus(e.key); return;
     }
     if(e.key==="Enter"){
+      /* e.repeat=true quando o controle mantém "OK" pressionado (key-repeat
+         automático do sistema) — sem ignorar isso, um clique que muda o foco
+         (ex.: abrir um título já deixa outro botão selecionado) recebe um
+         segundo "Enter" fantasma e ativa esse novo botão sem o usuário
+         querer, tipo abrir/assistir sem ter escolhido isso */
+      if(e.repeat) return;
+      /* causa real do mesmo sintoma: sem isso, o Enter clica o botão focado
+         via JS AQUI, mas o EVENTO ORIGINAL continua se propagando depois —
+         e como <button> nativamente também ativa com Enter, o navegador
+         dispara um SEGUNDO clique quando o evento "chega" nele. Se nosso
+         clique já tiver mudado o foco (ex.: abriu um overlay e focou outro
+         botão), esse segundo clique nativo cai no elemento NOVO, não no
+         original — abrindo o streaming sozinho sem o usuário escolher. */
+      e.preventDefault();
       if(document.activeElement && document.activeElement!==document.body) document.activeElement.click();
       return;
     }
@@ -3096,6 +4122,14 @@ if(window.CINELIST_IS_TV){
   },true);
 
   scheduleAutoFocus();
+  /* reforço: se a aba/janela ainda não tinha o foco real do sistema no
+     instante exato do carregamento (ex.: o usuário acabou de digitar a URL
+     e apertar Enter, e o foco ainda estava na barra de endereço), o
+     .focus() daqui de cima é ignorado pelo navegador. Reforça de novo
+     assim que a janela realmente ganhar o foco — esse é o momento em que
+     o navegador decide pra onde vai o foco "de verdade". */
+  setTimeout(scheduleAutoFocus,300);
+  window.addEventListener("focus",function(){ scheduleAutoFocus(); });
 
   /* menu estilo Netflix: lupa antes das abas, "Início" escrito por extenso
      em vez do ícone de casinha */
@@ -3106,8 +4140,18 @@ if(window.CINELIST_IS_TV){
   }
   var abaInicio=document.querySelector('.aba[data-aba="inicio"]');
   if(abaInicio && abaInicio.classList.contains("aba-icone")){
-    abaInicio.textContent="Início";
+    /* mantém o ícone da casinha (svg) e só adiciona o texto do lado, igual
+       ao padrão das outras abas (ícone + palavra) — antes o texContent
+       trocava TUDO, apagando o ícone */
+    abaInicio.insertAdjacentText("beforeend"," Início");
     abaInicio.classList.remove("aba-icone");
+  }
+
+  /* em vez do ícone de "3 tracinhos", o botão que abre o menu lateral mostra
+     o símbolo + nome CineList (igual ao topo da gaveta) */
+  var btnMenu=document.getElementById("btn-menu");
+  if(btnMenu){
+    btnMenu.innerHTML='<span class="logo-mark-mini">▶</span><span class="btn-menu-nome">CineList</span>';
   }
 
   /* ao voltar de um app de streaming aberto por "Abrir no Streaming", retorna
